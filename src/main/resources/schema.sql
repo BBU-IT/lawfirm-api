@@ -6,6 +6,7 @@ CREATE TABLE roles(
                       role_name VARCHAR(50) NOT NULL UNIQUE
 );
 
+
 CREATE TABLE app_users(
                           app_user_id SERIAL PRIMARY KEY ,
                           name VARCHAR(50) NOT NULL ,
@@ -112,7 +113,7 @@ VALUES
 INSERT INTO cases (title, description, status, start_date, end_date, lawyer_id, client_id, created_at, updated_at)
 VALUES
     ('Contract Dispute', 'Dispute over service contract terms.', 'processing', NOW() - INTERVAL '10 days', NULL, 2, 1, NOW(), NOW()),
-    ('Divorce Case', 'Divorce filing and custody matters.', 'pending', NOW() - INTERVAL '5 days', NULL, 3, 2, NOW(), NOW()),
+    ('Divorce CaseResponse', 'Divorce filing and custody matters.', 'pending', NOW() - INTERVAL '5 days', NULL, 3, 2, NOW(), NOW()),
     ('Property Claim', 'Claim regarding disputed land ownership.', 'completed', NOW() - INTERVAL '20 days', NOW() - INTERVAL '2 days', 2, 3, NOW(), NOW()),
     ('Personal Injury', 'Car accident injury claim.', 'pending', NOW() - INTERVAL '15 days', NULL, 3, 4, NOW(), NOW());
 
@@ -130,9 +131,14 @@ INSERT INTO appointments (client_id, case_id, appointment_date, location, purpos
 VALUES
     (1, 1, NOW() + INTERVAL '3 days', 'Law Office, Room 101', 'Discuss contract dispute updates', 'pending', NOW(), NOW()),
     (2, 2, NOW() + INTERVAL '1 week', 'Court Hall 2', 'Court appearance for divorce filing', 'processing', NOW(), NOW()),
-    (3, 3, NOW() - INTERVAL '3 days', 'Law Office, Room 203', 'Finalize property claim case', 'completed', NOW(), NOW()),
+    (3, 3, NOW() - INTERVAL '3 days', 'Law Office, Room 203', 'Finalize property claim cases', 'completed', NOW(), NOW()),
     (4, 4, NOW() + INTERVAL '2 days', 'Hospital Conference Room', 'Review injury reports with lawyer', 'pending', NOW(), NOW());
 
 
 ALTER TABLE app_users
 ADD COLUMN description TEXT;
+
+
+DROP TABLE app_users,roles,cases,clients,tasks,appointments
+
+Select * From app_users WHERE  email = 'yy'

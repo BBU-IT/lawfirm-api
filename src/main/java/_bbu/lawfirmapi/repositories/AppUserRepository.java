@@ -1,27 +1,18 @@
 package _bbu.lawfirmapi.repositories;
+import _bbu.lawfirmapi.models.DTO.appuser.response.AppUserResponse;
+import _bbu.lawfirmapi.models.Entity.AppUser;
+import _bbu.lawfirmapi.repositories.RoleRepository;
+import org.checkerframework.common.returnsreceiver.qual.This;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
-import _bbu.lawfirmapi.models.DTO.appuer.res.AppUser;
-import org.apache.ibatis.annotations.*;
-import java.util.List;
-@Mapper
-public interface AppUserRepository {
+// 👇 Recommended Code
+@Repository
+public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
-    @Results(id = "appUserMapper",
-            value = {@Result(property = "appUserId", column = "app_user_id"),
-                    @Result(property = "name", column = "name"),
-                    @Result(property = "email" , column = "email"),
-                    @Result(property = "phoneNumber" , column = "phone"),
-                    @Result(property = "role" , column = "role_id" , one = @One(select = "getRoleById")),
-                    @Result(property = "description" , column = "description")
-            })
-    @ResultMap("appUserMapper")
-    @Select("""
-			SELECT * FROM app_users
-			""")
-    public List<AppUser> getAllUser();
+    // No @Query needed! Spring Data JPA creates the query from the method name.
+     @Query(value = "select * from app_users where email = ?" , nativeQuery = true)
+     AppUser findByEmail(String email);
 
-    @Select("""
-			SELECT name FROM roles WHERE role_id = #{role_id}
-			""")
-    public String getRoleById(@Param("role_id") Integer roleId);
 }

@@ -1,4 +1,4 @@
-package  _bbu.lawfirmapi.models.DTO.response;
+package _bbu.lawfirmapi.models.DTO.shared.response;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,13 +14,15 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApiResponse<T> {
+public class ApiResponse<T>  {
 
     private Boolean success;
     private String message;
     private HttpStatus status;
+    private int code;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T payload;
     @Builder.Default
     private LocalDateTime timestamps = LocalDateTime.now();
+
 }

@@ -1,4 +1,4 @@
-package _bbu.lawfirmapi.models.DTO.response;
+package _bbu.lawfirmapi.models.DTO.shared.response;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -12,7 +12,6 @@ public abstract class BaseResponse {
     // Don't Edit It
 
     public <T> ResponseEntity<ApiResponse<T>> responseEntity(Boolean success, String message, HttpStatus httpStatus, T payload) {
-
         ApiResponse<T> apiResponse = ApiResponse.<T>builder()
                 .success(success)
                 .message(message)
