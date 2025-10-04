@@ -16,7 +16,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         @Server(url = "/", description = "Default Server URL") })
 @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", in = SecuritySchemeIn.HEADER)
 @SpringBootApplication
-@EntityScan(basePackages = "_bbu.lawfirmapi.models")
+@EntityScan(basePackages = "_bbu.lawfirmapi.models.Entity")
 @EnableJpaRepositories(basePackages = "_bbu.lawfirmapi.repositories")
 public class LawfirmApiApplication {
 

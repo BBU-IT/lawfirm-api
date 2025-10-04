@@ -37,12 +37,10 @@ public class AuthController extends BaseResponse {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    private void authenticate(String email , String password) throws Exception {
-        System.out.println("My credential " + email +  " "  + password);
-        try {
-           Authentication authentication =  authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
-            System.out.println("Authentication " + authentication);
+    private void authenticate(String email , String password) throws Exception {
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         } catch (DisabledException e) {
             throw new RuntimeException("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
@@ -53,16 +51,15 @@ public class AuthController extends BaseResponse {
     @PostMapping("/login")
     @Operation(summary = "Login")
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request) throws Exception {
-        System.out.println("My request body " + request);
+
         final UserDetails userDetails = appUserService.loadUserByUsername(request.getEmail());
-        System.out.println("My user details  " + userDetails);
+
 
         authenticate(userDetails.getUsername() ,  request.getPassword());;
 //        appUserService.validateUserByEmail(userDetails.getUsername());
         String token = jwtService.generateToken(userDetails);
-        System.out.println("My Token " + token);
         AuthResponse authResponse = new AuthResponse(token);
-        System.out.println("My Token " + authResponse);
+
         ApiResponse<AuthResponse> response = ApiResponse.<AuthResponse>builder().success(true)
                 .message("Login Successfully").status(HttpStatus.OK).code(HttpStatus.OK.value())
                 .payload(authResponse).timestamps(LocalDateTime.now()).build();
@@ -71,11 +68,6 @@ public class AuthController extends BaseResponse {
 
     @PostMapping("/register")
     @Operation(summary = "Register New User", description = "Registers a new user and returns user details")
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "User registered successfully"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal server error")
-    })
     public ResponseEntity<ApiResponse<AppUserResponse>> register(@Valid @RequestBody AppUserRequest request) {
         try {
             AppUserResponse appUserResponse = appUserService.registerNewUser(request);

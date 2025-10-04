@@ -1,7 +1,9 @@
 package _bbu.lawfirmapi.services.role.implement;
 
+import _bbu.lawfirmapi.exceptions.NotFoundException;
 import _bbu.lawfirmapi.models.DTO.role.request.RoleRequest;
 import _bbu.lawfirmapi.models.DTO.role.response.RoleResponse;
+import _bbu.lawfirmapi.models.Entity.Role;
 import _bbu.lawfirmapi.repositories.RoleRepository;
 import _bbu.lawfirmapi.services.role.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -17,25 +19,32 @@ public class RoleServiceImpl implements RoleService {
 //    private final RoleWithMyBatis roleWithMyBatis;
     // get all role method
     @Override
-    public List<RoleResponse> getAllRoles(){
+    public List<Role> getAllRoles(){
         return roleRepository.findAll();
     }
     @Override
-    public RoleResponse findRoleByRoleId(Integer roleId){
-       return roleRepository.findById(roleId).orElseThrow(() -> new RuntimeException("Not found"));
+    public Role findRoleByRoleId(Integer roleId){
+       return roleRepository.findById(roleId).orElseThrow(() -> new RuntimeException(" Role id not found"));
     }
     @Override
     public RoleResponse createNewRoleList(RoleRequest newRoleRequest){
-        RoleResponse role = new RoleResponse();
+        Role role = new Role();
         role.setRoleName(newRoleRequest.getRoleName());
-        return roleRepository.save(role);
+        Role newRole = roleRepository.save(role);
+        return RoleResponse.builder()
+                .roleId(newRole.getRoleId())
+                .roleName(newRole.getRoleName())
+                .build();
     }
     @Override
     public RoleResponse updateRoleById(Integer roleId  , RoleRequest updateRole){
-        return roleRepository.findById(roleId).map(ent -> {
-            ent.setRoleName(updateRole.getRoleName());
-            return  roleRepository.save(ent);
-        }).orElseThrow(() -> new RuntimeException("RoleResponse id" + roleId + " not found"));
+        Role updateNewRole = roleRepository.findById(roleId).orElseThrow(() -> new NotFoundException("role Id "  + roleId + "not found"));
+        updateNewRole.setRoleName(updateRole.getRoleName());
+        Role savedRole = roleRepository.save(updateNewRole);
+        return RoleResponse.builder()
+                .roleId(savedRole.getRoleId())
+                .roleName(savedRole.getRoleName())
+                .build();
     }
     @Override
     public void deleteRoleById(Integer roleId){

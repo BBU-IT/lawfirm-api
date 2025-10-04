@@ -15,6 +15,7 @@ public class AppUserResponse {
     private String email;
     private String phoneNumber;
     private String password;
-    private String roleId;
+    private Integer roleId;
+    private Integer departmentId;
     private String description;
 }

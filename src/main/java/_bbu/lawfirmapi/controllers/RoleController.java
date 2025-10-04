@@ -4,6 +4,7 @@ import _bbu.lawfirmapi.models.DTO.role.request.RoleRequest;
 import _bbu.lawfirmapi.models.DTO.role.response.RoleResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.ApiResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
+import _bbu.lawfirmapi.models.Entity.Role;
 import _bbu.lawfirmapi.repositories.RoleRepository;
 import _bbu.lawfirmapi.services.role.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -16,16 +17,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/roles")
 public class RoleController extends BaseResponse {
 
-    private final RoleService roleService;
+    private final RoleService  roleService;
     private final RoleRepository roleRepository;
 //    @GetMapping
 //    public ResponseEntity<ApiResponse<List<RoleResponse>>> getAllRoles(){
 //        return responseEntity(true, "Getting role using Data JPA" , HttpStatus.OK , roleService.getAllRoles());
 //    }
+
     @GetMapping("/{roleId}")
-    public ResponseEntity<ApiResponse<RoleResponse>> getRoleById(@PathVariable Integer roleId){
+    public ResponseEntity<ApiResponse<Role>> getRoleById(@PathVariable Integer roleId){
 //        System.out.println("My Data" + roleService.findRoleByRoleId(roleId));
-        return responseEntity(true , "Getting RoleResponse " + roleService.findRoleByRoleId(roleId).toString() , HttpStatus.OK , roleService.findRoleByRoleId(roleId));
+        return responseEntity(true , "Getting Role " + roleService.findRoleByRoleId(roleId).getRoleName() + " success" , HttpStatus.OK , roleService.findRoleByRoleId(roleId));
     }
     @PostMapping
     public ResponseEntity<ApiResponse<RoleResponse>> createNewRoleList(@RequestBody RoleRequest roleRequest){
@@ -39,6 +41,7 @@ public class RoleController extends BaseResponse {
 //    }
     @PutMapping("/{roleId}")
     public ResponseEntity<ApiResponse<RoleResponse>> updateNewRole (@PathVariable Integer roleId , @RequestBody RoleRequest newRoleRequest) {
+        System.out.println("My updating role " + newRoleRequest);
         return responseEntity(true, "update role success", HttpStatus.ACCEPTED, roleService.updateRoleById(roleId, newRoleRequest));
     }
     @DeleteMapping("/{roleId}")
@@ -49,8 +52,6 @@ public class RoleController extends BaseResponse {
         roleRepository.deleteById(roleId);
         return ResponseEntity.noContent().build(); // 204
     }
-
-
 
 
 }

@@ -1,6 +1,5 @@
-package _bbu.lawfirmapi.models.DTO.role.request;
+package _bbu.lawfirmapi.models.DTO.department.response;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RoleRequest {
-    private String roleName;
+public class DepartmentResponse {
+    private Long departmentId;
+    private String departmentName;
 }
