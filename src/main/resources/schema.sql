@@ -131,7 +131,7 @@ INSERT INTO appointments (client_id, case_id, appointment_date, location, purpos
 VALUES
     (1, 1, NOW() + INTERVAL '3 days', 'Law Office, Room 101', 'Discuss contract dispute updates', 'pending', NOW(), NOW()),
     (2, 2, NOW() + INTERVAL '1 week', 'Court Hall 2', 'Court appearance for divorce filing', 'processing', NOW(), NOW()),
-    (3, 3, NOW() - INTERVAL '3 days', 'Law Office, Room 203', 'Finalize property claim cases', 'completed', NOW(), NOW()),
+    (3, 3, NOW() - INTERVAL '3 days', 'Law Office, Room 203', 'Finalize property claim case', 'completed', NOW(), NOW()),
     (4, 4, NOW() + INTERVAL '2 days', 'Hospital Conference Room', 'Review injury reports with lawyer', 'pending', NOW(), NOW());
 
 

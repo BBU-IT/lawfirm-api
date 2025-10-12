@@ -34,7 +34,7 @@ public class AppUserController extends BaseResponse {
 //    }
 //
 //    @PostMapping
-//    public ResponseEntity<ApiResponse<AppUserResponse>> insertNewUser(@RequestBody AppUserRequest request){
+//    public ResponseEntity<ApiResponse<AppUserResponse>> insertNewUser(@RequestBody UserRequest request){
 //
 //        System.out.println("My new user request from ui " + request);
 //        return responseEntity(true , "Create new user successfully" , HttpStatus.CREATED , appUserService.insertNewUser(request));

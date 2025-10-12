@@ -1,5 +1,6 @@
 package _bbu.lawfirmapi.models.Entity;
 
+import _bbu.lawfirmapi.utils.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,16 +12,17 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
 @Entity
 @Table(name = "app_users")
-public class AppUser implements UserDetails {
+public class AppUser extends BaseEntity implements UserDetails  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "app_user_id")
+    @Column(name = "appuser_id")
     private Long appUserId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id" , referencedColumnName = "role_id")
@@ -40,15 +42,8 @@ public class AppUser implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @Column (name = "description")
+    @Column (name = "description" , columnDefinition = "TEXT")
     private String description;
-
-    @Column (name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column (name = "update_at")
-
-    private LocalDateTime updatedAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -65,17 +60,6 @@ public class AppUser implements UserDetails {
         return userName;
     }
 
-    // will calls onCreate(), setting both createdAt and updatedAt
-    @PrePersist
-    protected void onCreateNewUser(){
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-    //will calls onUpdate() to refresh only updatedAt
-    @PreUpdate
-    protected void onUpdateUser(){
-        this.updatedAt = LocalDateTime.now();
-    }
 
 
 }

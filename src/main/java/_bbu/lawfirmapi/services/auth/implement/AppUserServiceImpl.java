@@ -91,7 +91,7 @@ public class AppUserServiceImpl implements AppUserService {
                 .build(); // don’t expose password in response
     }
 
-//    public AppUserResponse insertNewUser(AppUserRequest appUserRequest){
+//    public AppUserResponse insertNewUser(UserRequest appUserRequest){
 //        System.out.println("from  service request " + appUserRequest);
 //        return appUserRepository.insertNewUser(appUserRequest);
 //    }

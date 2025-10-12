@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 // Recommended Code
 @Repository
-public interface   AppUserRepository extends JpaRepository<AppUser, Long> {
+public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
     // No @Query needed! Spring Data JPA creates the query from the method name.
 //     @Query(value = "select * from app_users where email = ?" , nativeQuery = true)

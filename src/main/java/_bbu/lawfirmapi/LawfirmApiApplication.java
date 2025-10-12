@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@OpenAPIDefinition(info = @Info(title = "LAW FIRM API", version = "v1", description = "This is description"), servers = {
+@OpenAPIDefinition(info = @Info(title = "LAW FIRM API", version = "v1", description = "Welcome to our law firm API. With this API, you can test it with your Law firm web application. "), servers = {
         @Server(url = "/", description = "Default Server URL") })
 @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", in = SecuritySchemeIn.HEADER)
 @SpringBootApplication
