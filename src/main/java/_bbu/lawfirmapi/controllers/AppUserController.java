@@ -15,8 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-
-@RequestMapping("/api/v1/lawyer")
+@RequestMapping("api/v1/lawyer")
 
 public class AppUserController extends BaseResponse {
 

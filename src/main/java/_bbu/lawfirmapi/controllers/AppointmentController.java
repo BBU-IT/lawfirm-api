@@ -25,11 +25,18 @@ public class AppointmentController extends BaseResponse {
     @GetMapping
     public ResponseEntity<ApiResponse<List<Appointment>>> getAllAppointment(){
 
-        return responseEntity(true , "Get appointment List"  , HttpStatus.OK , appointmentService.getAllAppointment()  );
+        return responseEntity(true ,
+                "Get appointment List"  ,
+                HttpStatus.OK ,
+                appointmentService.getAllAppointment());
 
     }
+
     @PostMapping
     public ResponseEntity<ApiResponse<AppointmentResponse>> createNewAppointment(@RequestBody AppointmentRequest appointmentRequest){
-        return responseEntity(true , "Create new appointment successfully" , HttpStatus.CREATED ,appointmentService.createNewAppointment(appointmentRequest) );
+        return responseEntity(true ,
+                "Create new appointment successfully" ,
+                HttpStatus.CREATED ,
+                appointmentService.createNewAppointment(appointmentRequest) );
     }
 }

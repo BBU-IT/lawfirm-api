@@ -11,5 +11,5 @@ import java.util.List;
 public interface AppointmentService {
 
     List<Appointment> getAllAppointment();
-    AppointmentResponse createNewAppointment(@RequestBody AppointmentRequest appointmentRequest);
+    AppointmentResponse createNewAppointment( AppointmentRequest appointmentRequest);
 }

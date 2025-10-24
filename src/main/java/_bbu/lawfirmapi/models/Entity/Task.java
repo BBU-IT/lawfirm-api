@@ -26,7 +26,7 @@ public class Task extends BaseEntity {
     private Case aCase ;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appuser_id" , referencedColumnName = "appuser_id")
-    private AppUser user;
+    private AppUser lawyer;
     @Column(name = "title")
     private String title;
     @Column(name = "description" , columnDefinition = " TEXT")

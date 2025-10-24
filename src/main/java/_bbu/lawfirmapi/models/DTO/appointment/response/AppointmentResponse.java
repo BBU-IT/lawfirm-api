@@ -13,13 +13,10 @@ import java.time.LocalDateTime;
 public class AppointmentResponse {
 
     private Long id;
-    private Client clients;
-    private AppUser appUser;
     private LocalDateTime appointmentDate;
     private String location;
     private String purpose;
     private AppointmentStatus appointmentStatus;
     private Case cases;
-
 
 }

@@ -8,9 +8,9 @@ import _bbu.lawfirmapi.repositories.AppointmentRepository;
 import _bbu.lawfirmapi.services.appointment.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,18 +20,14 @@ public class AppointServiceImpl implements AppointmentService {
 
     @Override
     public List<Appointment> getAllAppointment(){
-
-       if (appointmentRepository.findAll().isEmpty()){
-           throw  new NotFoundException("Appointment not found right now.");
-       }
-       return appointmentRepository.findAll();
+        return Optional.of(appointmentRepository.findAll())
+                .filter(list -> !list.isEmpty())
+                .orElseThrow(() -> new NotFoundException("Appointment list not found"));
     }
     @Override
     public AppointmentResponse createNewAppointment(AppointmentRequest appointmentRequest){
         Appointment newAppointment = appointmentRequest.toEntity();
-        newAppointment.setAppUser(appointmentRequest.getAppUser());
         newAppointment.setACase(appointmentRequest.getCases());
-        newAppointment.setClient(appointmentRequest.getClients());
         newAppointment.setLocation(appointmentRequest.getLocation());
         newAppointment.setAppointmentDate(appointmentRequest.getAppointmentDate());
         newAppointment.setPurpose(appointmentRequest.getPurpose());

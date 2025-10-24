@@ -1,14 +1,16 @@
 package _bbu.lawfirmapi.models.Entity;
 
+import _bbu.lawfirmapi.models.DTO.court.response.CourtResponse;
 import _bbu.lawfirmapi.models.Enumerations.CourtType;
 import _bbu.lawfirmapi.utils.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -16,7 +18,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "courts")
+@JsonPropertyOrder({"courtId", "courtName", "courtType", "location", "contactNumber", "createdAt", "updatedAt"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
 public class Court extends BaseEntity {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,5 +42,18 @@ public class Court extends BaseEntity {
 
     @Column(name = "contact_number")
 
+    @OneToMany(mappedBy = "court" , cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JsonIgnore  // Add this
+    private List<Case> cases;
+
     private String contactNumber ;
+
+    public Court(Object o, String courtName, CourtType courtType, String location, String contactNumber) {
+    }
+
+
+    public CourtResponse  toResponse(){
+       return new CourtResponse(this.courtId , this.courtName , this.courtType ,  this.location , this.contactNumber);
+    }
 }

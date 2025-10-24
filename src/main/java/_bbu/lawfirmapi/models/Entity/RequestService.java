@@ -26,6 +26,5 @@ public class RequestService extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id" , referencedColumnName = "service_id")
-
     private Service service;
 }

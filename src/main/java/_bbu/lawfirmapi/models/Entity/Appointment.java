@@ -23,18 +23,9 @@ public class Appointment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "appointment_id")
     private Long appointmentId;
-
-    @ManyToOne
-    @JoinColumn(name = "client_id" , referencedColumnName = "client_id")
-    private Client client;
-
     @ManyToOne
     @JoinColumn(name = "case_id" , referencedColumnName = "case_id")
     private Case aCase;
-
-    @ManyToOne
-    @JoinColumn(name = "schedule_by" , referencedColumnName = "appuser_id")
-    private AppUser appUser;
 
     @Column(name = "appointment_date")
     private LocalDateTime appointmentDate;
@@ -53,9 +44,7 @@ public class Appointment extends BaseEntity {
     public AppointmentResponse toResponse(){
         return AppointmentResponse.builder()
                 .id(this.appointmentId)
-                .appUser(this.appUser)
                 .cases(this.aCase)
-                .clients(this.client)
                 .appointmentDate(this.appointmentDate)
                 .appointmentStatus(this.status)
                 .build();

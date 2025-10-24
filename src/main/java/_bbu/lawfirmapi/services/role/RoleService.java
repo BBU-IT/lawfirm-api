@@ -15,7 +15,7 @@ public interface RoleService  {
 
     RoleResponse updateRoleById(Integer roleId, RoleRequest updateRole);
 
-    void deleteRoleById(Integer roleId);
+    void removeRoleById(Integer roleId);
 
 
 }

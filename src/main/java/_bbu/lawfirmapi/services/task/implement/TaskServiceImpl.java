@@ -1,4 +1,6 @@
 package _bbu.lawfirmapi.services.task.implement;
 
-public class TaskServiceImpl {
+import _bbu.lawfirmapi.services.task.TaskService;
+
+public class TaskServiceImpl implements TaskService {
 }

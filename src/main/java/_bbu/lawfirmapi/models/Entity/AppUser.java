@@ -1,7 +1,7 @@
 package _bbu.lawfirmapi.models.Entity;
 
 import _bbu.lawfirmapi.utils.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,6 +19,8 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "app_users")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
 public class AppUser extends BaseEntity implements UserDetails  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,10 +30,6 @@ public class AppUser extends BaseEntity implements UserDetails  {
     @JoinColumn(name = "role_id" , referencedColumnName = "role_id")
     @ToString.Exclude
     private Role role;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id", referencedColumnName = "department_id")
-    @ToString.Exclude
-    private Department department;
     @Column(name = "user_name")
     private String userName;
     @Column(name ="email")
@@ -44,11 +42,14 @@ public class AppUser extends BaseEntity implements UserDetails  {
 
     @Column (name = "description" , columnDefinition = "TEXT")
     private String description;
+    @OneToMany(mappedBy = "appUser")
+    @JsonIgnore  // Add this
+    private List<Case> cases;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        return List.of(new SimpleGrantedAuthority(role.getRoleId().toString()));
+        return List.of(new SimpleGrantedAuthority( role.getRoleId().toString()));
     }
 
     @Override

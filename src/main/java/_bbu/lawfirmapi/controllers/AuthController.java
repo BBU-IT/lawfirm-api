@@ -60,6 +60,7 @@ public class AuthController extends BaseResponse {
         String token = jwtService.generateToken(userDetails);
         AuthResponse authResponse = new AuthResponse(token);
 
+        System.out.println("My User :" + authResponse);
         ApiResponse<AuthResponse> response = ApiResponse.<AuthResponse>builder().success(true)
                 .message("Login Successfully").status(HttpStatus.OK).code(HttpStatus.OK.value())
                 .payload(authResponse).timestamps(LocalDateTime.now()).build();
@@ -71,6 +72,7 @@ public class AuthController extends BaseResponse {
     public ResponseEntity<ApiResponse<AppUserResponse>> register(@Valid @RequestBody AppUserRequest request) {
         try {
             AppUserResponse appUserResponse = appUserService.registerNewUser(request);
+            System.out.println("New User : " + appUserResponse);
             ApiResponse<AppUserResponse> response = ApiResponse.<AppUserResponse>builder()
                     .success(true)
                     .message("User registered successfully")

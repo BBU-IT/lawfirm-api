@@ -41,7 +41,6 @@ public class JwtService {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         AppUser appUser = (AppUser)  userDetails;
-        System.out.println("Where generate token " + appUser);
         return createToken(claims, appUser.getUsername());
     }
 

@@ -2,6 +2,7 @@ package _bbu.lawfirmapi.configuration;
 
 import _bbu.lawfirmapi.jwt.JwtAuthEntryPoint;
 import _bbu.lawfirmapi.jwt.JwtAuthFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,11 +15,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import lombok.RequiredArgsConstructor;
-
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final JwtAuthFilter jwtAuthFilter;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
 
@@ -30,18 +30,32 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(Customizer.withDefaults()).csrf(AbstractHttpConfigurer::disable)
+        http
+                .cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/v1/roles/**","/api/v1/departments/**",
-                                "/api/v1/auths/**","/api/v1/appointments/**", "/v3/api-docs/**", "/swagger-ui/**",
-                                "/swagger-ui.html", "/api/v1/files/**", "/swagger-ui.html")
-                        .permitAll()
-                        .anyRequest().authenticated())
-                .anonymous(Customizer.withDefaults())
-                .sessionManagement(
-                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntryPoint))
+                        .requestMatchers(
+                                "/api/v1/auths/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/api/v1/files/**",
+                                "/api/v1/appointments/**",
+                                "/api/v1/courts/**",
+                                "/api/v1/cases/**",
+                                "/api/v1/roles/**"
+                        ).permitAll()
+                        .requestMatchers("/api/v1/clients").hasAnyAuthority("1")
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthEntryPoint)
+                )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }
