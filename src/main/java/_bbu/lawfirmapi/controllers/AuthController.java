@@ -57,10 +57,10 @@ public class AuthController extends BaseResponse {
 
         authenticate(userDetails.getUsername() ,  request.getPassword());;
 //        appUserService.validateUserByEmail(userDetails.getUsername());
-        String token = jwtService.generateToken(userDetails);
+       final String token = jwtService.generateToken(userDetails);
         AuthResponse authResponse = new AuthResponse(token);
 
-        System.out.println("My User :" + authResponse);
+
         ApiResponse<AuthResponse> response = ApiResponse.<AuthResponse>builder().success(true)
                 .message("Login Successfully").status(HttpStatus.OK).code(HttpStatus.OK.value())
                 .payload(authResponse).timestamps(LocalDateTime.now()).build();

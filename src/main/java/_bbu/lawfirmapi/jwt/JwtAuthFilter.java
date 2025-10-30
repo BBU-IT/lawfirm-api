@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final AppUserService appUserService;
-    private final RoleRepository roleRepository;
+
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
@@ -41,8 +41,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = appUserService.loadUserByUsername(email);
+
+            System.out.println("User email: " + userDetails.getUsername());
             System.out.println("User authorities: " + userDetails.getAuthorities());
-            if (jwtService.validateToken(token, userDetails)) {
+
+            if (jwtService.validateToken(token,  userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails,
                         null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

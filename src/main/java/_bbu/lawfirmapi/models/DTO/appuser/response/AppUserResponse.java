@@ -6,7 +6,6 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-//@RequiredArgsConstructor
 @Builder
 
 public class AppUserResponse {
@@ -15,6 +14,6 @@ public class AppUserResponse {
     private String email;
     private String phoneNumber;
     private String password;
-    private Integer roleId;
+    private String role;
     private String description;
 }

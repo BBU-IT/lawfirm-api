@@ -30,6 +30,7 @@ public class Role extends BaseEntity {
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
     @JsonIgnore
+    @ToString.Exclude
     private List<AppUser> users;
 
     public Role(Integer roleId, String roleName) {

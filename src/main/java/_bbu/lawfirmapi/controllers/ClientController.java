@@ -7,6 +7,8 @@ import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
 import _bbu.lawfirmapi.models.Entity.Client;
 import _bbu.lawfirmapi.services.client.ClientService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,24 +19,43 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/clients")
+@SecurityRequirement(name = "bearerAuth")
+
 public class ClientController extends BaseResponse {
 
     private final ClientService clientService;
-    @SecurityRequirement(name = "bearerAuth")
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<Client>>> getAllClient(){
         return responseEntity(true ,
                 "Get all client list",
                 HttpStatus.OK,
-                clientService.getAllClient());
+                clientService.getAllClients());
     }
-    @SecurityRequirement(name = "bearerAuth")
+
     @PostMapping
     public ResponseEntity<ApiResponse<ClientResponse>> createNewClient(@RequestBody ClientRequest clientRequest){
         return responseEntity(true ,
                 "Create new client successfully",
                 HttpStatus.CREATED,
                 clientService.createNewClient(clientRequest));
+    }
+
+    @PutMapping("/{clientId}")
+    public ResponseEntity<ApiResponse<ClientResponse>> modifiedClientById(
+            @RequestBody ClientRequest clientRequest ,
+            @PathVariable @Valid @Positive Long clientId){
+        return responseEntity(true,
+                "Update client id " + clientId + " successfully",
+                HttpStatus.ACCEPTED,
+                clientService.modifiedClientById(clientRequest , clientId));
+    }
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<Void>> removeClientById(Long clientId){
+        return responseEntity(true ,
+                "Delete client id " + clientId + " successfully",
+                HttpStatus.OK,
+                clientService.removeClientById(clientId)
+                );
     }
 }

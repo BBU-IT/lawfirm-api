@@ -10,6 +10,7 @@ import _bbu.lawfirmapi.repositories.AppUserRepository;
 import _bbu.lawfirmapi.repositories.RoleRepository;
 import _bbu.lawfirmapi.services.auth.AppUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,13 +32,16 @@ public class AppUserServiceImpl implements AppUserService {
         return appUserRepository.findAll();
     }
 
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser userDetails = appUserRepository.findByEmail(username);
-        if (userDetails == null) {
-            throw new NotFoundException("User does not exist");
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        AppUser userDetail = appUserRepository.findByEmailWithRole(email);
+        if (userDetail == null) {
+            throw new UsernameNotFoundException("User does not exist");
         }
-        return userDetails;
+        System.out.println("My current role user " + userDetail.getRole().getRoleName() );
+        return userDetail;
     }
+
     //    @Override
 //    public AppUserResponse getUserByEmail(String email){
 //        return appUserRepository.getAppUserByEmail(email);
@@ -46,7 +50,7 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public AppUserResponse registerNewUser(AppUserRequest appUserRequest) {
         // Check for existing email
-        if (appUserRepository.findByEmail(appUserRequest.getEmail()) != null) {
+        if (appUserRepository.findByEmailWithRole(appUserRequest.getEmail()) != null) {
             throw new EmailAlreadyExistException("Email already exists: " + appUserRequest.getEmail());
         }
 
@@ -76,7 +80,7 @@ public class AppUserServiceImpl implements AppUserService {
                 .email(newUser.getUsername())
                 .phoneNumber(newUser.getPhoneNumber())
                 .password(passwordEncoder.encode(newUser.getPassword()))
-                .roleId(newUser.getRole().getRoleId())
+                .role(newUser.getRole().getRoleName())
                 .description(newUser.getDescription())
                 .build(); // don’t expose password in response
     }

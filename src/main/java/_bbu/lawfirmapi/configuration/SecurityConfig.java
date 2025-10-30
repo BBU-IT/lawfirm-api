@@ -43,9 +43,10 @@ public class SecurityConfig {
                                 "/api/v1/appointments/**",
                                 "/api/v1/courts/**",
                                 "/api/v1/cases/**",
-                                "/api/v1/roles/**"
+                                "/api/v1/roles/**",
+                                "/api/v1/lawyers/**"
                         ).permitAll()
-                        .requestMatchers("/api/v1/clients").hasAnyAuthority("1")
+                        .requestMatchers( HttpMethod.POST, "/api/v1/clients/**").hasAnyRole("ADMIN" , "LAWYER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

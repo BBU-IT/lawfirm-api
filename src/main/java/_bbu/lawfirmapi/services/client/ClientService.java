@@ -7,6 +7,8 @@ import _bbu.lawfirmapi.models.Entity.Client;
 import java.util.List;
 
 public interface ClientService {
-    List<Client> getAllClient();
+    List<Client> getAllClients();
     ClientResponse createNewClient(ClientRequest clientRequest);
+    ClientResponse modifiedClientById(ClientRequest clientRequest , Long clientId);
+    Void removeClientById(Long clientId);
 }
