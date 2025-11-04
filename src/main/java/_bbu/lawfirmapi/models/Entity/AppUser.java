@@ -4,12 +4,16 @@ import _bbu.lawfirmapi.utils.BaseEntity;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -25,10 +29,17 @@ public class AppUser extends BaseEntity implements UserDetails  {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "appuser_id")
     private Long appUserId;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id" , referencedColumnName = "role_id")
     @ToString.Exclude
     private Role role;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "appuser_expertise",
+            joinColumns = @JoinColumn(name = "appuser_id"),
+            inverseJoinColumns = @JoinColumn(name = "expertise_id")
+    )
+    private Set<Expertise> expertises;
     @Column(name = "user_name")
     private String userName;
     @Column(name ="email")
@@ -38,6 +49,8 @@ public class AppUser extends BaseEntity implements UserDetails  {
 
     @Column(name = "password")
     private String password;
+    @Column(name = "image" )
+    private String image;
 
     @Column (name = "description" , columnDefinition = "TEXT")
     private String description;

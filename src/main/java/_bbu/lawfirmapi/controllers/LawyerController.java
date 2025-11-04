@@ -5,6 +5,7 @@ import _bbu.lawfirmapi.models.DTO.shared.response.ApiResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
 import _bbu.lawfirmapi.models.Entity.AppUser;
 import _bbu.lawfirmapi.repositories.AppUserRepository;
+import _bbu.lawfirmapi.services.admin.AdminService;
 import _bbu.lawfirmapi.services.auth.AppUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,14 +18,29 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("api/v1/lawyers")
 
-public class AppUserController extends BaseResponse {
+public class LawyerController extends BaseResponse {
 
     private final AppUserRepository appUserRepository;
     private final AppUserService appUserService;
+    private final AdminService adminService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<AppUser>>> getAllUser(){
-        return responseEntity(true , "Get all user" , HttpStatus.OK , appUserService.getAllUser());
+        return responseEntity(true , "Get all user" , HttpStatus.OK , adminService.getAllUser());
+    }
+    @PutMapping("/{lawyerId}")
+    public ResponseEntity<ApiResponse<AppUserResponse>> updateExistLaywerById(@RequestBody AppUserRequest appUserRequest , @PathVariable Long lawyerId ){
+        return responseEntity(true,
+                "Update lawyer id " + lawyerId + " successfully" ,
+                HttpStatus.OK,
+                adminService.modifiedExistLawyerById(appUserRequest , lawyerId));
+    }
+    @DeleteMapping("/{lawyerId}")
+    public ResponseEntity<ApiResponse<Void>> removeExistLawyer(@PathVariable Long lawyerId ){
+        return responseEntity(true,
+                "Delete laywer id " + lawyerId+  " successfully",
+                HttpStatus.OK,
+                adminService.removeExistLawyerById(lawyerId));
     }
     // get user by gmail
 //    @GetMapping("/{email}")

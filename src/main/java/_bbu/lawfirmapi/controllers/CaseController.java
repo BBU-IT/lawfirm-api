@@ -29,7 +29,6 @@ public class CaseController extends BaseResponse {
                 caseService.getCaseList());
     }
 
-
     @PostMapping
     public ResponseEntity<ApiResponse<CaseResponse>> createNewCase(@RequestBody CaseRequest caseRequest){
         System.out.println(caseService.createNewCase(caseRequest));

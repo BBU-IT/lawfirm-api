@@ -15,5 +15,7 @@ public class AppUserResponse {
     private String phoneNumber;
     private String password;
     private String role;
+    private String image;
     private String description;
+
 }

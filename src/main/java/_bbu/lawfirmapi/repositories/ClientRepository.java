@@ -4,10 +4,9 @@ import _bbu.lawfirmapi.models.DTO.client.request.ClientRequest;
 import _bbu.lawfirmapi.models.DTO.client.response.ClientResponse;
 import _bbu.lawfirmapi.models.Entity.Client;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.NativeQuery;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -19,8 +18,9 @@ import java.util.List;
 public interface ClientRepository extends JpaRepository<Client , Long> {
 
 
-    @Query("SELECT c FROM Client c JOIN FETCH c.appUser WHERE c.appUser.appUserId = :appUserId")
-    List<Client> findClientByAppUserId(@Param("appUserId") Long appUserId);
+    @EntityGraph(attributePaths = {"appUser"})
+    @Query("SELECT c FROM Client c WHERE c.appUser.appUserId = :appUserId")
+    Page<Client> findClientByAppUserId(@Param("appUserId") Long appUserId , Pageable pageable);
 
 
 }

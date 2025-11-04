@@ -24,7 +24,6 @@ public class RoleController extends BaseResponse {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<Role>>> getAllRoles(){
-        System.out.println(roleService.getAllRoles().isEmpty());
         return responseEntity(true ,
                 "Getting all role" ,
                         HttpStatus.ACCEPTED,
@@ -32,21 +31,19 @@ public class RoleController extends BaseResponse {
     }
     @GetMapping("/{roleId}")
     public ResponseEntity<ApiResponse<Role>> getRoleById(@PathVariable Integer roleId){
-//        System.out.println("My Data" + roleService.findRoleByRoleId(roleId));
         return responseEntity(true,
                 "Getting Role " + roleService.findRoleByRoleId(roleId).getRoleName() + " success" ,
                 HttpStatus.OK ,
                 roleService.findRoleByRoleId(roleId));
     }
     @PostMapping
-    public ResponseEntity<ApiResponse<RoleResponse>> createNewRoleList(@RequestBody RoleRequest roleRequest){
-        System.out.println("my data" + roleRequest);
+    public ResponseEntity<ApiResponse<RoleResponse>> createNewRole(@RequestBody RoleRequest roleRequest){
         return responseEntity(true , "Created new role success" , HttpStatus.CREATED ,roleService.createNewRoleList(roleRequest));
     }
 
     @PutMapping("/{roleId}")
     public ResponseEntity<ApiResponse<RoleResponse>> updateNewRole (@PathVariable Integer roleId , @RequestBody RoleRequest newRoleRequest) {
-        System.out.println("My updating role " + newRoleRequest);
+
         return responseEntity(true, "update role success", HttpStatus.ACCEPTED, roleService.updateRoleById(roleId, newRoleRequest));
     }
     @DeleteMapping("/{roleId}")

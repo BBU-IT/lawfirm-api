@@ -44,9 +44,16 @@ public class SecurityConfig {
                                 "/api/v1/courts/**",
                                 "/api/v1/cases/**",
                                 "/api/v1/roles/**",
-                                "/api/v1/lawyers/**"
+                                "/api/v1/lawyers",
+                                "/api/v1/expertises/**"
                         ).permitAll()
-                        .requestMatchers( HttpMethod.POST, "/api/v1/clients/**").hasAnyRole("ADMIN" , "LAWYER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/admin/lawyers/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/admin/lawyers/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers("/api/v1/lawyers/**").hasAnyRole("LAWYER" , "ADMIN")
+                        .requestMatchers( "/api/v1/clients/**").hasAnyRole("ADMIN" , "LAWYER")
+                        .requestMatchers( HttpMethod.GET, "/api/v1/admin/lawyers").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

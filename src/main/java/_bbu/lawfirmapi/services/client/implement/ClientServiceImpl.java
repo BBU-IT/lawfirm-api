@@ -9,13 +9,11 @@ import _bbu.lawfirmapi.repositories.AppUserRepository;
 import _bbu.lawfirmapi.repositories.ClientRepository;
 import _bbu.lawfirmapi.services.client.ClientService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +31,7 @@ public class ClientServiceImpl implements ClientService {
         return (AppUser) authentication.getPrincipal();
     }
 
-    public List<Client> getAllClients() {
+    public Page<Client> getAllClients(Pageable pageable) {
         AppUser currentUser = getCurrentUser();
 
         if (currentUser == null) {
@@ -47,15 +45,15 @@ public class ClientServiceImpl implements ClientService {
             throw new RuntimeException("You don't have access to this endpoint.");
         }
 
-        List<Client> clients;
+        Page<Client> clients;
 
         // Admins can see ALL clients
         if (roleName.equals("ROLE_ADMIN")) {
-            clients = clientRepository.findAll(); // Get ALL clients
+            clients = clientRepository.findAll(pageable); // Get ALL clients
         }
         // Other roles (e.g., ROLE_LAWYER, ROLE_STAFF) see only their own clients
         else {
-            clients = clientRepository.findClientByAppUserId(currentUser.getAppUserId());
+            clients = clientRepository.findClientByAppUserId(currentUser.getAppUserId() , pageable);
         }
 
         if (clients.isEmpty()) {

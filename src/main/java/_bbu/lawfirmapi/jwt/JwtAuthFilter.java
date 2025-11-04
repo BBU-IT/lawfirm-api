@@ -4,6 +4,7 @@ import java.io.IOException;
 
 
 import _bbu.lawfirmapi.repositories.RoleRepository;
+import _bbu.lawfirmapi.services.admin.AdminService;
 import _bbu.lawfirmapi.services.auth.AppUserService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
-    private final AppUserService appUserService;
+    private final AdminService adminService;
 
 
     @Override
@@ -40,7 +41,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = appUserService.loadUserByUsername(email);
+            UserDetails userDetails = adminService.loadUserByUsername(email);
 
             System.out.println("User email: " + userDetails.getUsername());
             System.out.println("User authorities: " + userDetails.getAuthorities());
