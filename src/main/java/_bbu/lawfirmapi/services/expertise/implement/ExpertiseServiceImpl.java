@@ -6,7 +6,10 @@ import _bbu.lawfirmapi.models.DTO.expertise.response.ExpertiseResponse;
 import _bbu.lawfirmapi.models.Entity.Expertise;
 import _bbu.lawfirmapi.repositories.ExpertiseRepository;
 import _bbu.lawfirmapi.services.expertise.ExpertiseService;
+import _bbu.lawfirmapi.utils.CheckOutOfPage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.parser.Entity;
@@ -21,14 +24,17 @@ import java.util.Optional;
 public class ExpertiseServiceImpl implements ExpertiseService {
 
     private final ExpertiseRepository expertiseRepo;
+    private final CheckOutOfPage checkOutOfPage;
 
     @Override
-    public List<Expertise> fetchAllExpertise() {
+    public Page<Expertise> fetchAllExpertise(Pageable pageable , Integer totalPages , Integer requestedPage) {
         if(expertiseRepo.findAll().isEmpty()) {
             throw new NotFoundException("No expertise list found.");
         }
+        // this method from class named CheckOutOfPage in utils package
+        checkOutOfPage.isInvalidPage(totalPages , requestedPage);
 
-        return expertiseRepo.findAll();
+        return expertiseRepo.findAll(pageable);
     }
     @Override
     public Expertise fetchExpertiseById(Integer expertiseId) {

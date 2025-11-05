@@ -59,9 +59,6 @@ public class AuthController extends BaseResponse {
         final UserDetails userDetails = adminService.loadUserByUsername(request.getEmail());
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("Authorities: " + auth.getAuthorities());
-
-        System.out.println("Userdetail " + userDetails);
         authenticate(userDetails.getUsername() ,  request.getPassword());
 //        appUserService.validateUserByEmail(userDetails.getUsername());
        final String token = jwtService.generateToken(userDetails);

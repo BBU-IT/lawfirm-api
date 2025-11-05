@@ -3,6 +3,8 @@ package _bbu.lawfirmapi.models.DTO.appuser.response;
 
 import lombok.*;
 
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,6 +17,7 @@ public class AppUserResponse {
     private String phoneNumber;
     private String password;
     private String role;
+    private Set<String> expertises;
     private String image;
     private String description;
 

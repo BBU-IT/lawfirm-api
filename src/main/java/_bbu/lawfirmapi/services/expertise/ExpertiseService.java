@@ -3,12 +3,12 @@ package _bbu.lawfirmapi.services.expertise;
 import _bbu.lawfirmapi.models.DTO.expertise.request.ExpertiseRequest;
 import _bbu.lawfirmapi.models.DTO.expertise.response.ExpertiseResponse;
 import _bbu.lawfirmapi.models.Entity.Expertise;
-
-import java.util.List;
+import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
 
 public interface ExpertiseService {
 
-    List<Expertise> fetchAllExpertise();
+    Page<Expertise> fetchAllExpertise(Pageable pageable , Integer totalPages , Integer requestPage);
     Expertise fetchExpertiseById(Integer expertiseId);
 
     ExpertiseResponse createNewExpertise(ExpertiseRequest expertiseRequest);

@@ -1,6 +1,7 @@
 package _bbu.lawfirmapi.repositories;
 
 import _bbu.lawfirmapi.models.Entity.AppUser;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,8 +18,10 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
 
     // Fetch all lawyers with their roles
-    @Query("SELECT u FROM AppUser u JOIN FETCH u.role WHERE u.role.roleName = 'ROLE_LAWYER'")
+    @EntityGraph(attributePaths = {"role", "expertises"})
+    @Query("SELECT u FROM AppUser u WHERE u.role.roleName = 'ROLE_LAWYER'")
     List<AppUser> findAllLawyers();
+
 
     // Fetch user with clients (if needed separately)
     @Query("SELECT u FROM AppUser u LEFT JOIN FETCH u.clients WHERE u.appUserId = :id")

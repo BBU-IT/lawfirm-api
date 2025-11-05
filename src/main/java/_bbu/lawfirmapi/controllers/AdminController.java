@@ -8,11 +8,15 @@ import _bbu.lawfirmapi.models.Entity.AppUser;
 import _bbu.lawfirmapi.services.admin.AdminService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.mybatis.logging.Logger;
+import org.mybatis.logging.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.hibernate.internal.CoreLogging.logger;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,11 +27,21 @@ public class AdminController extends BaseResponse {
 
     @GetMapping("/lawyers")
     public ResponseEntity<ApiResponse<List<AppUser>>> getAllUser(){
-        return responseEntity(true , "Get all user" , HttpStatus.OK , adminService.getAllUser());
+        return responseEntity(true , "Get all users" , HttpStatus.OK , adminService.getAllUser());
+    }
+    @GetMapping("/lawyers/{lawyerId}")
+    public ResponseEntity<ApiResponse<AppUser>> fetchLawyerById(@PathVariable Long lawyerId){
+        return responseEntity(true ,
+                "Get lawyer with id " + lawyerId + " successfully.",
+                HttpStatus.ACCEPTED,
+                adminService.getLawyerById(lawyerId)
+                );
     }
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/lawyers/{lawyerId}")
-    public ResponseEntity<ApiResponse<AppUserResponse>> updateExistLawyerById(@RequestBody AppUserRequest appUserRequest , @PathVariable Long lawyerId ){
+    public ResponseEntity<ApiResponse<AppUserResponse>> updateExistLawyerById(@RequestBody AppUserRequest appUserRequest ,
+                                                                              @PathVariable Long lawyerId ){
+        logger(appUserRequest.getClass());
         return responseEntity(true,
                 "Update lawyer id " + lawyerId + " successfully" ,
                 HttpStatus.OK,

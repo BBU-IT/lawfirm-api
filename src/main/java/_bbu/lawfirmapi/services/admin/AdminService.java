@@ -16,6 +16,8 @@ public interface AdminService extends UserDetailsService {
 
     List<AppUser> getAllUser ();
 
+    AppUser getLawyerById(Long lawyerId);
+
 //    AppUserResponse findByEmail(String email);
 
 //    AppUserResponse findByEmail(String userEmail);

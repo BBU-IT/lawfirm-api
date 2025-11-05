@@ -1,4 +1,5 @@
 package _bbu.lawfirmapi.models.DTO.appuser.request;
+import _bbu.lawfirmapi.models.Entity.AppUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,5 +21,17 @@ public class AppUserRequest {
     private Set<Integer> expertiseIdList;
     private String image ;
     private String description;
+
+    public AppUser toEntity(){
+        return new AppUser(null ,
+                this.userName ,
+                this.email ,
+                this.phoneNumber ,
+                this.password ,
+                this.roleId ,
+                this.expertiseIdList ,
+                this.image,
+                this.description);
+    }
 
 }

@@ -1,9 +1,11 @@
 package _bbu.lawfirmapi.models.Entity;
 
+import _bbu.lawfirmapi.models.DTO.appuser.response.AppUserResponse;
 import _bbu.lawfirmapi.utils.BaseEntity;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
+import org.checkerframework.checker.units.qual.A;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,8 +16,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"expertises", "clients", "cases"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -30,8 +33,9 @@ public class AppUser extends BaseEntity implements UserDetails  {
     @Column(name = "appuser_id")
     private Long appUserId;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id" , referencedColumnName = "role_id")
     @ToString.Exclude
+
+    @JoinColumn(name = "role_id" , referencedColumnName = "role_id")
     private Role role;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -39,6 +43,7 @@ public class AppUser extends BaseEntity implements UserDetails  {
             joinColumns = @JoinColumn(name = "appuser_id"),
             inverseJoinColumns = @JoinColumn(name = "expertise_id")
     )
+    @ToString.Exclude
     private Set<Expertise> expertises;
     @Column(name = "user_name")
     private String userName;
@@ -63,10 +68,30 @@ public class AppUser extends BaseEntity implements UserDetails  {
     @JsonIgnore  // Add this
     @ToString.Exclude
     private List<Client> clients;
+
+    public AppUser(Object o, String userName, String email, String phoneNumber, String password, Integer roleId, Set<Integer> expertiseIdList, String image, String description) {
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
         return List.of(new SimpleGrantedAuthority(role.getRoleName()));
+    }
+
+    public AppUserResponse toResponse(){
+        return new AppUserResponse(
+                this.appUserId,
+                this.userName,
+                this.email,
+                this.phoneNumber,
+                this.password,
+                this.role.getRoleName(),
+                this.expertises.stream().map(
+                        Expertise::getExpertName
+                ).collect(Collectors.toSet()),
+                this.image,
+                this.description
+        );
     }
 
 

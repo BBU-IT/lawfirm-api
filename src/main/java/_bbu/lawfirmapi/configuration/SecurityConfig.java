@@ -47,13 +47,13 @@ public class SecurityConfig {
                                 "/api/v1/lawyers",
                                 "/api/v1/expertises/**"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET ,"/api/v1/admin/lawyers/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/admin/lawyers/**")
                         .hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/admin/lawyers/**")
                         .hasRole("ADMIN")
                         .requestMatchers("/api/v1/lawyers/**").hasAnyRole("LAWYER" , "ADMIN")
                         .requestMatchers( "/api/v1/clients/**").hasAnyRole("ADMIN" , "LAWYER")
-                        .requestMatchers( HttpMethod.GET, "/api/v1/admin/lawyers").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

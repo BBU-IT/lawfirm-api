@@ -15,7 +15,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
+@ToString
 @Entity
 @Table(name = "expertises")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -30,7 +30,7 @@ public class Expertise extends BaseEntity {
     @Column(name = "expert_name")
     private String expertName;
 
-    @ManyToMany(mappedBy = "expertises")
+    @ManyToMany(mappedBy = "expertises" )
     @JsonIgnore
     private Set<AppUser> lawyerProfiles;
 

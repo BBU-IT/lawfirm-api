@@ -5,11 +5,14 @@ import _bbu.lawfirmapi.exceptions.NotFoundException;
 import _bbu.lawfirmapi.models.DTO.appuser.request.AppUserRequest;
 import _bbu.lawfirmapi.models.DTO.appuser.response.AppUserResponse;
 import _bbu.lawfirmapi.models.Entity.AppUser;
+import _bbu.lawfirmapi.models.Entity.Expertise;
 import _bbu.lawfirmapi.models.Entity.Role;
 import _bbu.lawfirmapi.repositories.AppUserRepository;
+import _bbu.lawfirmapi.repositories.ExpertiseRepository;
 import _bbu.lawfirmapi.repositories.RoleRepository;
 import _bbu.lawfirmapi.services.admin.AdminService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,7 +20,10 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -25,12 +31,18 @@ public class AdminServiceImpl implements AdminService {
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final ExpertiseRepository expertiseRepository;
 
     @Override
     public List<AppUser> getAllUser(){
-        System.out.println("All lawyer " + appUserRepository.findAllLawyers());
         return appUserRepository.findAllLawyers();
     }
+
+    @Override
+    public AppUser getLawyerById(Long lawyerId){
+        return appUserRepository.findById(lawyerId).orElseThrow(() -> new NotFoundException("Lawyer with id " + lawyerId + " not found."));
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -45,10 +57,6 @@ public class AdminServiceImpl implements AdminService {
         return userDetail;
     }
 
-    //    @Override
-//    public AppUserResponse getUserByEmail(String email){
-//        return appUserRepository.getAppUserByEmail(email);
-//    }
     @Override
     public void checkIsEmailExist(String email){
         if (appUserRepository.findByEmailWithRole(email) != null) {
@@ -58,75 +66,89 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AppUserResponse registerNewLawyer(AppUserRequest appUserRequest) {
-        // Check for existing email
+        //  Check for existing email
         checkIsEmailExist(appUserRequest.getEmail());
 
-        // Attach existing Role
+        // Convert expertise IDs to entities
+        Set<Expertise> expertiseEntities = appUserRequest.getExpertiseIdList().stream()
+                .map(id -> expertiseRepository.findById(id)
+                        .orElseThrow(() -> new NotFoundException("Expertise with id " + id + " not found")))
+                .collect(Collectors.toSet());
+
+        // Prepare expertise get name only
+        Set<String> setOfExpertiseName = expertiseEntities.stream()
+                .map(Expertise::getExpertName)
+                .collect(Collectors.toSet());
+
+        // Fetch role
         Role role = roleRepository.findById(appUserRequest.getRoleId())
                 .orElseThrow(() -> new NotFoundException("Invalid role ID: " + appUserRequest.getRoleId()));
 
-
-        // Create and populate AppUser
+        //  Build and save AppUser
         AppUser user = AppUser.builder()
                 .userName(appUserRequest.getUserName())
                 .email(appUserRequest.getEmail())
                 .phoneNumber(appUserRequest.getPhoneNumber())
                 .password(passwordEncoder.encode(appUserRequest.getPassword()))
                 .role(role)
+                .expertises(expertiseEntities)
                 .image(appUserRequest.getImage())
                 .description(appUserRequest.getDescription())
                 .build();
 
-        // Save
-        AppUser updatedLawyer = appUserRepository.save(user);
+        AppUser savedLawyer = appUserRepository.save(user);
 
-        // Map to response
+        // Map to response (exclude password)
         return AppUserResponse.builder()
-                .appUserId(updatedLawyer.getAppUserId())
-                .userName(updatedLawyer.getName())
-                .email(updatedLawyer.getUsername())
-                .phoneNumber(updatedLawyer.getPhoneNumber())
-                .password(passwordEncoder.encode(updatedLawyer.getPassword()))
-                .role(updatedLawyer.getRole().getRoleName().substring(4))
-                .description(updatedLawyer.getDescription())
-                .image(updatedLawyer.getImage())
-                .build(); // don’t expose password in response
+                .appUserId(savedLawyer.getAppUserId())
+                .userName(savedLawyer.getUsername())
+                .email(savedLawyer.getEmail())
+                .phoneNumber(savedLawyer.getPhoneNumber())
+                .role(savedLawyer.getRole().getRoleName().substring(5)) // "ROLE_LAWYER" -> "LAWYER"
+                .expertises(setOfExpertiseName)
+                .description(savedLawyer.getDescription())
+                .image(savedLawyer.getImage())
+                .build();
     }
+
+
     @Override
     public AppUserResponse modifiedExistLawyerById(AppUserRequest appUserRequest , Long lawyerId){
         checkIsEmailExist(appUserRequest.getEmail());
 
+        AppUser currentLawyer = appUserRepository.findById(lawyerId).orElseThrow(
+                () -> new NotFoundException("Lawyer Id " + lawyerId + " not found.")
+        );
+
         // Attach existing Role
         Role role = roleRepository.findById(appUserRequest.getRoleId())
                 .orElseThrow(() -> new NotFoundException("Invalid role ID: " + appUserRequest.getRoleId()));
 
 
-        // Create and populate AppUser
-        AppUser user = AppUser.builder()
-                .userName(appUserRequest.getUserName())
-                .email(appUserRequest.getEmail())
-                .phoneNumber(appUserRequest.getPhoneNumber())
-                .password(passwordEncoder.encode(appUserRequest.getPassword()))
-                .role(role)
-                .image(appUserRequest.getImage())
-                .description(appUserRequest.getDescription())
-                .build();
+        // Convert expertise IDs to entities
+        Set<Expertise> expertiseEntities = appUserRequest.getExpertiseIdList().stream()
+                .map(id -> expertiseRepository.findById(id)
+                        .orElseThrow(() -> new NotFoundException("Expertise with id " + id + " not found")))
+                .collect(Collectors.toSet());
 
-        // Save
-        AppUser updatedLawyer = appUserRepository.save(user);
+        // Prepare expertise get name only
+        Set<String> setOfExpertiseName = expertiseEntities.stream()
+                .map(Expertise::getExpertName)
+                .collect(Collectors.toSet());
 
-        // Map to response
-        return AppUserResponse.builder()
-                .appUserId(updatedLawyer.getAppUserId())
-                .userName(updatedLawyer.getName())
-                .email(updatedLawyer.getUsername())
-                .phoneNumber(updatedLawyer.getPhoneNumber())
-                .password(passwordEncoder.encode(updatedLawyer.getPassword()))
-                .role(updatedLawyer.getRole().getRoleName().substring(4))
-                .description(updatedLawyer.getDescription())
-                .image(updatedLawyer.getImage())
-                .build();
-                
+        currentLawyer.setUserName(appUserRequest.getUserName());
+        currentLawyer.setEmail(appUserRequest.getEmail());
+        currentLawyer.setPhoneNumber(appUserRequest.getPhoneNumber());
+        currentLawyer.setPassword(appUserRequest.getPassword());
+        currentLawyer.setDescription(appUserRequest.getDescription());
+        currentLawyer.setImage(appUserRequest.getImage());
+        currentLawyer.setRole(role);
+        currentLawyer.setExpertises(expertiseEntities);
+
+        AppUserResponse updatedLawyer = appUserRepository.save(currentLawyer).toResponse();
+
+            return updatedLawyer;
+
     }
 
     @Override
