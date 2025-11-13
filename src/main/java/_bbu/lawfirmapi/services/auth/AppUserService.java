@@ -12,4 +12,6 @@ import java.util.List;
 
 public interface AppUserService  {
 
+      String sendNews(String email);
+
 }

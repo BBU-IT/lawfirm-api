@@ -1,6 +1,8 @@
 package _bbu.lawfirmapi.models.DTO.appuser.response;
 
 
+import _bbu.lawfirmapi.models.Enumerations.Gender;
+import _bbu.lawfirmapi.models.Enumerations.LawyerStatus;
 import lombok.*;
 
 import java.util.Set;
@@ -12,7 +14,9 @@ import java.util.Set;
 
 public class AppUserResponse {
     private Long appUserId;
-    private String userName;
+    private String fullName;
+    private Gender gender;
+    private LawyerStatus lawyerStatus;
     private String email;
     private String phoneNumber;
     private String password;

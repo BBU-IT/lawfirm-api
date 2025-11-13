@@ -1,6 +1,7 @@
 package _bbu.lawfirmapi.controllers;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 
 import _bbu.lawfirmapi.exceptions.InvalidException;
@@ -11,13 +12,13 @@ import _bbu.lawfirmapi.models.DTO.auth.response.AuthResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.ApiResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
 import _bbu.lawfirmapi.services.admin.AdminService;
-import _bbu.lawfirmapi.services.auth.AppUserService;
 import _bbu.lawfirmapi.jwt.JwtService;
+import _bbu.lawfirmapi.utils.MethodHelper;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -35,10 +36,10 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class AuthController extends BaseResponse {
 //    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-    private final AppUserService appUserService;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final AdminService adminService;
+    private final MethodHelper helper;
 
 
     private void authenticate(String email , String password) throws Exception {
@@ -54,15 +55,12 @@ public class AuthController extends BaseResponse {
     @PostMapping("/login")
     @Operation(summary = "Login")
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request) throws Exception {
-
-        System.out.println("Auth Controller "  + request.getEmail());
         final UserDetails userDetails = adminService.loadUserByUsername(request.getEmail());
-
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         authenticate(userDetails.getUsername() ,  request.getPassword());
-//        appUserService.validateUserByEmail(userDetails.getUsername());
        final String token = jwtService.generateToken(userDetails);
-        AuthResponse authResponse = new AuthResponse(token);
+        final String expiredTokenDateTime = helper.extractExpirationDateInCambodia(token);
+        AuthResponse authResponse = new AuthResponse(token ,expiredTokenDateTime );
 
         ApiResponse<AuthResponse> response = ApiResponse.<AuthResponse>builder().success(true)
                 .message("Login Successfully").status(HttpStatus.OK).code(HttpStatus.OK.value())
@@ -70,12 +68,11 @@ public class AuthController extends BaseResponse {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/register")
+    @PostMapping( "/register" )
     @Operation(summary = "Register New User", description = "Registers a new user and returns user details")
     public ResponseEntity<ApiResponse<AppUserResponse>> register(@Valid @RequestBody AppUserRequest request) {
         try {
             AppUserResponse appUserResponse = adminService.registerNewLawyer(request);
-            System.out.println("New User : " + appUserResponse);
             ApiResponse<AppUserResponse> response = ApiResponse.<AppUserResponse>builder()
                     .success(true)
                     .message("User registered successfully")

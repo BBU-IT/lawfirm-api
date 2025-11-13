@@ -13,4 +13,6 @@ public interface FilerService {
     InputStream getFileByFileName(String fileName);
 
     List<FileMetaData> bulkUploadFile(List<MultipartFile> files);
+
+    List<String> getAllImagesUrl();
 }

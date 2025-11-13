@@ -8,15 +8,10 @@ import _bbu.lawfirmapi.models.Entity.Client;
 import _bbu.lawfirmapi.models.Entity.Expertise;
 import _bbu.lawfirmapi.services.expertise.ExpertiseService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,23 +20,32 @@ public class ExpertiseController extends BaseResponse {
     private final ExpertiseService expertiseService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Slice<Expertise>>> getExpertiseList(
+    public ResponseEntity<ApiResponse<Page<Expertise>>> getExpertiseList(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
-            @RequestParam String sortBy,
+            @RequestParam(defaultValue = "expertiseId") String sortBy,
             @RequestParam(defaultValue = "true") Boolean ascending
     ){
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
-        System.out.println("Out of pageable : " + pageable.getPageNumber() );
-        System.out.println("number of run out of pageable : " + page );
 
-        Slice<Expertise> expertiseList = expertiseService.fetchAllExpertise(pageable , pageable.getPageSize() , page);
+        Page<Expertise> expertiseList = expertiseService.fetchAllExpertise(pageable , page);
+
         return responseEntity(true ,
                 "Getting expertise list successfully",
                 HttpStatus.OK,
         expertiseList);
     }
+    @GetMapping("/{expertiseId}")
+    public ResponseEntity<ApiResponse<Expertise>> fetchExpertiseById(@PathVariable Integer expertiseId){
+        return responseEntity(
+                true,
+                "Get expertise with id " + expertiseId + " successfully",
+                HttpStatus.ACCEPTED,
+                expertiseService.fetchExpertiseById(expertiseId)
+        );
+    }
+
     @PostMapping
     public ResponseEntity<ApiResponse<ExpertiseResponse>> createExpertise(@RequestBody ExpertiseRequest expertiseRequest){
 

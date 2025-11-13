@@ -1,8 +1,11 @@
 package _bbu.lawfirmapi.models.Entity;
 
 import _bbu.lawfirmapi.models.DTO.appuser.response.AppUserResponse;
+import _bbu.lawfirmapi.models.Enumerations.Gender;
+import _bbu.lawfirmapi.models.Enumerations.LawyerStatus;
 import _bbu.lawfirmapi.utils.BaseEntity;
 import com.fasterxml.jackson.annotation.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 import org.checkerframework.checker.units.qual.A;
@@ -18,7 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@EqualsAndHashCode(callSuper = true, exclude = {"expertises", "clients", "cases"})
+@EqualsAndHashCode(callSuper = true, exclude = {"expertises", "cases"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -38,6 +41,7 @@ public class AppUser extends BaseEntity implements UserDetails  {
     @JoinColumn(name = "role_id" , referencedColumnName = "role_id")
     private Role role;
     @ManyToMany(fetch = FetchType.LAZY)
+    // create for many-many between appuser & expertise
     @JoinTable(
             name = "appuser_expertise",
             joinColumns = @JoinColumn(name = "appuser_id"),
@@ -45,8 +49,12 @@ public class AppUser extends BaseEntity implements UserDetails  {
     )
     @ToString.Exclude
     private Set<Expertise> expertises;
-    @Column(name = "user_name")
-    private String userName;
+    @Column(name = "full_name")
+    private String fullName;
+    @Column(name = "gender")
+    private Gender gender;
+    @Column(name = "lawyer_status")
+    private LawyerStatus lawyerStatus;
     @Column(name ="email")
     private String email;
     @Column(name = "phone_number")
@@ -54,7 +62,7 @@ public class AppUser extends BaseEntity implements UserDetails  {
 
     @Column(name = "password")
     private String password;
-    @Column(name = "image" )
+    @Column(name = "profile_image")
     private String image;
 
     @Column (name = "description" , columnDefinition = "TEXT")
@@ -64,13 +72,19 @@ public class AppUser extends BaseEntity implements UserDetails  {
     @ToString.Exclude
     private List<Case> cases;
 
-    @OneToMany(mappedBy = "appUser" , fetch = FetchType.LAZY)
-    @JsonIgnore  // Add this
-    @ToString.Exclude
-    private List<Client> clients;
-
-    public AppUser(Object o, String userName, String email, String phoneNumber, String password, Integer roleId, Set<Integer> expertiseIdList, String image, String description) {
+    public AppUser(Object o,
+                   String fullName,
+                   Gender gender,
+                   LawyerStatus lawyerStatus,
+                   String email,
+                   String phoneNumber,
+                   String password,
+                   Integer roleId,
+                   Set<Integer> expertiseIdList,
+                   String image,
+                   String description) {
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -81,7 +95,9 @@ public class AppUser extends BaseEntity implements UserDetails  {
     public AppUserResponse toResponse(){
         return new AppUserResponse(
                 this.appUserId,
-                this.userName,
+                this.fullName,
+                this.gender,
+                this.lawyerStatus,
                 this.email,
                 this.phoneNumber,
                 this.password,
@@ -101,7 +117,7 @@ public class AppUser extends BaseEntity implements UserDetails  {
     }
 
     public String getName(){
-        return userName;
+        return this.fullName;
     }
 
 

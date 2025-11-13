@@ -17,10 +17,4 @@ import java.util.List;
 @Repository
 public interface ClientRepository extends JpaRepository<Client , Long> {
 
-
-    @EntityGraph(attributePaths = {"appUser"})
-    @Query("SELECT c FROM Client c WHERE c.appUser.appUserId = :appUserId")
-    Page<Client> findClientByAppUserId(@Param("appUserId") Long appUserId , Pageable pageable);
-
-
 }

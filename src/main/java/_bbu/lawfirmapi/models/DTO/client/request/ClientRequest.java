@@ -19,10 +19,10 @@ public class ClientRequest {
     private String email;
     private String phoneNumber;
     private String address;
-    private String message;
-    private Long appUserId;
-    public Client toEntity(AppUser appUser){
-        return new Client(null , this.clientName , this.email , this.phoneNumber , this.address , this.message , appUser);
+    private String complaint;
+    private String clientImage;
+    public Client toEntity(){
+        return new Client(null , this.clientName , this.email , this.phoneNumber , this.address , this.complaint,this.clientImage);
     }
 
 }

@@ -7,6 +7,7 @@ import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
 import _bbu.lawfirmapi.models.Entity.Role;
 import _bbu.lawfirmapi.repositories.RoleRepository;
 import _bbu.lawfirmapi.services.role.RoleService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/roles")
 public class RoleController extends BaseResponse {
-
     private final RoleService  roleService;
-    private final RoleRepository roleRepository;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<Role>>> getAllRoles(){
@@ -36,16 +35,21 @@ public class RoleController extends BaseResponse {
                 HttpStatus.OK ,
                 roleService.findRoleByRoleId(roleId));
     }
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     public ResponseEntity<ApiResponse<RoleResponse>> createNewRole(@RequestBody RoleRequest roleRequest){
         return responseEntity(true , "Created new role success" , HttpStatus.CREATED ,roleService.createNewRoleList(roleRequest));
     }
+
+    @SecurityRequirement(name = "bearerAuth")
 
     @PutMapping("/{roleId}")
     public ResponseEntity<ApiResponse<RoleResponse>> updateNewRole (@PathVariable Integer roleId , @RequestBody RoleRequest newRoleRequest) {
 
         return responseEntity(true, "update role success", HttpStatus.ACCEPTED, roleService.updateRoleById(roleId, newRoleRequest));
     }
+    @SecurityRequirement(name = "bearerAuth")
+
     @DeleteMapping("/{roleId}")
     public void deleteRoleById(@PathVariable Integer roleId) {
        roleService.removeRoleById(roleId);

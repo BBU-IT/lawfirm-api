@@ -1,5 +1,6 @@
 package _bbu.lawfirmapi.controllers;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -7,6 +8,11 @@ import _bbu.lawfirmapi.models.DTO.shared.response.ApiResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
 import _bbu.lawfirmapi.models.File.FileMetaData;
 import _bbu.lawfirmapi.services.file.FilerService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,11 +29,24 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @RestController
-@RequestMapping("api/v1/files")
+@RequestMapping("/api/v1/files")
 @RequiredArgsConstructor
 public class FileController extends BaseResponse {
     private final FilerService fileService;
 
+    @GetMapping("/{fileName}")
+    public ResponseEntity<Resource> getPdfFile(@PathVariable String fileName) throws IOException {
+        FileSystemResource file = new FileSystemResource("uploads/" + fileName);
+
+        if (!file.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(file);
+    }
     @PostMapping(value = "/upload-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<FileMetaData>> uploadFile(
             @RequestParam("file") MultipartFile file) {
@@ -86,5 +105,14 @@ public class FileController extends BaseResponse {
                 .contentType(mediaType)
                 .contentLength(fileBytes.length)
                 .body(fileBytes);
+    }
+    @SecurityRequirement(name = "bearerAuth")
+    @SneakyThrows
+    @GetMapping("/get-file-list")
+    public ResponseEntity<ApiResponse<List<String>>> getImageList(){
+        return responseEntity(true ,
+                "Retrieve file list successfully",
+                HttpStatus.OK,
+                fileService.getAllImagesUrl());
     }
 }

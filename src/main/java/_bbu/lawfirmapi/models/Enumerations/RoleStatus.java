@@ -1,4 +1,5 @@
 package _bbu.lawfirmapi.models.Enumerations;
 
-public class RoleStatus {
+public  enum RoleStatus {
+    LAWYER , ADMIN
 }

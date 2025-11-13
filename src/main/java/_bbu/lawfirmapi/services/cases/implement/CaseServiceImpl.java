@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CaseServiceImpl implements CaseService  {
 
-
     private final CaseRepository caseRepository;
     private final ClientRepository clientRepository;
     private final CourtRepository courtRepository;

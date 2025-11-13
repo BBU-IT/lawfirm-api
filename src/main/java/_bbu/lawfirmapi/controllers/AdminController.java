@@ -44,7 +44,7 @@ public class AdminController extends BaseResponse {
         logger(appUserRequest.getClass());
         return responseEntity(true,
                 "Update lawyer id " + lawyerId + " successfully" ,
-                HttpStatus.OK,
+                HttpStatus.ACCEPTED,
                 adminService.modifiedExistLawyerById(appUserRequest , lawyerId));
     }
     @SecurityRequirement(name = "bearerAuth")
@@ -53,7 +53,7 @@ public class AdminController extends BaseResponse {
     public ResponseEntity<ApiResponse<Void>> removeExistLawyer(@PathVariable Long lawyerId ){
         return responseEntity(true,
                 "Delete lawyer id " + lawyerId+  " successfully",
-                HttpStatus.OK,
+                HttpStatus.ACCEPTED,
                 adminService.removeExistLawyerById(lawyerId));
     }
 }

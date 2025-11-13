@@ -8,6 +8,8 @@ import java.util.UUID;
 import _bbu.lawfirmapi.exceptions.InvalidException;
 import _bbu.lawfirmapi.models.File.FileMetaData;
 import _bbu.lawfirmapi.services.file.FilerService;
+import io.minio.*;
+import io.minio.messages.Item;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -15,11 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
-import io.minio.BucketExistsArgs;
-import io.minio.GetObjectArgs;
-import io.minio.MakeBucketArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -30,6 +27,8 @@ public class FileServiceImplement implements FilerService {
 
     @Value("${minio.bucket.name}")
     private String bucketName;
+    @Value("${minio.url}")
+    private String minioUrl;
 
     private void verifyFileExtension(MultipartFile file) {
         // validate file extension allow only ending with .png, .svg, .jpg, .jpeg, or .gif
@@ -94,5 +93,20 @@ public class FileServiceImplement implements FilerService {
             responseFiles.add(uploadFileToMinio(file));
         }
         return responseFiles;
+    }
+    @SneakyThrows
+    public List<String> getAllImagesUrl(){
+        List<String> listOfUrls = new ArrayList<>();
+        Iterable<Result<Item>> results = minioClient.listObjects(
+                ListObjectsArgs.builder()
+                        .bucket(bucketName)
+                        .build());
+        for(Result<Item> result : results ){
+            Item item = result.get();
+            String fileName = item.objectName();
+            String url = String.format("%s/%s", bucketName , fileName);
+            listOfUrls.add(url);
+        }
+        return listOfUrls;
     }
 }

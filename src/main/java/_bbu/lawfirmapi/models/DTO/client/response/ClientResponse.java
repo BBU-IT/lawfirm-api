@@ -13,13 +13,12 @@ import java.time.LocalDateTime;
 public class ClientResponse {
 
     private Long  clientId ;
-
     private String clientName ;
     private String email ;
     private String phoneNumber;
     private String address;
-    private String message ;
+    private String complaint ;
+    private String clientImage;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private AppUser appUser;
 }

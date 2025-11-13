@@ -7,6 +7,8 @@ import _bbu.lawfirmapi.models.Entity.Appointment;
 import _bbu.lawfirmapi.repositories.AppointmentRepository;
 import _bbu.lawfirmapi.services.appointment.AppointmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,8 +21,8 @@ public class AppointServiceImpl implements AppointmentService {
     private final AppointmentRepository appointmentRepository;
 
     @Override
-    public List<Appointment> getAllAppointment(){
-        return Optional.of(appointmentRepository.findAll())
+    public Page<Appointment> getAllAppointment(Pageable pageable){
+        return Optional.of(appointmentRepository.findAll(pageable))
                 .filter(list -> !list.isEmpty())
                 .orElseThrow(() -> new NotFoundException("Appointment list not found"));
     }

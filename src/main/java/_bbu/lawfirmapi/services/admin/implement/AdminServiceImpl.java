@@ -48,9 +48,8 @@ public class AdminServiceImpl implements AdminService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         AppUser userDetail = appUserRepository.findByEmailWithRole(email);
+        
 
-
-        System.out.println("load user " + userDetail);
         if (userDetail == null) {
             throw new UsernameNotFoundException("User does not exist");
         }
@@ -86,8 +85,10 @@ public class AdminServiceImpl implements AdminService {
 
         //  Build and save AppUser
         AppUser user = AppUser.builder()
-                .userName(appUserRequest.getUserName())
+                .fullName(appUserRequest.getFullName())
                 .email(appUserRequest.getEmail())
+                .gender(appUserRequest.getGender())
+                .lawyerStatus(appUserRequest.getLawyerStatus())
                 .phoneNumber(appUserRequest.getPhoneNumber())
                 .password(passwordEncoder.encode(appUserRequest.getPassword()))
                 .role(role)
@@ -101,9 +102,12 @@ public class AdminServiceImpl implements AdminService {
         // Map to response (exclude password)
         return AppUserResponse.builder()
                 .appUserId(savedLawyer.getAppUserId())
-                .userName(savedLawyer.getUsername())
+                .fullName(savedLawyer.getFullName())
                 .email(savedLawyer.getEmail())
+                .gender(savedLawyer.getGender())
+                .lawyerStatus(savedLawyer.getLawyerStatus())
                 .phoneNumber(savedLawyer.getPhoneNumber())
+                .password(savedLawyer.getPassword())
                 .role(savedLawyer.getRole().getRoleName().substring(5)) // "ROLE_LAWYER" -> "LAWYER"
                 .expertises(setOfExpertiseName)
                 .description(savedLawyer.getDescription())
@@ -136,8 +140,10 @@ public class AdminServiceImpl implements AdminService {
                 .map(Expertise::getExpertName)
                 .collect(Collectors.toSet());
 
-        currentLawyer.setUserName(appUserRequest.getUserName());
+        currentLawyer.setFullName(appUserRequest.getFullName());
         currentLawyer.setEmail(appUserRequest.getEmail());
+        currentLawyer.setGender(appUserRequest.getGender());
+        currentLawyer.setLawyerStatus(appUserRequest.getLawyerStatus());
         currentLawyer.setPhoneNumber(appUserRequest.getPhoneNumber());
         currentLawyer.setPassword(appUserRequest.getPassword());
         currentLawyer.setDescription(appUserRequest.getDescription());

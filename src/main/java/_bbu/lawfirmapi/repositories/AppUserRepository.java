@@ -23,14 +23,6 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     List<AppUser> findAllLawyers();
 
 
-    // Fetch user with clients (if needed separately)
-    @Query("SELECT u FROM AppUser u LEFT JOIN FETCH u.clients WHERE u.appUserId = :id")
-    Optional<AppUser> findByIdWithClients(@Param("id") Long id);
-
-    // Fetch user with cases (if needed separately)
-    @Query("SELECT u FROM AppUser u LEFT JOIN FETCH u.cases WHERE u.appUserId = :id")
-    Optional<AppUser> findByIdWithCases(@Param("id") Long id);
-
     // Basic existence check (no joins needed)
     boolean existsByEmail(String email);
 }

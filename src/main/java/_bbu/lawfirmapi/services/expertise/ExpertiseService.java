@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 
 public interface ExpertiseService {
 
-    Page<Expertise> fetchAllExpertise(Pageable pageable , Integer totalPages , Integer requestPage);
+    Page<Expertise> fetchAllExpertise(Pageable pageable, Integer requestPage);
     Expertise fetchExpertiseById(Integer expertiseId);
 
     ExpertiseResponse createNewExpertise(ExpertiseRequest expertiseRequest);
