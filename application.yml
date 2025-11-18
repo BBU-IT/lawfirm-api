@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://postgres:5432/lawfirm_db   # ← service name, not container name
+    url: jdbc:postgresql://localhost:5432/lawfirm_db   # ← service name, not container name
     username: postgres
-    password: Sup3rStr0ngP4ssw0rd!
+    password: 123@456
   jpa:
     hibernate:
       ddl-auto: update   # or validate/create-drop depending on your needs

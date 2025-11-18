@@ -6,7 +6,7 @@ services:
     container_name: pg-container            # optional, you can remove this line
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123
+      POSTGRES_PASSWORD: 123@456
       POSTGRES_DB: lawfirm_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -18,7 +18,7 @@ services:
     image: lawfirm-api-image:latest
     build: .                                # remove if you already have an image
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lawfirm_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/lawfirm_db
     ports:
       - "8080:8080"
     depends_on:
