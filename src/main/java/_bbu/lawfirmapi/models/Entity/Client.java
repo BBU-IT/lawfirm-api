@@ -1,0 +1,67 @@
+package _bbu.lawfirmapi.models.Entity;
+
+import _bbu.lawfirmapi.models.DTO.client.response.ClientResponse;
+import _bbu.lawfirmapi.models.Enumerations.ClientStatus;
+import _bbu.lawfirmapi.utils.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import jakarta.persistence.*;
+import lombok.*;
+import java.util.List;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "clients")
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonPropertyOrder({
+        "clientId" , "clientName" , "email", "phoneNumber"  ,"complaint" ,"address" , "createdAt" , "updatedAt"
+})
+public class Client extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name =  "client_id")
+    private Long  clientId ;
+    @Column(name = "client_name")
+    private String clientName ;
+    @Column(name = "email")
+    private String email ;
+    @Column(name = "phone_number")
+    private String phoneNumber;
+    @Column(name = "address")
+    private String address;
+    @Column(name =  "complaint" , columnDefinition = "TEXT")
+    private String complaint ;
+    @Column(name = "status")
+    private ClientStatus status;
+    @Column(name = "client_image")
+    private String clientImage;
+
+
+
+    @OneToMany(mappedBy = "client" , cascade = CascadeType.ALL)
+    @JsonIgnore  // Add this
+    @ToString.Exclude
+    private List<Case> cases;
+
+    public Client(Object o, String clientName, String email, String phoneNumber, String address, String complaint, String clientImage ) {
+    }
+
+    public ClientResponse toResponse(){
+        return new ClientResponse(
+                this.clientId ,
+                this.clientName ,
+                this.email ,
+                this.phoneNumber ,
+                this.address ,
+                this.complaint ,
+                this.clientImage ,
+                this.getCreatedAt() ,
+                this.getUpdatedAt());
+    }
+}

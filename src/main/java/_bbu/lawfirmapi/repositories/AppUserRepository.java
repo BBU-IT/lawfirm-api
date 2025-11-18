@@ -1,27 +1,28 @@
 package _bbu.lawfirmapi.repositories;
 
-import _bbu.lawfirmapi.models.DTO.appuer.res.AppUser;
-import org.apache.ibatis.annotations.*;
+import _bbu.lawfirmapi.models.Entity.AppUser;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
-@Mapper
-public interface AppUserRepository {
+import java.util.Optional;
 
-    @Results(id = "appUserMapper",
-            value = {@Result(property = "appUserId", column = "app_user_id"),
-                    @Result(property = "name", column = "name"),
-                    @Result(property = "email" , column = "email"),
-                    @Result(property = "phoneNumber" , column = "phone"),
-                    @Result(property = "role" , column = "role_id" , one = @One(select = "getRoleById")),
-                    @Result(property = "description" , column = "description")
-            })
-    @ResultMap("appUserMapper")
-    @Select("""
-			SELECT * FROM app_users
-			""")
-    public List<AppUser> getAllUser();
+@Repository
+public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
-    @Select("""
-			SELECT name FROM roles WHERE role_id = #{role_id}
-			""")
-    public String getRoleById(@Param("role_id") Integer roleId);
+    @Query("SELECT u FROM AppUser u JOIN FETCH u.role WHERE u.email = :email")
+    AppUser findByEmailWithRole(@Param("email") String email);
+
+
+    // Fetch all lawyers with their roles
+    @EntityGraph(attributePaths = {"role", "expertises"})
+    @Query("SELECT u FROM AppUser u WHERE u.role.roleName = 'ROLE_LAWYER'")
+    List<AppUser> findAllLawyers();
+
+
+    // Basic existence check (no joins needed)
+    boolean existsByEmail(String email);
 }

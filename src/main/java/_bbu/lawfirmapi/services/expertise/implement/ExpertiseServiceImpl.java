@@ -1,0 +1,68 @@
+package _bbu.lawfirmapi.services.expertise.implement;
+
+import _bbu.lawfirmapi.exceptions.NotFoundException;
+import _bbu.lawfirmapi.models.DTO.expertise.request.ExpertiseRequest;
+import _bbu.lawfirmapi.models.DTO.expertise.response.ExpertiseResponse;
+import _bbu.lawfirmapi.models.Entity.Expertise;
+import _bbu.lawfirmapi.repositories.ExpertiseRepository;
+import _bbu.lawfirmapi.services.expertise.ExpertiseService;
+import _bbu.lawfirmapi.utils.MethodHelper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class ExpertiseServiceImpl implements ExpertiseService {
+
+    private final ExpertiseRepository expertiseRepo;
+    private final MethodHelper checkOutOfPage;
+
+    @Override
+    public Page<Expertise> fetchAllExpertise(Pageable pageable , Integer requestedPage) {
+        if(expertiseRepo.findAll().isEmpty()) {
+            throw new NotFoundException("No expertise list found.");
+        }
+        Page<Expertise> expertisePage = expertiseRepo.findAll(pageable);
+
+        checkOutOfPage.isInvalidPage(expertisePage.getTotalPages(), requestedPage);
+
+        return expertisePage;
+    }
+    @Override
+    public Expertise fetchExpertiseById(Integer expertiseId) {
+
+        return expertiseRepo.findById(expertiseId).orElseThrow(() -> new NotFoundException("Expertise with id " + expertiseId + " not found."));
+    }
+
+    @Override
+    public ExpertiseResponse createNewExpertise(ExpertiseRequest expertiseRequest) {
+        Expertise newExpertise  = expertiseRequest.toEntity();
+        newExpertise.setExpertName(expertiseRequest.getExpertName());
+        newExpertise.setCreatedAt(LocalDateTime.now());
+        newExpertise.setUpdatedAt(LocalDateTime.now());
+        return expertiseRepo.save(newExpertise).toResponse();
+    }
+
+    @Override
+    public ExpertiseResponse updateExistExpertiseById(ExpertiseRequest expertiseRequest, Integer expertiseId) {
+        Expertise previousExpertise = expertiseRepo.findById(expertiseId).orElseThrow(() -> new NotFoundException("Cannot update expertise name " +
+                expertiseRequest.getExpertName() + "Because expertise id" +  expertiseId + " not found."));
+        previousExpertise.setExpertName(expertiseRequest.getExpertName());
+        previousExpertise.setUpdatedAt(LocalDateTime.now());
+        Expertise updatedExpertise = expertiseRepo.save(previousExpertise);
+        return updatedExpertise.toResponse();
+    }
+
+    @Override
+    public Void removeExistExpertiseById(Integer expertiseId) {
+        expertiseRepo.findById(expertiseId).orElseThrow(() -> new NotFoundException("Expertise with id " + expertiseId + " not found."));
+        expertiseRepo.deleteById(expertiseId);
+        return null;
+    }
+}
