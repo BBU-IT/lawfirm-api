@@ -1,14 +1,15 @@
 package _bbu.lawfirmapi.services.file.implement;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import _bbu.lawfirmapi.exceptions.InvalidException;
 import _bbu.lawfirmapi.models.File.FileMetaData;
 import _bbu.lawfirmapi.services.file.FilerService;
 import io.minio.*;
+import io.minio.http.Method;
 import io.minio.messages.Item;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -104,9 +105,66 @@ public class FileServiceImplement implements FilerService {
         for(Result<Item> result : results ){
             Item item = result.get();
             String fileName = item.objectName();
-            String url = String.format("%s/%s", bucketName , fileName);
+            String url = "http://localhost:9000/" + bucketName + "/" + fileName;;
             listOfUrls.add(url);
         }
-        return listOfUrls;
+        List<String> pdfOnly = listOfUrls.stream()
+                .filter(url -> url.toLowerCase().endsWith(".pdf")).collect(Collectors.toList());
+
+        return pdfOnly;
+    }
+
+    @Override
+    public List<String> uploadMultipleFilePdf(List<MultipartFile> files) throws Exception {
+        List<String> objectNames = new ArrayList<>();
+
+        for(MultipartFile file : files){
+            // Generate unique name to avoid collisions
+            String objectName = UUID.randomUUID().toString() + ".pdf";
+
+            // Upload each file
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectName)
+                            .stream(file.getInputStream(), file.getSize(), -1)
+                            .contentType(file.getContentType())
+                            .build());
+            objectNames.add(objectName);
+
+        }
+        return objectNames;
+    }
+    @Override
+    public String uploadPdfFile(MultipartFile file) throws Exception {
+        String objectName = UUID.randomUUID().toString()+".pdf";
+
+        minioClient.putObject(
+                PutObjectArgs.builder()
+                        .bucket(bucketName)
+                        .object(objectName)
+                        .stream(file.getInputStream(), file.getSize(), -1)
+                        .contentType(file.getContentType()) // Sets content type
+                        .build());
+
+        return objectName;
+    }
+
+    @Override
+    public String getPdfPreviewUrl(String objectName) throws Exception {
+        // Set response-content-type to application/pdf for inline browser preview
+        Map<String, String> reqParams = new HashMap<>();
+        reqParams.put("response-content-type", "application/pdf");
+
+        // Generate a temporary presigned URL that expires in a short time (e.g., 1 hour)
+        String url = minioClient.getPresignedObjectUrl(
+                GetPresignedObjectUrlArgs.builder()
+                        .method(Method.GET)
+                        .bucket(bucketName)
+                        .object(objectName)
+                        .expiry(1, TimeUnit.HOURS)
+                        .extraQueryParams(reqParams)
+                        .build());
+        return url;
     }
 }

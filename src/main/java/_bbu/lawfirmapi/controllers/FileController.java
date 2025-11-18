@@ -70,7 +70,6 @@ public class FileController extends BaseResponse {
                         .status(HttpStatus.CREATED).code(HttpStatus.OK.value()).payload(uploadedFiles).build();
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
-
     @SneakyThrows
     @GetMapping("/preview-file/{file-name}")
     public ResponseEntity<?> getFileByFileName(@PathVariable("file-name") String fileName) {
@@ -90,6 +89,27 @@ public class FileController extends BaseResponse {
         }
         return ResponseEntity.status(HttpStatus.OK).contentType(mediaType)
                 .body(inputStream.readAllBytes());
+    }
+    @PostMapping(value = "/upload-pdf/bulk", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadMultiPdfFile(@RequestParam("file") List<MultipartFile> files) {
+        try {
+
+            // Validate each file
+            for (MultipartFile file : files) {
+                if (!"application/pdf".equalsIgnoreCase(file.getContentType())) {
+                    return ResponseEntity.badRequest().body("Only PDF files are allowed.");
+                }
+            }
+
+            // Upload all files
+            List<String> objectNames = fileService.uploadMultipleFilePdf(files);
+
+            return ResponseEntity.ok(objectNames);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body("Error uploading files: " + e.getMessage());
+        }
     }
     @SneakyThrows
     @GetMapping("/download-file/{file-name}")
@@ -114,5 +134,31 @@ public class FileController extends BaseResponse {
                 "Retrieve file list successfully",
                 HttpStatus.OK,
                 fileService.getAllImagesUrl());
+    }
+
+    // ==================================================
+    @PostMapping(value =  "/upload-pdf" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadPdf(@RequestParam("file") MultipartFile file) {
+        try {
+            // Validate file type
+            if (!"application/pdf".equals(file.getContentType())) {
+                return ResponseEntity.badRequest().body("Only PDF files are allowed.");
+            }
+            String objectName = fileService.uploadPdfFile(file);
+            return ResponseEntity.ok("File uploaded successfully. Object Name: " + objectName);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error uploading file: " + e.getMessage());
+        }
+    }
+    // Endpoint to get a preview URL for a PDF
+    @GetMapping("/preview-pdf/{objectName}")
+    public ResponseEntity<String> previewPdf(@PathVariable String objectName) {
+        try {
+            String presignedUrl = fileService.getPdfPreviewUrl(objectName);
+            // Return the URL to the client, which can then open it in a browser
+            return ResponseEntity.ok(presignedUrl);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error generating preview URL: " + e.getMessage());
+        }
     }
 }

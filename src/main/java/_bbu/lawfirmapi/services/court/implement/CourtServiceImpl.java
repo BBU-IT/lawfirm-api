@@ -18,6 +18,12 @@ public class CourtServiceImpl implements CourtService {
 
     private final CourtRepository courtRepository;
 
+
+    @Override
+    public Court getCourtById(Long courtId){
+        return  courtRepository.findById(courtId)
+                .orElseThrow(() -> new NotFoundException("Court with id " + courtId + " not found update"));
+    }
     @Override
     public List<Court> getCourtList() {
         return Optional.of(courtRepository.findAll())
@@ -34,8 +40,26 @@ public class CourtServiceImpl implements CourtService {
         newCourt.setLocation(courtRequest.getLocation());
         newCourt.setCreatedAt(LocalDateTime.now());
         return courtRepository.save(newCourt).toResponse();
-
     }
 
 
+    @Override
+    public CourtResponse modifiedCourtById(CourtRequest courtRequest, Long courtId) {
+        Court currentCourt = courtRepository.findById(courtId)
+                .orElseThrow(() -> new NotFoundException("Court with id " + courtId+ " not found update"));
+        currentCourt.setCourtName(courtRequest.getCourtName());
+        currentCourt.setCourtType(courtRequest.getCourtType());
+        currentCourt.setLocation(courtRequest.getLocation());
+        currentCourt.setContactNumber(courtRequest.getContactNumber());
+        currentCourt.setUpdatedAt(LocalDateTime.now());
+        Court newCourt = courtRepository.save(currentCourt);
+        return newCourt.toResponse();
+    }
+
+    @Override
+    public Void removeCourtById(Long courtId) {
+        courtRepository.findById(courtId)
+                .orElseThrow(() -> new NotFoundException("Court with id " + courtId+ " not found for delete"));
+        return null;
+    }
 }

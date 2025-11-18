@@ -8,6 +8,9 @@ import java.util.List;
 
 public interface FilerService {
 
+    String uploadPdfFile(MultipartFile file) throws Exception;
+    List<String> uploadMultipleFilePdf(List<MultipartFile> files) throws  Exception;
+    String getPdfPreviewUrl(String objectName) throws  Exception;
     FileMetaData uploadFile(MultipartFile file);
 
     InputStream getFileByFileName(String fileName);

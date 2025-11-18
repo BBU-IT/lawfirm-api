@@ -21,14 +21,41 @@ public class CourtController extends BaseResponse {
 
     public final CourtService courtService;
 
+    @GetMapping("/{courtId}")
+    public ResponseEntity<ApiResponse<Court>> getCourtById( Long courtId){
+        return responseEntity(true ,
+                "Get court with id " + courtId + " successfully" ,
+                HttpStatus.OK ,
+                courtService.getCourtById(courtId));
+    }
     @GetMapping
     public ResponseEntity<ApiResponse<List<Court>>> getAllCourts(){
-        return responseEntity(true , "Get all court successfully" , HttpStatus.OK , courtService.getCourtList());
+        return responseEntity(true ,
+                "Get all court successfully" ,
+                HttpStatus.OK ,
+                courtService.getCourtList());
     }
 
     @PostMapping
     public ResponseEntity<ApiResponse<CourtResponse>> createCourt(@RequestBody CourtRequest courtRequest){
-        return responseEntity(true , "Create new court successfully" , HttpStatus.CREATED , courtService.createNewCourt(courtRequest));
+        return responseEntity(true ,
+                "Create new court successfully" ,
+                HttpStatus.CREATED ,
+                courtService.createNewCourt(courtRequest));
+    }
+    @PutMapping("/{courtId}")
+    public ResponseEntity<ApiResponse<CourtResponse>> updateNewCourt(@RequestBody CourtRequest courtRequest , @PathVariable Long courtId){
+        return responseEntity(true ,
+                "Update court with name " + courtService.getCourtById(courtId).getCourtName() +  " to " + courtRequest.getCourtName(),
+                HttpStatus.ACCEPTED,
+                courtService.modifiedCourtById(courtRequest , courtId));
+    }
+    @DeleteMapping("/{courtId}")
+    public ResponseEntity<ApiResponse<Void>> deleteExistCourtById(@PathVariable  Long courtId){
+        return responseEntity(true ,
+                "Delete court with id " + courtId + " successfully",
+                HttpStatus.OK,
+                courtService.removeCourtById(courtId));
     }
 
 
