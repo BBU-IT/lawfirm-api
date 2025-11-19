@@ -47,7 +47,8 @@ public class SecurityConfig {
                                 "/api/v1/cases/**",
                                 "/api/v1/expertises/**",
                                 "/api/v1/app-user/**",
-                                "/api/v1/files/**"
+                                "/api/v1/files/**",
+                                "/api/v1/services/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET ,"/api/v1/admin/lawyers/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/admin/lawyers/**")

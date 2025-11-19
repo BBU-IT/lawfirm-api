@@ -7,10 +7,8 @@ import java.util.List;
 import _bbu.lawfirmapi.models.DTO.shared.response.ApiResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
 import _bbu.lawfirmapi.models.File.FileMetaData;
-import _bbu.lawfirmapi.services.file.FilerService;
+import _bbu.lawfirmapi.services.file.FileService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -32,7 +30,7 @@ import lombok.SneakyThrows;
 @RequestMapping("/api/v1/files")
 @RequiredArgsConstructor
 public class FileController extends BaseResponse {
-    private final FilerService fileService;
+    private final FileService fileService;
 
     @GetMapping("/{fileName}")
     public ResponseEntity<Resource> getPdfFile(@PathVariable String fileName) throws IOException {

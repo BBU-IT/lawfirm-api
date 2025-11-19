@@ -34,6 +34,10 @@ public class Expertise extends BaseEntity {
     @JsonIgnore
     private Set<AppUser> lawyerProfiles;
 
+    @OneToMany(mappedBy = "expertise" , cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Service> serviceSet;
+
     public Expertise(Object o, String expertiseName) {
     }
 

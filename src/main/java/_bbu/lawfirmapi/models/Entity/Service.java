@@ -1,6 +1,8 @@
 package _bbu.lawfirmapi.models.Entity;
 
+import _bbu.lawfirmapi.models.DTO.service.response.ServiceResponse;
 import _bbu.lawfirmapi.utils.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,4 +28,23 @@ public class Service extends BaseEntity {
     private String description;
     @Column(name = "base_price")
     private Float basePrice;
+
+    @ManyToOne(fetch = FetchType.LAZY ,cascade = CascadeType.ALL)
+    @JoinColumn(name = "expertise_id" , referencedColumnName = "expertise_id")
+    @JsonIgnore
+    private Expertise expertise;
+
+    public Service(Long serviceId, String serviceName, String description, Float basePrice, Integer expertiseId) {
+    }
+
+    public ServiceResponse toResponse(){
+        return new ServiceResponse(
+          this.serviceId,
+          this.serviceName,
+          this.description,
+          this.basePrice,
+          this.expertise.getExpertName()
+        );
+    }
+
 }

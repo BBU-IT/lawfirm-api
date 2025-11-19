@@ -58,9 +58,7 @@ public class ClientServiceImpl implements ClientService {
         if (roleName.equals("ROLE_ANONYMOUS")) {
             throw new RuntimeException("You don't have access to this endpoint.");
         }
-        Page<Client> clients;
-        // Admins can see ALL clients
-        clients = clientRepository.findAll(pageable); // Get ALL clients
+        Page<Client> clients = clientRepository.findAll(pageable); // Get ALL clients
 
         checkOutOfPage.isInvalidPage(clients.getTotalPages() , requestedPage);
 

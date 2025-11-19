@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import _bbu.lawfirmapi.exceptions.InvalidException;
 import _bbu.lawfirmapi.models.File.FileMetaData;
-import _bbu.lawfirmapi.services.file.FilerService;
+import _bbu.lawfirmapi.services.file.FileService;
 import io.minio.*;
 import io.minio.http.Method;
 import io.minio.messages.Item;
@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
 
 @Service
 @RequiredArgsConstructor
-public class FileServiceImplement implements FilerService {
+public class FileServiceImplement implements FileService {
     private final MinioClient minioClient;
 
     @Value("${minio.bucket.name}")
@@ -81,7 +81,6 @@ public class FileServiceImplement implements FilerService {
         return minioClient
                 .getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
     }
-
     @SneakyThrows
     @Override
     public List<FileMetaData> bulkUploadFile(List<MultipartFile> files) {

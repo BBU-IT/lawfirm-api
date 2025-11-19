@@ -52,6 +52,7 @@ public class AuthController extends BaseResponse {
                     "Invalid username, email, or password. Please check your credentials and try again.");
         }
     }
+
     @PostMapping("/login")
     @Operation(summary = "Login")
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request) throws Exception {

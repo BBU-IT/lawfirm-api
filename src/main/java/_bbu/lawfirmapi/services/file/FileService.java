@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.util.List;
 
-public interface FilerService {
+public interface FileService {
 
     String uploadPdfFile(MultipartFile file) throws Exception;
     List<String> uploadMultipleFilePdf(List<MultipartFile> files) throws  Exception;
