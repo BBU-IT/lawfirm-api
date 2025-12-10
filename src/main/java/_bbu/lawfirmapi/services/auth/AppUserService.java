@@ -12,6 +12,8 @@ import java.util.List;
 
 public interface AppUserService  {
 
+      AppUser getCurrentUser();
+      AppUserResponse getProfile();
       String sendNews(String email);
 
 }

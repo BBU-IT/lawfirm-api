@@ -1,6 +1,8 @@
 package _bbu.lawfirmapi.repositories;
 
 import _bbu.lawfirmapi.models.Entity.AppUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,8 +22,13 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     // Fetch all lawyers with their roles
     @EntityGraph(attributePaths = {"role", "expertises"})
     @Query("SELECT u FROM AppUser u WHERE u.role.roleName = 'ROLE_LAWYER'")
-    List<AppUser> findAllLawyers();
+    Page<AppUser> findAllLawyers(Pageable pageable);
 
+    @Query("SELECT u FROM AppUser u WHERE u.role.roleName = 'ROLE_LAWYER'")
+    List<AppUser> findLawyerList();
+
+    @Query("SELECT u FROM AppUser u WHERE u.role.roleName = 'ROLE_LAWYER' AND u.appUserId = :lawyerId ")
+    AppUser findLawyerByAppUserId(@Param("lawyerId") Long lawyerId);
 
     // Basic existence check (no joins needed)
     boolean existsByEmail(String email);

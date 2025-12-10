@@ -8,8 +8,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface ServiceLawyerService {
 
-    Service getLawyerServiceById(Long serviceId);
-    Page<Service> getAllLawyerService(Pageable pageable , Integer requestedPage);
+    ServiceResponse getLawyerServiceById(Long serviceId);
+    Page<ServiceResponse> getAllLawyerService(Pageable pageable , Integer requestedPage);
     ServiceResponse createNewLawyerService(ServiceRequest serviceRequest);
     ServiceResponse modifiedExistingLawyerServiceById(Long serviceId, ServiceRequest serviceRequest);
     Void removeLawyerServiceById(Long serviceId);

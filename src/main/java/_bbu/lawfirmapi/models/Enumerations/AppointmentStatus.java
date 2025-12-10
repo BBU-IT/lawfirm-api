@@ -2,5 +2,5 @@ package _bbu.lawfirmapi.models.Enumerations;
 
 public enum AppointmentStatus {
 
-    NOT_YET , FINISHED
+    PENDING , CONFIRMED , CANCELLED , FINISHED
 }

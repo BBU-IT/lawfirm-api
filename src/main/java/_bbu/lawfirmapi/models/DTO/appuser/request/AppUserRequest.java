@@ -43,6 +43,11 @@ public class AppUserRequest {
 
     @Schema(description = "Short description or bio", example = "Experienced lawyer specializing in corporate law.")
     private String description;
+    private String title;
+
+    private String facebookLink;
+    private String tiktokLink;
+    private String telegramLink;
 
     public AppUser toEntity(){
         return new AppUser(null ,
@@ -55,6 +60,11 @@ public class AppUserRequest {
                 this.roleId ,
                 this.expertiseIdList ,
                 this.image,
-                this.description);
+                this.description,
+                this.title,
+                this.facebookLink,
+                this.tiktokLink,
+                this.telegramLink
+        );
     }
 }

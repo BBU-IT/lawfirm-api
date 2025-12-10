@@ -1,5 +1,6 @@
 package _bbu.lawfirmapi.services.expertise.implement;
 
+import _bbu.lawfirmapi.exceptions.IllegalArgumentException;
 import _bbu.lawfirmapi.exceptions.NotFoundException;
 import _bbu.lawfirmapi.models.DTO.expertise.request.ExpertiseRequest;
 import _bbu.lawfirmapi.models.DTO.expertise.response.ExpertiseResponse;
@@ -10,6 +11,7 @@ import _bbu.lawfirmapi.utils.MethodHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -25,15 +27,22 @@ public class ExpertiseServiceImpl implements ExpertiseService {
 
     @Override
     public Page<Expertise> fetchAllExpertise(Pageable pageable , Integer requestedPage) {
-        if(expertiseRepo.findAll().isEmpty()) {
+
+
+
+        Page<Expertise> page = expertiseRepo.findAll(pageable);
+        if (page.getTotalElements() < 1) {
+            throw new IllegalArgumentException("Page size must not be less than one");
+        }
+        checkOutOfPage.isInvalidPage(page.getTotalPages(), requestedPage);
+
+        if (page.isEmpty()) {
             throw new NotFoundException("No expertise list found.");
         }
-        Page<Expertise> expertisePage = expertiseRepo.findAll(pageable);
 
-        checkOutOfPage.isInvalidPage(expertisePage.getTotalPages(), requestedPage);
-
-        return expertisePage;
+        return page;
     }
+
     @Override
     public Expertise fetchExpertiseById(Integer expertiseId) {
 

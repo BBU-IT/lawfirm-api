@@ -33,7 +33,13 @@ public class FileController extends BaseResponse {
     private final FileService fileService;
 
     @GetMapping("/{fileName}")
-    public ResponseEntity<Resource> getPdfFile(@PathVariable String fileName) throws IOException {
+    public ResponseEntity<Resource> getPdfFile(
+            @PathVariable String fileName,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "5") Integer size,
+            @RequestParam(defaultValue = "appointmentId") String sortBy,
+            @RequestParam(defaultValue = "true") Boolean ascending
+    ) throws IOException {
         FileSystemResource file = new FileSystemResource("uploads/" + fileName);
 
         if (!file.exists()) {
@@ -73,6 +79,7 @@ public class FileController extends BaseResponse {
     public ResponseEntity<?> getFileByFileName(@PathVariable("file-name") String fileName) {
 
         InputStream inputStream = fileService.getFileByFileName(fileName);
+
 
         MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
 
@@ -126,7 +133,7 @@ public class FileController extends BaseResponse {
     }
     @SecurityRequirement(name = "bearerAuth")
     @SneakyThrows
-    @GetMapping("/get-file-list")
+    @GetMapping("/file-list")
     public ResponseEntity<ApiResponse<List<String>>> getImageList(){
         return responseEntity(true ,
                 "Retrieve file list successfully",
@@ -136,27 +143,39 @@ public class FileController extends BaseResponse {
 
     // ==================================================
     @PostMapping(value =  "/upload-pdf" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadPdf(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> uploadPdf(@RequestParam("file") MultipartFile file ,@RequestParam String lawType) {
         try {
             // Validate file type
             if (!"application/pdf".equals(file.getContentType())) {
                 return ResponseEntity.badRequest().body("Only PDF files are allowed.");
             }
-            String objectName = fileService.uploadPdfFile(file);
+            String objectName = fileService.uploadPdfFile(file , lawType);
             return ResponseEntity.ok("File uploaded successfully. Object Name: " + objectName);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error uploading file: " + e.getMessage());
         }
     }
     // Endpoint to get a preview URL for a PDF
-    @GetMapping("/preview-pdf/{objectName}")
-    public ResponseEntity<String> previewPdf(@PathVariable String objectName) {
+    @GetMapping("/preview-pdf/{file-name}")
+    public ResponseEntity<String> previewPdf(@PathVariable("file-name") String fileName) {
         try {
-            String presignedUrl = fileService.getPdfPreviewUrl(objectName);
+            String presignedUrl = fileService.getPdfPreviewUrl(fileName);
             // Return the URL to the client, which can then open it in a browser
             return ResponseEntity.ok(presignedUrl);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error generating preview URL: " + e.getMessage());
         }
+    }
+    @GetMapping("/law-document")
+    public ResponseEntity<ApiResponse<List<String>>> filterDocuments(
+            @RequestParam String lawType
+    ) throws Exception {
+            return responseEntity(
+                    true ,
+                    "Get law file type " + lawType + " successfully",
+                    HttpStatus.ACCEPTED,
+                    fileService.filterFileByLawType(lawType)
+            );
+
     }
 }

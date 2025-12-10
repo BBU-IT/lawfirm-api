@@ -11,8 +11,12 @@ import _bbu.lawfirmapi.repositories.AppUserRepository;
 import _bbu.lawfirmapi.repositories.ExpertiseRepository;
 import _bbu.lawfirmapi.repositories.RoleRepository;
 import _bbu.lawfirmapi.services.admin.AdminService;
+import _bbu.lawfirmapi.utils.MethodHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,10 +36,19 @@ public class AdminServiceImpl implements AdminService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final ExpertiseRepository expertiseRepository;
+    private final MethodHelper checkOutOfPage;
 
+    public AppUser getCurrentUser(){
+        return (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
     @Override
-    public List<AppUser> getAllUser(){
-        return appUserRepository.findAllLawyers();
+    public Page<AppUser> getAllUser(Pageable pageable , Integer requestPage){
+        Page<AppUser> lawyerList = appUserRepository.findAllLawyers(pageable);
+        checkOutOfPage.isInvalidPage(lawyerList.getTotalPages() , requestPage);
+        if (lawyerList.isEmpty()){
+            throw new NotFoundException("No appointment list here.");
+        }
+        return lawyerList ;
     }
 
     @Override
@@ -65,6 +78,8 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AppUserResponse registerNewLawyer(AppUserRequest appUserRequest) {
+        System.out.println("My register request : " + appUserRequest);
+        AppUser newLawyer = appUserRequest.toEntity();
         //  Check for existing email
         checkIsEmailExist(appUserRequest.getEmail());
 
@@ -79,40 +94,29 @@ public class AdminServiceImpl implements AdminService {
                 .map(Expertise::getExpertName)
                 .collect(Collectors.toSet());
 
+        System.out.println("Expertise list " +setOfExpertiseName);
+
         // Fetch role
         Role role = roleRepository.findById(appUserRequest.getRoleId())
                 .orElseThrow(() -> new NotFoundException("Invalid role ID: " + appUserRequest.getRoleId()));
 
-        //  Build and save AppUser
-        AppUser user = AppUser.builder()
-                .fullName(appUserRequest.getFullName())
-                .email(appUserRequest.getEmail())
-                .gender(appUserRequest.getGender())
-                .lawyerStatus(appUserRequest.getLawyerStatus())
-                .phoneNumber(appUserRequest.getPhoneNumber())
-                .password(passwordEncoder.encode(appUserRequest.getPassword()))
-                .role(role)
-                .expertises(expertiseEntities)
-                .image(appUserRequest.getImage())
-                .description(appUserRequest.getDescription())
-                .build();
+        newLawyer.setFullName(appUserRequest.getFullName());
+        newLawyer.setGender(appUserRequest.getGender());
+        newLawyer.setLawyerStatus(appUserRequest.getLawyerStatus());
+        newLawyer.setEmail(appUserRequest.getEmail());
+        newLawyer.setPhoneNumber(appUserRequest.getPhoneNumber());
+        newLawyer.setPassword(passwordEncoder.encode(appUserRequest.getPassword()));
+        newLawyer.setRole(role);
+        newLawyer.setExpertises(expertiseEntities);
+        newLawyer.setImage(appUserRequest.getImage());
+        newLawyer.setDescription(appUserRequest.getDescription());
+        newLawyer.setTitle(appUserRequest.getTitle());
+        newLawyer.setFacebookLink(appUserRequest.getFacebookLink());
+        newLawyer.setTiktokLink(appUserRequest.getTiktokLink());
+        newLawyer.setTelegramLink(appUserRequest.getTelegramLink());
 
-        AppUser savedLawyer = appUserRepository.save(user);
-
-        // Map to response (exclude password)
-        return AppUserResponse.builder()
-                .appUserId(savedLawyer.getAppUserId())
-                .fullName(savedLawyer.getFullName())
-                .email(savedLawyer.getEmail())
-                .gender(savedLawyer.getGender())
-                .lawyerStatus(savedLawyer.getLawyerStatus())
-                .phoneNumber(savedLawyer.getPhoneNumber())
-                .password(savedLawyer.getPassword())
-                .role(savedLawyer.getRole().getRoleName().substring(5)) // "ROLE_LAWYER" -> "LAWYER"
-                .expertises(setOfExpertiseName)
-                .description(savedLawyer.getDescription())
-                .image(savedLawyer.getImage())
-                .build();
+        AppUserResponse savedNewLawyer = appUserRepository.save(newLawyer).toResponse();
+        return savedNewLawyer;
     }
 
 
@@ -146,8 +150,12 @@ public class AdminServiceImpl implements AdminService {
         currentLawyer.setLawyerStatus(appUserRequest.getLawyerStatus());
         currentLawyer.setPhoneNumber(appUserRequest.getPhoneNumber());
         currentLawyer.setPassword(appUserRequest.getPassword());
-        currentLawyer.setDescription(appUserRequest.getDescription());
         currentLawyer.setImage(appUserRequest.getImage());
+        currentLawyer.setDescription(appUserRequest.getDescription());
+        currentLawyer.setTitle(appUserRequest.getTitle());
+        currentLawyer.setFacebookLink(appUserRequest.getFacebookLink());
+        currentLawyer.setTiktokLink(appUserRequest.getTiktokLink());
+        currentLawyer.setTelegramLink(appUserRequest.getTelegramLink());
         currentLawyer.setRole(role);
         currentLawyer.setExpertises(expertiseEntities);
 

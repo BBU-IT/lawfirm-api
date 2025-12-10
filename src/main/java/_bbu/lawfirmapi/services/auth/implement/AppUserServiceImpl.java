@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,6 +40,17 @@ public class AppUserServiceImpl implements AppUserService {
     @Value("${spring.mail.username}")
     private String adminEmail;
 
+    @Override
+    public AppUser getCurrentUser(){
+        return (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+    @Override
+    public AppUserResponse getProfile(){
+        AppUser appUser = appUserRepository.findById(getCurrentUser().getAppUserId())
+                .orElseThrow(() -> new NotFoundException("The profile with id " + getCurrentUser().getAppUserId() + " not found"));
+        if (appUser.getRole().getRoleName().equals("ROLE_LAWYER"));
+        return appUser.toResponse();
+    }
     @Override
     @SneakyThrows
     public String sendNews(String email){

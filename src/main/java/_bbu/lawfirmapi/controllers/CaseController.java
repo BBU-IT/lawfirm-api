@@ -7,6 +7,10 @@ import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
 import _bbu.lawfirmapi.models.Entity.Case;
 import _bbu.lawfirmapi.services.cases.CaseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +25,20 @@ public class CaseController extends BaseResponse {
     private final CaseService caseService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Case>>> getAllCase(){
+    public ResponseEntity<ApiResponse<Page<Case>>> getAllCase(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "5") Integer size,
+            @RequestParam(defaultValue = "caseId") String sortBy,
+            @RequestParam(defaultValue = "true") Boolean ascending
+    ){
+        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
 
+        Page<Case> caseList =   caseService.getCaseList(pageable , page);
         return responseEntity(true,
                 "Get all cases successfully",
                 HttpStatus.OK,
-                caseService.getCaseList());
+                caseList);
     }
 
     @PostMapping

@@ -29,8 +29,9 @@ public class ExpertiseController extends BaseResponse {
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 
-        Page<Expertise> expertiseList = expertiseService.fetchAllExpertise(pageable , page);
+        Page<Expertise> expertiseList = expertiseService.fetchAllExpertise(pageable , page );
 
+        System.out.println("Pageable " + pageable.getPageSize());
         return responseEntity(true ,
                 "Getting expertise list successfully",
                 HttpStatus.OK,

@@ -3,11 +3,13 @@ package _bbu.lawfirmapi.models.Entity;
 import _bbu.lawfirmapi.models.DTO.cases.response.CaseResponse;
 import _bbu.lawfirmapi.models.Enumerations.CaseStatus;
 import _bbu.lawfirmapi.utils.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -15,6 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "cases")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
 public class Case extends BaseEntity {
 
     @Id
@@ -30,17 +34,22 @@ public class Case extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "court_id" , referencedColumnName = "court_id")
     @ToString.Exclude
-
     private Court court;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appuser_id" , referencedColumnName = "appuser_id")
     @ToString.Exclude
-
     private AppUser appUser;
-    @Column(name = "title")
 
+    @OneToOne(mappedBy = "aCase")
+    @ToString.Exclude
+    @JsonIgnore
+
+    private Appointment appointment;
+
+    @Column(name = "title")
     private String title;
+
     @Column(name = "description"  ,columnDefinition = "TEXT")
 
     private String description;
@@ -55,6 +64,16 @@ public class Case extends BaseEntity {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
+    public Case(Object o,
+                Client client,
+                Court court,
+                AppUser appUser,
+                String title,
+                String description,
+                CaseStatus status,
+                LocalDateTime statedDate,
+                LocalDateTime endedDate) {
+    }
 
 
     public CaseResponse toResponse(){

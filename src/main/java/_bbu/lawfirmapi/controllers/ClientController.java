@@ -21,14 +21,14 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/clients")
-@SecurityRequirement(name = "bearerAuth")
+//@SecurityRequirement(name = "bearerAuth")
 
 public class ClientController extends BaseResponse {
 
     private final ClientService clientService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Slice<Client>>> getAllClient(
+    public ResponseEntity<ApiResponse<Page<Client>>> getAllClient(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
             @RequestParam(defaultValue = "clientId") String sortBy,

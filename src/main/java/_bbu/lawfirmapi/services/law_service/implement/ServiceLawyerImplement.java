@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+
 import java.time.LocalDateTime;
 
 @Service
@@ -27,13 +28,21 @@ public class ServiceLawyerImplement implements ServiceLawyerService {
      because it's confuse with Service annotation  */
     @Override
 
-    public _bbu.lawfirmapi.models.Entity.Service getLawyerServiceById(Long serviceId) {
-        return serviceRepo.findById(serviceId).orElseThrow(() -> new NotFoundException("Service with id " + serviceId +  " not found"));
+    public ServiceResponse getLawyerServiceById(Long serviceId) {
+        return serviceRepo.findById(serviceId).orElseThrow(() -> new NotFoundException("Service with id " + serviceId +  " not found")).toResponse();
     }
 
     @Override
-    public Page<_bbu.lawfirmapi.models.Entity.Service> getAllLawyerService(Pageable pageable, Integer requestedPage) {
-        Page<_bbu.lawfirmapi.models.Entity.Service> serviceList = serviceRepo.findAll(pageable);
+    public Page<ServiceResponse> getAllLawyerService(Pageable pageable, Integer requestedPage) {
+        Page<ServiceResponse> serviceList = serviceRepo.findAll(pageable)
+                .map(service -> new ServiceResponse(
+                        service.getServiceId(),
+                        service.getServiceName(),
+                        service.getDescription(),
+                        service.getBasePrice(),
+                        service.getExpertise().getExpertName() // <-- adjust based on your entity
+                ));
+
         checkOutOfPage.isInvalidPage(serviceList.getTotalPages(), requestedPage);
         if (serviceList.isEmpty()) {
             throw new NotFoundException("No service list found");

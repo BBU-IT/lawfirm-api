@@ -60,7 +60,7 @@ public class ClientServiceImpl implements ClientService {
         }
         Page<Client> clients = clientRepository.findAll(pageable); // Get ALL clients
 
-        checkOutOfPage.isInvalidPage(clients.getTotalPages() , requestedPage);
+//        checkOutOfPage.isInvalidPage(clients.getTotalPages() , requestedPage);
 
         if (clients.isEmpty()) {
             throw new NotFoundException("No client list found");
@@ -101,6 +101,7 @@ public class ClientServiceImpl implements ClientService {
         Client client = request.toEntity();
         client.setClientName(request.getClientName());
         client.setEmail(request.getEmail());
+        client.setStatus(request.getStatus());
         client.setPhoneNumber(request.getPhoneNumber());
         client.setAddress(request.getAddress());
         client.setComplaint(request.getComplaint());
@@ -116,6 +117,7 @@ public class ClientServiceImpl implements ClientService {
         previousClient = clientRequest.toEntity();
         previousClient.setClientName(clientRequest.getClientName());
         previousClient.setEmail(clientRequest.getEmail());
+        previousClient.setStatus(clientRequest.getStatus());
         previousClient.setPhoneNumber(clientRequest.getPhoneNumber());
         previousClient.setAddress(clientRequest.getAddress());
         previousClient.setComplaint(clientRequest.getComplaint());

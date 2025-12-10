@@ -15,6 +15,7 @@ import _bbu.lawfirmapi.services.admin.AdminService;
 import _bbu.lawfirmapi.jwt.JwtService;
 import _bbu.lawfirmapi.utils.MethodHelper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -58,10 +59,11 @@ public class AuthController extends BaseResponse {
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request) throws Exception {
         final UserDetails userDetails = adminService.loadUserByUsername(request.getEmail());
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("My auth login " +  userDetails);
         authenticate(userDetails.getUsername() ,  request.getPassword());
        final String token = jwtService.generateToken(userDetails);
         final String expiredTokenDateTime = helper.extractExpirationDateInCambodia(token);
-        AuthResponse authResponse = new AuthResponse(token ,expiredTokenDateTime );
+        AuthResponse authResponse = new AuthResponse(token , userDetails ,expiredTokenDateTime );
 
         ApiResponse<AuthResponse> response = ApiResponse.<AuthResponse>builder().success(true)
                 .message("Login Successfully").status(HttpStatus.OK).code(HttpStatus.OK.value())
@@ -70,29 +72,12 @@ public class AuthController extends BaseResponse {
     }
 
     @PostMapping( "/register" )
+//    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Register New User", description = "Registers a new user and returns user details")
-    public ResponseEntity<ApiResponse<AppUserResponse>> register(@Valid @RequestBody AppUserRequest request) {
-        try {
-            AppUserResponse appUserResponse = adminService.registerNewLawyer(request);
-            ApiResponse<AppUserResponse> response = ApiResponse.<AppUserResponse>builder()
-                    .success(true)
-                    .message("User registered successfully")
-                    .payload(appUserResponse)
-                    .status(HttpStatus.CREATED)
-                    .code(HttpStatus.CREATED.value())
-                    .timestamps(LocalDateTime.now())
-                    .build();
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (Exception ex) {
-//            logger.error("Registration error for email: {}", request.getEmail(), ex);
-            ApiResponse<AppUserResponse> errorResponse = ApiResponse.<AppUserResponse>builder()
-                    .success(false)
-                    .message("An error occurred during registration")
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .timestamps(LocalDateTime.now())
-                    .build();
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<ApiResponse<AppUserResponse>> register( @RequestBody AppUserRequest request) {
+        return responseEntity(true ,
+                "Create new lawyer successfully.",
+                HttpStatus.CREATED,
+                adminService.registerNewLawyer(request));
     }
 }

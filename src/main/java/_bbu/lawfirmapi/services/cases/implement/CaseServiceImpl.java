@@ -12,7 +12,10 @@ import _bbu.lawfirmapi.repositories.CaseRepository;
 import _bbu.lawfirmapi.repositories.ClientRepository;
 import _bbu.lawfirmapi.repositories.CourtRepository;
 import _bbu.lawfirmapi.services.cases.CaseService;
+import _bbu.lawfirmapi.utils.MethodHelper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -27,18 +30,18 @@ public class CaseServiceImpl implements CaseService  {
     private final ClientRepository clientRepository;
     private final CourtRepository courtRepository;
     private final AppUserRepository appUserRepository;
+    private final MethodHelper checkOutOfPage;
 
     @Override
-    public List<Case> getCaseList() {
-        List<Case> n = caseRepository.findAll().stream()
-                .distinct()
-                .collect(Collectors.toList());
-        System.out.println(n);
-        return caseRepository.findAll().stream()
-                .distinct()
-                .collect(Collectors.toList());
-    }
+    public Page<Case> getCaseList(Pageable pageable , Integer requestPage) {
 
+        Page<Case> casePage = caseRepository.findAll(pageable) ;
+
+        checkOutOfPage.isInvalidPage(casePage.getTotalPages() , requestPage);
+
+        return casePage;
+
+    }
     @Override
     public CaseResponse createNewCase(CaseRequest request) {
         Client client = clientRepository.findById(request.getClientId())
@@ -56,9 +59,6 @@ public class CaseServiceImpl implements CaseService  {
         newCase.setStatus(request.getStatus());
         newCase.setStartDate(request.getStatedDate());
         newCase.setEndDate(request.getEndedDate());
-
-        System.out.println("New case " + newCase);
-
         return caseRepository.save(newCase).toResponse();
     }
 

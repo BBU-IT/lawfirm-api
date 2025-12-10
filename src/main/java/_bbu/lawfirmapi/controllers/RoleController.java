@@ -42,7 +42,6 @@ public class RoleController extends BaseResponse {
     }
 
     @SecurityRequirement(name = "bearerAuth")
-
     @PutMapping("/{roleId}")
     public ResponseEntity<ApiResponse<RoleResponse>> updateNewRole (@PathVariable Integer roleId , @RequestBody RoleRequest newRoleRequest) {
 
@@ -51,8 +50,13 @@ public class RoleController extends BaseResponse {
     @SecurityRequirement(name = "bearerAuth")
 
     @DeleteMapping("/{roleId}")
-    public void deleteRoleById(@PathVariable Integer roleId) {
-       roleService.removeRoleById(roleId);
+    public ResponseEntity<ApiResponse<Void>> deleteRoleById(@PathVariable Integer roleId) {
+        return responseEntity(true ,
+                "Delete role " + roleService.findRoleByRoleId(roleId) + " successfully" ,
+                HttpStatus.ACCEPTED,
+                roleService.removeRoleById(roleId)
+
+                );
     }
 
 

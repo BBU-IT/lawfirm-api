@@ -76,7 +76,7 @@ public class FileServiceImplement implements FileService {
 
     @SneakyThrows
     @Override
-    public InputStream getFileByFileName(String fileName) {
+    public InputStream getFileByFileName(String fileName ) {
 
         return minioClient
                 .getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
@@ -134,23 +134,69 @@ public class FileServiceImplement implements FileService {
         }
         return objectNames;
     }
-    @Override
-    public String uploadPdfFile(MultipartFile file) throws Exception {
-        String objectName = UUID.randomUUID().toString()+".pdf";
 
-        minioClient.putObject(
-                PutObjectArgs.builder()
+    @Override
+    public List<String> filterFileByLawType(String lawType) throws  Exception{
+        List<String> objectNames = new ArrayList<>();
+
+        Iterable<Result<Item>> results = minioClient.listObjects(
+                ListObjectsArgs.builder()
                         .bucket(bucketName)
-                        .object(objectName)
-                        .stream(file.getInputStream(), file.getSize(), -1)
-                        .contentType(file.getContentType()) // Sets content type
-                        .build());
+                        .prefix(lawType + "/")  // Filter by law type prefix
+                        .build()
+        );
 
-        return objectName;
+        for (Result<Item> result : results) {
+            Item item = result.get();
+            objectNames.add(item.objectName());
+        }
+
+        return objectNames;
     }
+//    @Override
+//    public String uploadPdfFile(MultipartFile file) throws Exception {
+//        String objectName = UUID.randomUUID().toString()+".pdf";
+//
+//        minioClient.putObject(
+//                PutObjectArgs.builder()
+//                        .bucket(bucketName)
+//                        .object(objectName)
+//                        .stream(file.getInputStream(), file.getSize(), -1)
+//                        .contentType(file.getContentType()) // Sets content type
+//                        .build());
+//
+//        return objectName;
+//    }
+    @Override
+public String uploadPdfFile(MultipartFile file, String lawType) throws Exception {
+    // 1. Dynamic prefix from law type enum
+    String lawTypePrefix = lawType;  // e.g., CRIMINAL/, BANK_AND_FINANCE/
+
+    // 2. Timestamp for uniqueness
+    String timestamp = String.valueOf(System.currentTimeMillis());
+
+    // 3. Optional: keep original file name
+    String originalName = file.getOriginalFilename();
+
+    // 4. Build object name
+    String objectName = lawTypePrefix + timestamp + "_" + originalName;
+
+    // 5. Upload to MinIO
+    minioClient.putObject(
+            PutObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(objectName)
+                    .stream(file.getInputStream(), file.getSize(), -1)
+                    .contentType(file.getContentType())
+                    .build()
+    );
+
+    return objectName;
+}
+
 
     @Override
-    public String getPdfPreviewUrl(String objectName) throws Exception {
+    public String getPdfPreviewUrl(String fileName) throws Exception {
         // Set response-content-type to application/pdf for inline browser preview
         Map<String, String> reqParams = new HashMap<>();
         reqParams.put("response-content-type", "application/pdf");
@@ -160,7 +206,7 @@ public class FileServiceImplement implements FileService {
                 GetPresignedObjectUrlArgs.builder()
                         .method(Method.GET)
                         .bucket(bucketName)
-                        .object(objectName)
+                        .object(fileName)
                         .expiry(1, TimeUnit.HOURS)
                         .extraQueryParams(reqParams)
                         .build());

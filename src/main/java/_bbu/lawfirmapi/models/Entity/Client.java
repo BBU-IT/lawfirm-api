@@ -37,19 +37,18 @@ public class Client extends BaseEntity {
     private String address;
     @Column(name =  "complaint" , columnDefinition = "TEXT")
     private String complaint ;
-    @Column(name = "status")
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "status" , columnDefinition = "VARCHAR(20)")
     private ClientStatus status;
     @Column(name = "client_image")
     private String clientImage;
-
-
 
     @OneToMany(mappedBy = "client" , cascade = CascadeType.ALL)
     @JsonIgnore  // Add this
     @ToString.Exclude
     private List<Case> cases;
 
-    public Client(Object o, String clientName, String email, String phoneNumber, String address, String complaint, String clientImage ) {
+    public Client(Object o, String clientName, String email, ClientStatus status, String phoneNumber, String address, String complaint, String clientImage ) {
     }
 
     public ClientResponse toResponse(){
@@ -57,6 +56,7 @@ public class Client extends BaseEntity {
                 this.clientId ,
                 this.clientName ,
                 this.email ,
+                this.status,
                 this.phoneNumber ,
                 this.address ,
                 this.complaint ,

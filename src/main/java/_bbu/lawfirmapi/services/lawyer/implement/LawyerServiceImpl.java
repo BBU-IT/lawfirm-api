@@ -1,0 +1,38 @@
+package _bbu.lawfirmapi.services.lawyer.implement;
+
+import _bbu.lawfirmapi.exceptions.NotFoundException;
+import _bbu.lawfirmapi.models.DTO.appuser.response.AppUserResponse;
+import _bbu.lawfirmapi.models.Entity.AppUser;
+import _bbu.lawfirmapi.repositories.AppUserRepository;
+import _bbu.lawfirmapi.services.lawyer.LawyerService;
+import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Not;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class LawyerServiceImpl implements LawyerService {
+    private final AppUserRepository appUserRepository;
+    @Override
+    public List<AppUser> fetchAllLawyers(){
+
+//        if(appUserRepository.findLawyerList().isEmpty()){
+//            throw new NotFoundException("No list lawyer found.");
+//        }
+        return appUserRepository.findLawyerList();
+    }
+    @Override
+    public AppUser fetchLawyerById(Long lawyerId){
+        if(appUserRepository.findLawyerByAppUserId(lawyerId) == null){
+            throw new NotFoundException("Lawyer with id " + lawyerId + " not found.");
+
+        }
+        return appUserRepository.findLawyerByAppUserId(lawyerId);
+    }
+
+}

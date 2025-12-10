@@ -58,6 +58,16 @@ public class GlobalException extends BaseResponse {
         return problemDetailResponseEntityCustom(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", 400);
+        body.put("error", "Bad Request");
+        body.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
 //    @ExceptionHandler(com.kshrd.lumnov.exception.WrongInputException.class)
 //    public ResponseEntity<?> wrongInputException(com.kshrd.lumnov.exception.WrongInputException e) {
 //        return problemDetailResponseEntityCustom(e.getMessage(), HttpStatus.NOT_FOUND);

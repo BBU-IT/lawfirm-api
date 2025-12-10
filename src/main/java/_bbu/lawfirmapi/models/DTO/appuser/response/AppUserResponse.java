@@ -5,6 +5,7 @@ import _bbu.lawfirmapi.models.Enumerations.Gender;
 import _bbu.lawfirmapi.models.Enumerations.LawyerStatus;
 import lombok.*;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -24,5 +25,9 @@ public class AppUserResponse {
     private Set<String> expertises;
     private String image;
     private String description;
+    private String title;
+    private String facebookLink;
+    private String tiktokLink;
+    private String telegramLink;
 
 }

@@ -56,11 +56,12 @@ public class RoleServiceImpl implements RoleService {
         return roleRepository.save(updateNewRole).toResponse();
     }
     @Override
-    public void removeRoleById(Integer roleId){
+    public Void removeRoleById(Integer roleId){
         if(roleRepository.findById(roleId).isEmpty()){
             System.out.println("role deleted" + roleRepository.findById(roleId));
             roleRepository.deleteById(roleId);
         }
+        return null;
     }
 
 }

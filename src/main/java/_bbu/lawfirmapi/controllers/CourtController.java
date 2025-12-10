@@ -22,14 +22,19 @@ public class CourtController extends BaseResponse {
     public final CourtService courtService;
 
     @GetMapping("/{courtId}")
-    public ResponseEntity<ApiResponse<Court>> getCourtById( Long courtId){
+    public ResponseEntity<ApiResponse<Court>> getCourtById(@PathVariable Long courtId){
         return responseEntity(true ,
                 "Get court with id " + courtId + " successfully" ,
                 HttpStatus.OK ,
                 courtService.getCourtById(courtId));
     }
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Court>>> getAllCourts(){
+    public ResponseEntity<ApiResponse<List<Court>>> getAllCourts(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "5") Integer size,
+            @RequestParam(defaultValue = "appointmentId") String sortBy,
+            @RequestParam(defaultValue = "true") Boolean ascending
+    ){
         return responseEntity(true ,
                 "Get all court successfully" ,
                 HttpStatus.OK ,

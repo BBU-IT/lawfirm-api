@@ -2,14 +2,18 @@ package _bbu.lawfirmapi.models.Entity;
 
 import _bbu.lawfirmapi.models.DTO.appointment.response.AppointmentResponse;
 import _bbu.lawfirmapi.models.Enumerations.AppointmentStatus;
+import _bbu.lawfirmapi.models.Enumerations.MeetingType;
 import _bbu.lawfirmapi.utils.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.apache.ibatis.annotations.One;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -23,30 +27,50 @@ public class Appointment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "appointment_id")
     private Long appointmentId;
-    @ManyToOne
+
+
+    @OneToOne(fetch = FetchType.LAZY)  // "appointment" matches Case.appointment
     @JoinColumn(name = "case_id" , referencedColumnName = "case_id")
+    @ToString.Exclude
+    @JsonIgnore
     private Case aCase;
 
     @Column(name = "appointment_date")
-    private LocalDateTime appointmentDate;
+    private String appointmentDate;
+
+    @Column(name = "appointment_time" , columnDefinition = "TEXT" )
+    @JsonFormat(pattern = "HH:mm")
+    private String appointmentTime;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "meeting_type")
+    private MeetingType meetingType;
 
     @Column(name = "location")
-
     private String location;
 
-    @Column(name = "purpose")
+    @Column(name = "purpose" , columnDefinition = "TEXT")
     private String purpose;
 
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
 
 
+    public Appointment(Long o, Long caseId, String appointmentDate, String appointmentTime, MeetingType meetingType, String location, String purpose, AppointmentStatus status) {
+    }
+
+
     public AppointmentResponse toResponse(){
-        return AppointmentResponse.builder()
-                .id(this.appointmentId)
-                .cases(this.aCase)
-                .appointmentDate(this.appointmentDate)
-                .appointmentStatus(this.status)
-                .build();
+
+        return new AppointmentResponse(
+                appointmentId,
+                aCase,
+                appointmentDate,
+                appointmentTime,
+                meetingType,
+                location,
+                purpose,
+                status
+        );
     }
 }

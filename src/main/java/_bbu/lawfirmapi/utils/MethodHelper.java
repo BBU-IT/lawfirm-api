@@ -19,7 +19,7 @@ public  class MethodHelper {
 
     private final JwtService jwtService;
     public void isInvalidPage(Integer totalPages , Integer requestedPage){
-        if(requestedPage > totalPages && requestedPage <=0 ){
+        if(requestedPage > totalPages || requestedPage <=0 ){
             throw  new NotFoundException("Page number : " + requestedPage +  " doesn't exist");
         }
     }

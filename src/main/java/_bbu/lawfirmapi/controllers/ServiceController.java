@@ -23,7 +23,7 @@ public class ServiceController extends BaseResponse {
     private final ServiceLawyerService serviceLawyerService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<Service>>> getAllService(
+    public ResponseEntity<ApiResponse<Page<ServiceResponse>>> getAllService(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
             @RequestParam(defaultValue = "serviceId") String sortBy,
@@ -31,14 +31,14 @@ public class ServiceController extends BaseResponse {
     ){
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
-        Page<Service> services = serviceLawyerService.getAllLawyerService(pageable , page);
+        Page<ServiceResponse> services = serviceLawyerService.getAllLawyerService(pageable , page);
         return responseEntity(true ,
                 "Get service list successfully",
                 HttpStatus.OK,
                 services);
     }
     @GetMapping("/{serviceId}")
-    public ResponseEntity<ApiResponse<Service>> getServiceById(@PathVariable Long serviceId){
+    public ResponseEntity<ApiResponse<ServiceResponse>> getServiceById(@PathVariable Long serviceId){
         return responseEntity(
                 true ,
                 "Get service with id " +  serviceId + " successfully " ,

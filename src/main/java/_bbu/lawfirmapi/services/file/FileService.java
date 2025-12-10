@@ -8,8 +8,9 @@ import java.util.List;
 
 public interface FileService {
 
-    String uploadPdfFile(MultipartFile file) throws Exception;
+    String uploadPdfFile(MultipartFile file , String lawType) throws Exception;
     List<String> uploadMultipleFilePdf(List<MultipartFile> files) throws  Exception;
+    List<String> filterFileByLawType(String lawType) throws Exception;
     String getPdfPreviewUrl(String objectName) throws  Exception;
     FileMetaData uploadFile(MultipartFile file);
 

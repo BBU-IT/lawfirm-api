@@ -1,20 +1,47 @@
 package _bbu.lawfirmapi.models.Entity;
 
+import _bbu.lawfirmapi.models.DTO.doc.response.DocResponse;
+import _bbu.lawfirmapi.utils.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "documents")
-public class Document {
+public class Document extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String fileName;
-    private String contentType;
-    private String objectName; // MinIO object key
+    private Long docId;
+    @Column(name = "title" , unique = true)
+    private String title;
+    @Column(name = "file_cover" , unique = true)
+    private String fileCover;
+    @Column(name = "file_url" , unique = true)
+    private String fileUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id" , referencedColumnName = "category_id")  // this column will be created in documents table
+    @JsonIgnore
+    private Category category;
+
+    public Document(Object o, String title, String fileCover, String fileUrl , Long categoryId) {
+    }
+
+    public DocResponse toResponse(){
+        return new DocResponse(
+                this.docId,
+                this.title,
+                this.fileCover,
+                this.fileUrl,
+                this.category != null ? this.category.getCategoryName() : null
+        );
+
+    }
 }

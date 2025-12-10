@@ -5,19 +5,14 @@ import _bbu.lawfirmapi.models.Enumerations.Gender;
 import _bbu.lawfirmapi.models.Enumerations.LawyerStatus;
 import _bbu.lawfirmapi.utils.BaseEntity;
 import com.fasterxml.jackson.annotation.*;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
-import org.checkerframework.checker.units.qual.A;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,6 +43,7 @@ public class AppUser extends BaseEntity implements UserDetails  {
             inverseJoinColumns = @JoinColumn(name = "expertise_id")
     )
     @ToString.Exclude
+    @JsonIgnore
     private Set<Expertise> expertises;
     @Column(name = "full_name")
     private String fullName;
@@ -62,15 +58,24 @@ public class AppUser extends BaseEntity implements UserDetails  {
 
     @Column(name = "password")
     private String password;
-    @Column(name = "profile_image")
+    @Column(name = "image")
     private String image;
+    @Column(name = "facebook_link")
+    private String facebookLink;
+    @Column(name = "tiktok_link")
+    private String tiktokLink;
+    @Column(name = "telegram_link")
+    private String telegramLink;
 
     @Column (name = "description" , columnDefinition = "TEXT")
     private String description;
+    @Column(name = "title")
+    private String title;
     @OneToMany(mappedBy = "appUser" , fetch = FetchType.LAZY)
     @JsonIgnore  // Add this
     @ToString.Exclude
     private List<Case> cases;
+
 
     public AppUser(Object o,
                    String fullName,
@@ -82,7 +87,13 @@ public class AppUser extends BaseEntity implements UserDetails  {
                    Integer roleId,
                    Set<Integer> expertiseIdList,
                    String image,
-                   String description) {
+                   String description,
+                   String title,
+                   String facebookLink,
+                   String tiktokLink,
+                   String telegramLink
+    ) {
+
     }
 
 
@@ -106,7 +117,11 @@ public class AppUser extends BaseEntity implements UserDetails  {
                         Expertise::getExpertName
                 ).collect(Collectors.toSet()),
                 this.image,
-                this.description
+                this.description,
+                this.title,
+                this.facebookLink,
+                this.tiktokLink,
+                this.telegramLink
         );
     }
 

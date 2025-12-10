@@ -3,6 +3,7 @@ package _bbu.lawfirmapi.models.Entity;
 import _bbu.lawfirmapi.models.DTO.service.response.ServiceResponse;
 import _bbu.lawfirmapi.utils.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "services")
+@JsonPropertyOrder({"serviceId" , "serviceName" , "description" ,"basePrice" , "createdAt" , "updatedAt"})
 public class Service extends BaseEntity {
 
     @Id

@@ -3,6 +3,8 @@ package _bbu.lawfirmapi.services.admin;
 import _bbu.lawfirmapi.models.DTO.appuser.request.AppUserRequest;
 import _bbu.lawfirmapi.models.DTO.appuser.response.AppUserResponse;
 import _bbu.lawfirmapi.models.Entity.AppUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -14,7 +16,7 @@ public interface AdminService extends UserDetailsService {
 
     UserDetails loadUserByUsername(String email);
 
-    List<AppUser> getAllUser ();
+    Page<AppUser> getAllUser (Pageable pageable , Integer requestPage);
 
     AppUser getLawyerById(Long lawyerId);
 

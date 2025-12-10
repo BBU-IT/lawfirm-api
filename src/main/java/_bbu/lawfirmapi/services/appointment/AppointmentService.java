@@ -12,6 +12,9 @@ import java.util.List;
 
 public interface AppointmentService {
 
-    Page<Appointment> getAllAppointment(Pageable pageable);
+    Page<Appointment> getAllAppointments(Pageable pageable , Integer requestPage);
+    Appointment getAppointmentById(Long appointmentId);
     AppointmentResponse createNewAppointment( AppointmentRequest appointmentRequest);
+    AppointmentResponse modifiedAppointmentById(Long appointmentId , AppointmentRequest appointmentRequest);
+    Void removeAppointmentById(Long appointmentId);
 }

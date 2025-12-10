@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/api/v1/app-user")
 @RequiredArgsConstructor
+// this controller is use for lawyer which is appuser for track email to notification  for client
 public class AppUserController {
     private final AppUserService appUserService;
     @PostMapping("/send")
