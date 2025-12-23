@@ -3,8 +3,12 @@ package _bbu.lawfirmapi.utils;
 import _bbu.lawfirmapi.exceptions.NotFoundException;
 
 import _bbu.lawfirmapi.jwt.JwtService;
+import _bbu.lawfirmapi.models.Entity.Category;
+import _bbu.lawfirmapi.models.Entity.Document;
 import io.jsonwebtoken.Claims;
+import jakarta.persistence.criteria.Join;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -30,6 +34,13 @@ public  class MethodHelper {
         ZonedDateTime cambodiaTime = instant.atZone(cambodiaZone);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss a");
         return cambodiaTime.format(formatter);
+    }
+    // use to filter document by category name
+    public  Specification<Document> categoryNameContains(String name) {
+        return (root, query, cb) -> {
+            Join<Document, Category> categoryJoin = root.join("category");
+            return cb.like(cb.upper(categoryJoin.get("categoryName")), "%" + name.toUpperCase() + "%");
+        };
     }
 
 

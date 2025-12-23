@@ -8,8 +8,11 @@ import _bbu.lawfirmapi.models.Entity.Document;
 import _bbu.lawfirmapi.repositories.CategoryRepository;
 import _bbu.lawfirmapi.repositories.DocumentRepository;
 import _bbu.lawfirmapi.services.doc.DocService;
+import _bbu.lawfirmapi.utils.MethodHelper;
 import jakarta.persistence.criteria.Join;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +25,7 @@ import java.util.List;
 public class DocServiceImpl implements DocService  {
     private final DocumentRepository documentRepo;
     private final CategoryRepository categoryRepository;
+    private final MethodHelper methodHelper;
 
     @Override
     public List<DocResponse> fetchAllDocs() {
@@ -34,23 +38,42 @@ public class DocServiceImpl implements DocService  {
                        doc.getTitle(),
                        doc.getFileCover(),
                        doc.getFileUrl(),
-                       doc.getCategory().getCategoryName()
+                       doc.getCategory().getCategoryName(),
+                       doc.getCreatedAt(),
+                       doc.getUpdatedAt()
                )
        ).toList();
         return listOfDocs;
     }
     public class DocumentSpecs {
-        public static Specification<Document> categoryNameContains(String name) {
-            return (root, query, cb) -> {
-                Join<Document, Category> categoryJoin = root.join("category");
-                return cb.like(cb.upper(categoryJoin.get("categoryName")), "%" + name.toUpperCase() + "%");
-            };
+
+    }
+
+    @Override
+    public Page<DocResponse> fetchDocWithPagination(Pageable pageable , Integer requestPage){
+
+        Page<DocResponse> docResponse = documentRepo.findAll(pageable).map(
+                doc -> new DocResponse(
+                        doc.getDocId(),
+                        doc.getTitle(),
+                        doc.getFileCover(),
+                        doc.getFileUrl(),
+                        doc.getCategory().getCategoryName(),
+                        doc.getCreatedAt(),
+                        doc.getUpdatedAt()
+                )
+        );
+
+        methodHelper.isInvalidPage(docResponse.getTotalPages() , requestPage);
+        if(docResponse.isEmpty()){
+            throw  new NotFoundException("Document list not found.");
         }
+        return  docResponse;
     }
 
     @Override
     public List<DocResponse> fetchDocsByCategoryName(String categoryName){
-        List<DocResponse> docsByCateName = documentRepo.findAll(DocumentSpecs.categoryNameContains(categoryName.toUpperCase()))
+        List<DocResponse> docsByCateName = documentRepo.findAll(methodHelper.categoryNameContains(categoryName.toUpperCase()))
                 .stream()
                 .map(
                         doc -> new DocResponse(
@@ -58,12 +81,23 @@ public class DocServiceImpl implements DocService  {
                                 doc.getTitle(),
                                 doc.getFileCover(),
                                 doc.getFileUrl(),
-                                doc.getCategory().getCategoryName()
+                                doc.getCategory().getCategoryName(),
+                                doc.getCreatedAt(),
+                                doc.getUpdatedAt()
                         )
                 ).toList();
 
-        System.out.println("mama " + docsByCateName);
+
         return docsByCateName;
+    }
+    @Override
+    public List<DocResponse> fetchDocByKeyword(String keyword , String categoryName){
+        List<DocResponse> listDocs = documentRepo.searchDocs(keyword , categoryName);
+        if(listDocs.isEmpty()){
+            throw new NotFoundException("Document with category name "  + "categoryName " + categoryName + " and keyword " + keyword +" Not found.");
+        }
+
+        return listDocs;
     }
 
     @Override

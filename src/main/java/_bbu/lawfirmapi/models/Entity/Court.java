@@ -23,7 +23,6 @@ import java.util.List;
 
 public class Court extends BaseEntity {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "court_id")
@@ -33,7 +32,7 @@ public class Court extends BaseEntity {
     private String courtName;
 
     @Enumerated(EnumType.STRING)
-
+    @Column(name =  "court_type" , columnDefinition = "VARCHAR(100)")
     private CourtType courtType ;
 
     @Column(name = "location")
@@ -41,13 +40,13 @@ public class Court extends BaseEntity {
     private String location ;
 
     @Column(name = "contact_number")
+    private String contactNumber ;
 
     @OneToMany(mappedBy = "court" , cascade = CascadeType.ALL)
     @ToString.Exclude
     @JsonIgnore  // Add this
     private List<Case> cases;
 
-    private String contactNumber ;
 
     public Court(Object o, String courtName, CourtType courtType, String location, String contactNumber) {
     }

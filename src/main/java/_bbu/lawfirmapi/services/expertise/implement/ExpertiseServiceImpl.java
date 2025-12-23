@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,9 +27,14 @@ public class ExpertiseServiceImpl implements ExpertiseService {
     private final MethodHelper checkOutOfPage;
 
     @Override
+    public List<Expertise> fetchAllExpertiseWithNoPagination(){
+        if(expertiseRepo.findAll().isEmpty()){
+            throw new NotFoundException("There is none expertise found");
+        }
+        return expertiseRepo.findAll();
+    }
+    @Override
     public Page<Expertise> fetchAllExpertise(Pageable pageable , Integer requestedPage) {
-
-
 
         Page<Expertise> page = expertiseRepo.findAll(pageable);
         if (page.getTotalElements() < 1) {

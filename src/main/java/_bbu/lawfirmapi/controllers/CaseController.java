@@ -6,6 +6,8 @@ import _bbu.lawfirmapi.models.DTO.shared.response.ApiResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
 import _bbu.lawfirmapi.models.Entity.Case;
 import _bbu.lawfirmapi.services.cases.CaseService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,11 +45,29 @@ public class CaseController extends BaseResponse {
 
     @PostMapping
     public ResponseEntity<ApiResponse<CaseResponse>> createNewCase(@RequestBody CaseRequest caseRequest){
-        System.out.println(caseService.createNewCase(caseRequest));
+
         return responseEntity(true ,
                 "Create new case successfully",
                 HttpStatus.CREATED,
                 caseService.createNewCase(caseRequest));
     }
+
+    @PutMapping("/{caseId}")
+    public ResponseEntity<ApiResponse<CaseResponse>> updateCaseByID(@PathVariable("caseId") @Valid @Positive Long caseId , @RequestBody CaseRequest caseRequest){
+        return responseEntity(true ,
+                "Update case with id " + caseId + " successfully",
+                HttpStatus.ACCEPTED,
+                caseService.modifiedCaseById(caseId , caseRequest));
+    }
+
+    @DeleteMapping("/{caseId}")
+    public ResponseEntity<ApiResponse<Void>> deleteCaseById(@PathVariable("caseId") Long caseId){
+
+        return responseEntity(true ,
+                "Delete case with id " + caseId +" successfully",
+                HttpStatus.CREATED,
+                caseService.removeCaseById(caseId));
+    }
+
 
 }

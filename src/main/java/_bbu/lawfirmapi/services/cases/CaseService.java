@@ -13,4 +13,10 @@ public interface CaseService {
     Page<Case> getCaseList(Pageable pageable , Integer requestedPage);
 
     CaseResponse createNewCase(CaseRequest caseRequest);
+
+    CaseResponse modifiedCaseById(Long caseId , CaseRequest caseRequest);
+
+    Void removeCaseById(Long caseId);
+
+
 }

@@ -3,6 +3,7 @@ package _bbu.lawfirmapi.models.Entity;
 import _bbu.lawfirmapi.models.DTO.category.response.CateResponse;
 import _bbu.lawfirmapi.utils.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,7 +29,8 @@ public class Category extends BaseEntity {
     private String categoryName;
     
     @OneToMany(mappedBy = "category" , cascade = CascadeType.ALL)
-    @JsonIgnore
+//    @JsonIgnore
+    @JsonManagedReference
     private List<Document> documents;
 
     public Category(Object o, String categoryName) {

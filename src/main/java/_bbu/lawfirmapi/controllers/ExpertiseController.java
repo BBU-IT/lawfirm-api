@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/expertises")
@@ -21,7 +23,7 @@ public class ExpertiseController extends BaseResponse {
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<Expertise>>> getExpertiseList(
-            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "1")  Integer page,
             @RequestParam(defaultValue = "5") Integer size,
             @RequestParam(defaultValue = "expertiseId") String sortBy,
             @RequestParam(defaultValue = "true") Boolean ascending
@@ -31,11 +33,17 @@ public class ExpertiseController extends BaseResponse {
 
         Page<Expertise> expertiseList = expertiseService.fetchAllExpertise(pageable , page );
 
-        System.out.println("Pageable " + pageable.getPageSize());
         return responseEntity(true ,
                 "Getting expertise list successfully",
                 HttpStatus.OK,
         expertiseList);
+    }
+    @GetMapping("/without-pagination")
+    public ResponseEntity<ApiResponse<List<Expertise>>> getExpertiseListNoPage(){
+        return responseEntity(true ,
+                "Get all expertise list without pagination successfully.",
+                HttpStatus.OK,
+                expertiseService.fetchAllExpertiseWithNoPagination());
     }
     @GetMapping("/{expertiseId}")
     public ResponseEntity<ApiResponse<Expertise>> fetchExpertiseById(@PathVariable Integer expertiseId){

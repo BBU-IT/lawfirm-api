@@ -9,6 +9,10 @@ import _bbu.lawfirmapi.services.doc.DocService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +25,24 @@ import java.util.List;
 public class DocumentController  extends BaseResponse {
 
     private final DocService docService;
+
     @GetMapping
+    public ResponseEntity<ApiResponse<Page<DocResponse>>> getDocsWithPagination(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "5") Integer size,
+            @RequestParam(defaultValue = "docId") String sortBy,
+            @RequestParam(defaultValue = "true") Boolean ascending
+    ){
+
+        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page -1 , size , sort);
+        Page<DocResponse> docList = docService.fetchDocWithPagination(pageable ,page );
+        return responseEntity(true ,
+                "Get all document successfully",
+                HttpStatus.OK,
+                docList);
+    }
+    @GetMapping("/without-pagination")
     public ResponseEntity<ApiResponse<List<DocResponse>>> getAllDocuments(){
         return responseEntity(true ,
                 "Get all document successfully",
@@ -35,12 +56,20 @@ public class DocumentController  extends BaseResponse {
                 HttpStatus.ACCEPTED,
                 docService.fetchDocById(documentId));
     }
-    @GetMapping("/by-category")
+    @GetMapping("/filter-by-category")
     public ResponseEntity<ApiResponse<List<DocResponse>>> getDocListWithCategory(@RequestParam String  categoryName){
         return responseEntity(true ,
                 "Get document with category " + categoryName.toUpperCase() + " successfully",
                 HttpStatus.ACCEPTED,
                 docService.fetchDocsByCategoryName(categoryName.toUpperCase()));
+    } @GetMapping("/search-document")
+    public ResponseEntity<ApiResponse<List<DocResponse>>> searchDocumentByKeyword(
+            @RequestParam String keyword,
+            @RequestParam(required = false) String categoryName){
+        return responseEntity(true ,
+                "Search document with category "  + " and keyword " + keyword + " successfully",
+                HttpStatus.ACCEPTED,
+                docService.fetchDocByKeyword(keyword , categoryName));
     }
     @PostMapping
     public ResponseEntity<ApiResponse<DocResponse>> insertNewDoc(@RequestBody DocRequest docRequest){

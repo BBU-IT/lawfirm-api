@@ -13,10 +13,13 @@ import _bbu.lawfirmapi.repositories.ClientRepository;
 import _bbu.lawfirmapi.repositories.CourtRepository;
 import _bbu.lawfirmapi.services.cases.CaseService;
 import _bbu.lawfirmapi.utils.MethodHelper;
+import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -48,18 +51,46 @@ public class CaseServiceImpl implements CaseService  {
                 .orElseThrow(() -> new RuntimeException("Client not found"));
         Court court = courtRepository.findById(request.getCourtId())
                 .orElseThrow(() -> new RuntimeException("Court not found"));
-        AppUser appUser = appUserRepository.findById(request.getAppUserId())
-                .orElseThrow(() -> new RuntimeException("AppUser not found"));
 
-
-        Case newCase = request.toEntity(client , court ,appUser);
-
+        Case newCase = request.toEntity();
+        newCase.setClient(client);
+        newCase.setCourt(court);
         newCase.setTitle(request.getTitle());
         newCase.setDescription(request.getDescription());
         newCase.setStatus(request.getStatus());
         newCase.setStartDate(request.getStatedDate());
         newCase.setEndDate(request.getEndedDate());
+        newCase.setCreatedAt(LocalDateTime.now());
         return caseRepository.save(newCase).toResponse();
+    }
+
+    @Override
+    public CaseResponse modifiedCaseById(Long caseId , CaseRequest caseRequest){
+        Case currentCase = caseRepository.findById(caseId).orElseThrow(
+                () -> new NotFoundException("Case with id " + caseId + " not found.")
+        );
+        Client client = clientRepository.findById(caseRequest.getClientId())
+                .orElseThrow(() -> new RuntimeException("Client not found"));
+        Court court = courtRepository.findById(caseRequest.getCourtId())
+                .orElseThrow(() -> new RuntimeException("Court not found"));
+
+
+        currentCase.setTitle(caseRequest.getTitle());
+        currentCase.setDescription(caseRequest.getDescription());
+        currentCase.setStatus(caseRequest.getStatus());
+        currentCase.setStartDate(caseRequest.getStatedDate());
+        currentCase.setEndDate(caseRequest.getEndedDate());
+        currentCase.setUpdatedAt(LocalDateTime.now());
+
+        CaseResponse saveUpdatedCase = caseRepository.save(currentCase).toResponse();
+        return saveUpdatedCase;
+    }
+    @Override
+    public Void removeCaseById(Long caseId){
+        if(caseRepository.existsById(caseId)){
+            caseRepository.deleteById(caseId);
+        }
+        return null;
     }
 
 

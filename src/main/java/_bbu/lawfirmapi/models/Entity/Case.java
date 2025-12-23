@@ -36,11 +36,6 @@ public class Case extends BaseEntity {
     @ToString.Exclude
     private Court court;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "appuser_id" , referencedColumnName = "appuser_id")
-    @ToString.Exclude
-    private AppUser appUser;
-
     @OneToOne(mappedBy = "aCase")
     @ToString.Exclude
     @JsonIgnore
@@ -55,7 +50,7 @@ public class Case extends BaseEntity {
     private String description;
 
     @Enumerated(EnumType.STRING)
-
+    @Column(name = "status" )
     private CaseStatus status ;
 
     @Column(name = "start_date")
@@ -65,9 +60,8 @@ public class Case extends BaseEntity {
     private LocalDateTime endDate;
 
     public Case(Object o,
-                Client client,
-                Court court,
-                AppUser appUser,
+                Long clientId,
+                Long courtId,
                 String title,
                 String description,
                 CaseStatus status,
@@ -79,7 +73,6 @@ public class Case extends BaseEntity {
     public CaseResponse toResponse(){
         return new CaseResponse(this.caseId ,
                 this.client ,
-                this.appUser ,
                 this.court ,
                 this.title ,
                 this.description ,

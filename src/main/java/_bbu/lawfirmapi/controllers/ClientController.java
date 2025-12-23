@@ -47,7 +47,7 @@ public class ClientController extends BaseResponse {
     @GetMapping("/{clientId}")
     public ResponseEntity<ApiResponse<Client>> retrieveClientById(@PathVariable Long clientId){
         return responseEntity(true ,
-                "get client id " +  clientId +  " with name " +  clientService.getClientById(clientId),
+                "get client id " +  clientId +  " with name " +  clientService.getClientById(clientId).getClientName() + " successfully",
                 HttpStatus.ACCEPTED,
                 clientService.getClientById(clientId));
     }

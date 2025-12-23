@@ -3,6 +3,7 @@ package _bbu.lawfirmapi.controllers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import _bbu.lawfirmapi.models.DTO.shared.response.ApiResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
@@ -142,19 +143,35 @@ public class FileController extends BaseResponse {
     }
 
     // ==================================================
-    @PostMapping(value =  "/upload-pdf" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadPdf(@RequestParam("file") MultipartFile file ,@RequestParam String lawType) {
+    @PostMapping(
+            value = "/upload-pdf",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<Map<String, String>> uploadPdf(
+            @RequestParam("file-pdf") MultipartFile file,
+            @RequestParam String lawType
+    ) {
         try {
-            // Validate file type
             if (!"application/pdf".equals(file.getContentType())) {
-                return ResponseEntity.badRequest().body("Only PDF files are allowed.");
+                return ResponseEntity.badRequest()
+                        .body(Map.of("message", "Only PDF files are allowed"));
             }
-            String objectName = fileService.uploadPdfFile(file , lawType);
-            return ResponseEntity.ok("File uploaded successfully. Object Name: " + objectName);
+
+            String objectName = fileService.uploadPdfFile(file, lawType);
+
+            return ResponseEntity.ok(
+                    Map.of(
+                            "message", "File uploaded successfully",
+                            "objectName", objectName
+                    )
+            );
+
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error uploading file: " + e.getMessage());
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", e.getMessage()));
         }
     }
+
     // Endpoint to get a preview URL for a PDF
     @GetMapping("/preview-pdf/{file-name}")
     public ResponseEntity<String> previewPdf(@PathVariable("file-name") String fileName) {

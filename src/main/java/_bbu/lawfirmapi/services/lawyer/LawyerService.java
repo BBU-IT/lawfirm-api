@@ -14,5 +14,8 @@ public interface LawyerService {
 
     AppUser fetchLawyerById(Long lawyerId);
 
+    Void changeLawyerPasswordByEmail( String newPassword , String email);
+
+
 
 }

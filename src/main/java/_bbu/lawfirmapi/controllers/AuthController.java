@@ -59,7 +59,7 @@ public class AuthController extends BaseResponse {
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request) throws Exception {
         final UserDetails userDetails = adminService.loadUserByUsername(request.getEmail());
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("My auth login " +  userDetails);
+
         authenticate(userDetails.getUsername() ,  request.getPassword());
        final String token = jwtService.generateToken(userDetails);
         final String expiredTokenDateTime = helper.extractExpirationDateInCambodia(token);

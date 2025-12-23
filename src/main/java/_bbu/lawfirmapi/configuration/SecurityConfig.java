@@ -68,7 +68,7 @@ public class SecurityConfig {
                         .hasRole("ADMIN")
                         .requestMatchers("/api/v1/lawyers/**").hasAnyRole( roleStatus[0], roleStatus[1])
 //                        .requestMatchers( "/api/v1/clients/**").hasAnyRole(roleStatus[0], roleStatus[1])
-                        .requestMatchers("/api/v1/files/get-file-list").hasAnyRole(roleStatus[0], roleStatus[1])
+//                        .requestMatchers("/api/v1/files/get-file-list").hasAnyRole(roleStatus[0], roleStatus[1])
 //                        .requestMatchers("/api/v1/roles/**").hasRole(roleStatus[1])
 //                        .requestMatchers(HttpMethod.GET, "/api/v1/roles/**").permitAll()
 //                        .requestMatchers("/api/v1/auths/register").hasRole(roleStatus[1])

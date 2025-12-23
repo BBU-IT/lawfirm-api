@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 public class CaseResponse {
     private Long caseId;
     private Client client;
-    private AppUser appUser;
     private Court court;
     private String title;
     private String description;

@@ -9,6 +9,10 @@ import _bbu.lawfirmapi.repositories.AppUserRepository;
 import _bbu.lawfirmapi.services.admin.AdminService;
 import _bbu.lawfirmapi.services.auth.AppUserService;
 import _bbu.lawfirmapi.services.lawyer.LawyerService;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -48,6 +53,21 @@ public class LawyerController extends BaseResponse {
                 lawyerService.fetchLawyerById(lawyerId)
         );
     }
+        @PutMapping("/reset-password")
+    @Operation(summary = "Reset Password")
+    public ResponseEntity<ApiResponse<Void>> resetLawyerPassword(@RequestParam String email, @RequestParam String newPassword) {
+
+        // validation
+//            @NotBlank(message = "Password is required") @Size(min = 8, max = 100,
+//                    message = "Password must be between 8 and 100 characters") @Pattern(
+//                    regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$",
+//                    message = "Password must contain at least one digit, one lowercase, one uppercase, and one special character")
+        return responseEntity(true ,
+                "Password has been reset successfully.",
+                HttpStatus.ACCEPTED,
+                lawyerService.changeLawyerPasswordByEmail(newPassword , email)
+                );
+    }
     @PutMapping("/{lawyerId}")
     public ResponseEntity<ApiResponse<AppUserResponse>> updateExistLawyerById(@RequestBody AppUserRequest appUserRequest , @PathVariable Long lawyerId ){
         return responseEntity(true,
@@ -73,6 +93,23 @@ public class LawyerController extends BaseResponse {
 //
 //        System.out.println("My new user request from ui " + request);
 //        return responseEntity(true , "Create new user successfully" , HttpStatus.CREATED , appUserService.insertNewUser(request));
+//    }
+
+//    @PutMapping("/reset-password")
+//    @Operation(summary = "Reset Password")
+//    public ResponseEntity<?> resetPassword(@RequestParam String email,
+//
+//                                           @NotBlank(message = "Password is required") @Size(min = 8, max = 100,
+//                                                   message = "Password must be between 8 and 100 characters") @Pattern(
+//                                                   regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$",
+//                                                   message = "Password must contain at least one digit, one lowercase, one uppercase, and one special character") @RequestParam String newPassword) {
+//
+//        String resultMessage = appUserService.resetPassword(email, newPassword);
+//
+//        ApiResponse<String> response = ApiResponse.<String>builder().success(true)
+//                .message(resultMessage).status(HttpStatus.OK).code(HttpStatus.CREATED.value())
+//                .timestamp(LocalDateTime.now()).build();
+//        return new ResponseEntity<>(response, HttpStatus.OK);
 //    }
 
 }

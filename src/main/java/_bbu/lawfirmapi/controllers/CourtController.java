@@ -8,6 +8,10 @@ import _bbu.lawfirmapi.models.Entity.Court;
 import _bbu.lawfirmapi.services.court.CourtService;
 import _bbu.lawfirmapi.utils.BaseEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,19 +32,29 @@ public class CourtController extends BaseResponse {
                 HttpStatus.OK ,
                 courtService.getCourtById(courtId));
     }
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<Court>>> getAllCourts(
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "5") Integer size,
-            @RequestParam(defaultValue = "appointmentId") String sortBy,
-            @RequestParam(defaultValue = "true") Boolean ascending
-    ){
+    @GetMapping("/without-pagination")
+    public ResponseEntity<ApiResponse<List<Court>>> getAllCourts(){
         return responseEntity(true ,
                 "Get all court successfully" ,
                 HttpStatus.OK ,
-                courtService.getCourtList());
+                courtService.getCourtListWithNoPagination());
     }
 
+    @GetMapping
+    public ResponseEntity<ApiResponse<Page<Court>>> getAllCourtWithPagination(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "5") Integer size,
+            @RequestParam(defaultValue = "courtId") String sortBy,
+            @RequestParam(defaultValue = "true") Boolean ascending
+    ){
+        Sort sort = ascending ? Sort.by(sortBy).ascending()  : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page -1 , size , sort);
+        Page<Court> courts = courtService.fetchAllCourtWithPagination(pageable , page);
+        return responseEntity(true ,
+                "Get all court successfully" ,
+                HttpStatus.OK ,
+                courts);
+    }
     @PostMapping
     public ResponseEntity<ApiResponse<CourtResponse>> createCourt(@RequestBody CourtRequest courtRequest){
         return responseEntity(true ,

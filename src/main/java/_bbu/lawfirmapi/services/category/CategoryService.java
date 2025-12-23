@@ -6,11 +6,14 @@ import _bbu.lawfirmapi.models.DTO.doc.request.DocRequest;
 import _bbu.lawfirmapi.models.DTO.doc.response.DocResponse;
 import _bbu.lawfirmapi.models.Entity.Category;
 import _bbu.lawfirmapi.models.Entity.Document;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface CategoryService {
-    List<Category> fetchAllCategories();
+    Page<Category> fetchAllCategories(Pageable pageable, Integer requestPage);
+    List<Category> fetchCategoriesWithoutPagination();
     Category fetchCateById(Long docId);
     CateResponse createNewCategory(CateRequest cateRequest);
     CateResponse modifiedExistCategoryById( Long cateId, CateRequest cateRequest);

@@ -37,13 +37,14 @@ public class Client extends BaseEntity {
     private String address;
     @Column(name =  "complaint" , columnDefinition = "TEXT")
     private String complaint ;
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     @Column(name = "status" , columnDefinition = "VARCHAR(20)")
     private ClientStatus status;
     @Column(name = "client_image")
     private String clientImage;
 
     @OneToMany(mappedBy = "client" , cascade = CascadeType.ALL)
+    // "client"that map by id field name in table which has relation with
     @JsonIgnore  // Add this
     @ToString.Exclude
     private List<Case> cases;

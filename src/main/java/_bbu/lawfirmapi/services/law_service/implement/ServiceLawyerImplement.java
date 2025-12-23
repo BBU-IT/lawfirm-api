@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 
 @Service
@@ -23,6 +24,7 @@ public class ServiceLawyerImplement implements ServiceLawyerService {
     private final ServiceRepository serviceRepo;
     private final MethodHelper checkOutOfPage;
     private final ExpertiseRepository expertiseRepo;
+
 
     /* this "_bbu.lawfirmapi.models.Entity.Service" is the Service Entity type
      because it's confuse with Service annotation  */
@@ -40,7 +42,8 @@ public class ServiceLawyerImplement implements ServiceLawyerService {
                         service.getServiceName(),
                         service.getDescription(),
                         service.getBasePrice(),
-                        service.getExpertise().getExpertName() // <-- adjust based on your entity
+                        service.getExpertise().getExpertName(),
+                        service.getExpertise().getExpertiseId()// <-- adjust based on your entity
                 ));
 
         checkOutOfPage.isInvalidPage(serviceList.getTotalPages(), requestedPage);
@@ -81,6 +84,7 @@ public class ServiceLawyerImplement implements ServiceLawyerService {
         return serviceRepo.save(currentService).toResponse();
     }
     @Override
+    @Transactional
     public Void removeLawyerServiceById(Long serviceId) {
         if(serviceRepo.existsById(serviceId)){
             serviceRepo.deleteById(serviceId);

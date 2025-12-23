@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.ast.Not;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class LawyerServiceImpl implements LawyerService {
     private final AppUserRepository appUserRepository;
+    private final PasswordEncoder passwordEncoder;
+
     @Override
     public List<AppUser> fetchAllLawyers(){
 
@@ -34,5 +37,24 @@ public class LawyerServiceImpl implements LawyerService {
         }
         return appUserRepository.findLawyerByAppUserId(lawyerId);
     }
+
+    @Override
+    public Void changeLawyerPasswordByEmail(String newPassword , String email){
+
+
+        String newPasswordEncoder = passwordEncoder.encode(newPassword);
+
+        int updatedNewPassword = appUserRepository.resetPassword(newPasswordEncoder , email);
+
+        if(updatedNewPassword == 0){
+            throw new RuntimeException("User not found");
+        }
+
+        return null;
+
+
+    }
+
+
 
 }

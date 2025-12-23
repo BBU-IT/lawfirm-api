@@ -71,10 +71,6 @@ public class AppUser extends BaseEntity implements UserDetails  {
     private String description;
     @Column(name = "title")
     private String title;
-    @OneToMany(mappedBy = "appUser" , fetch = FetchType.LAZY)
-    @JsonIgnore  // Add this
-    @ToString.Exclude
-    private List<Case> cases;
 
 
     public AppUser(Object o,

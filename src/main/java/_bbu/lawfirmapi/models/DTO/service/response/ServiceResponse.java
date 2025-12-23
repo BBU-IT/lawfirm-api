@@ -13,5 +13,6 @@ public class ServiceResponse {
     private String description;
     private Float basePrice;
     private String expertiseName;
+    private Integer expertiseId;
 
 }

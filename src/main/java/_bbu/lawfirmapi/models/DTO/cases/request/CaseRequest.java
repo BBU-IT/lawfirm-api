@@ -18,19 +18,17 @@ public class CaseRequest {
 
     private Long clientId;
     private Long courtId;
-    private Long appUserId;
     private String title;
     private String description;
     private CaseStatus status;
     private LocalDateTime statedDate;
     private LocalDateTime endedDate;
 
-    public Case toEntity(Client client, Court court, AppUser appUser) {
+    public Case toEntity() {
         return new Case(
                 null,
-                client,
-                court,
-                appUser,
+                this.clientId,
+                this.courtId,
                 this.title,
                 this.description,
                 this.status,

@@ -39,6 +39,7 @@ public class ClientServiceImpl implements ClientService {
     public AppUser getCurrentUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        System.out.println("DD" + authentication);
         if(authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")){
             return null;
         }
@@ -46,18 +47,19 @@ public class ClientServiceImpl implements ClientService {
     }
 
     public Page<Client> getAllClients(Pageable pageable , Integer requestedPage) {
-        AppUser currentUser = getCurrentUser();
-
-        if (currentUser == null) {
-            throw new RuntimeException("User not authenticated");
-        }
-
-        String roleName = currentUser.getRole().getRoleName();
-
-        // Check authorization
-        if (roleName.equals("ROLE_ANONYMOUS")) {
-            throw new RuntimeException("You don't have access to this endpoint.");
-        }
+//        AppUser currentUser = getCurrentUser();
+//
+//        System.out.println("Client " + currentUser);
+//        if (currentUser == null) {
+//            throw new RuntimeException("User not authenticated");
+//        }
+//
+//        String roleName = currentUser.getRole().getRoleName();
+//
+//        // Check authorization
+//        if (roleName.equals("ROLE_ANONYMOUS")) {
+//            throw new RuntimeException("You don't have access to this endpoint.");
+//        }
         Page<Client> clients = clientRepository.findAll(pageable); // Get ALL clients
 
 //        checkOutOfPage.isInvalidPage(clients.getTotalPages() , requestedPage);

@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface CaseRepository extends JpaRepository<Case, Long> {
-    @Query("SELECT DISTINCT c FROM Case c JOIN FETCH c.client  JOIN FETCH c.court JOIN FETCH c.appUser")
+    @Query("SELECT DISTINCT c FROM Case c JOIN FETCH c.client  JOIN FETCH c.court ")
     List<Case> findAllWithCases();
 }

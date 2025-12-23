@@ -31,7 +31,7 @@ public class Service extends BaseEntity {
     @Column(name = "base_price")
     private Float basePrice;
 
-    @ManyToOne(fetch = FetchType.LAZY ,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "expertise_id" , referencedColumnName = "expertise_id")
     @JsonIgnore
     private Expertise expertise;
@@ -45,7 +45,8 @@ public class Service extends BaseEntity {
           this.serviceName,
           this.description,
           this.basePrice,
-          this.expertise.getExpertName()
+          this.expertise.getExpertName(),
+          this.getExpertise().getExpertiseId()
         );
     }
 

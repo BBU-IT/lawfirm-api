@@ -6,7 +6,10 @@ import _bbu.lawfirmapi.models.DTO.category.response.CateResponse;
 import _bbu.lawfirmapi.models.Entity.Category;
 import _bbu.lawfirmapi.repositories.CategoryRepository;
 import _bbu.lawfirmapi.services.category.CategoryService;
+import _bbu.lawfirmapi.utils.MethodHelper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,11 +20,25 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepo;
+    private final MethodHelper checkOutOfPage;
 
     @Override
-    public List<Category> fetchAllCategories() {
+    public Page<Category> fetchAllCategories(Pageable pageable, Integer requestPage) {
+        Page<Category> categories = categoryRepo.findAll(pageable);
+        checkOutOfPage.isInvalidPage(categories.getTotalPages() , requestPage);
+
+        if(categories.isEmpty()){
+            throw new NotFoundException("No category list found");
+
+        }
+        return categories;
+    }
+
+    @Override
+    public List<Category> fetchCategoriesWithoutPagination(){
         if(categoryRepo.findAll().isEmpty()){
-            throw  new NotFoundException("List of category not found");
+            throw new NotFoundException("No category list found");
+
         }
         return categoryRepo.findAll();
     }
