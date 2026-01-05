@@ -2,10 +2,7 @@ package _bbu.lawfirmapi.models.Entity;
 
 import _bbu.lawfirmapi.models.DTO.role.response.RoleResponse;
 import _bbu.lawfirmapi.utils.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,7 +16,9 @@ import java.util.List;
 @Entity
 @Table(name = "roles")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonPropertyOrder({"roleId" , "roleName" , "createdAt"  , "updatedAt"})
 public class Role extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id")

@@ -15,6 +15,7 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,6 +43,13 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUser getCurrentUser(){
+        Authentication auth =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        System.out.println("AUTH CLASS = " + auth.getClass());
+        System.out.println("PRINCIPAL = " + auth.getPrincipal());
+        System.out.println("AUTHORITIES = " + auth.getAuthorities());
+
         return (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
     @Override

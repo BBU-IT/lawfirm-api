@@ -16,9 +16,13 @@ public interface AdminService extends UserDetailsService {
 
     UserDetails loadUserByUsername(String email);
 
-    Page<AppUser> getAllUser (Pageable pageable , Integer requestPage);
+    Page<AppUserResponse> getAllUser (Pageable pageable , Integer requestPage);
 
-    AppUser getLawyerById(Long lawyerId);
+
+    AppUserResponse getLawyerById(Long lawyerId);
+
+    List<AppUserResponse> getAllLawyerListNoPagination();
+
 
 //    AppUserResponse findByEmail(String email);
 

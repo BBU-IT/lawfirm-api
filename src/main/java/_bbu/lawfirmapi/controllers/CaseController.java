@@ -29,7 +29,7 @@ public class CaseController extends BaseResponse {
     @GetMapping
     public ResponseEntity<ApiResponse<Page<Case>>> getAllCase(
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "5") Integer size,
+            @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "caseId") String sortBy,
             @RequestParam(defaultValue = "true") Boolean ascending
     ){
@@ -42,6 +42,16 @@ public class CaseController extends BaseResponse {
                 HttpStatus.OK,
                 caseList);
     }
+
+    @GetMapping("/{caseId}")
+
+    public ResponseEntity<ApiResponse<Case>> fetchCaseById(@PathVariable Long caseId){
+        return responseEntity(true ,
+                "Get case with id " + caseId +" successfully",
+                HttpStatus.ACCEPTED,
+                caseService.getCaseById(caseId));
+    }
+
 
     @PostMapping
     public ResponseEntity<ApiResponse<CaseResponse>> createNewCase(@RequestBody CaseRequest caseRequest){
@@ -65,7 +75,7 @@ public class CaseController extends BaseResponse {
 
         return responseEntity(true ,
                 "Delete case with id " + caseId +" successfully",
-                HttpStatus.CREATED,
+                HttpStatus.ACCEPTED,
                 caseService.removeCaseById(caseId));
     }
 

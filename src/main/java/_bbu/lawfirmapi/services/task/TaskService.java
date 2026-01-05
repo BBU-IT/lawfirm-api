@@ -14,6 +14,7 @@ public interface TaskService {
 
     Page<Task> getTaskList(Pageable pageable , Integer requestedPage);
 
+    Task getTaskById(Long taskId);
     TaskResponse createNewTask(TaskRequest taskRequest);
 
     TaskResponse modifiedTaskById(Long taskId , TaskRequest taskRequest);

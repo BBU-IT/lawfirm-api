@@ -19,7 +19,7 @@ import java.util.List;
 //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @JsonPropertyOrder({
-        "clientId" , "clientName" , "email", "phoneNumber"  ,"complaint" ,"address" , "createdAt" , "updatedAt"
+        "clientId" , "clientName" , "email", "phoneNumber"  ,"complaint" ,"address" ,"status" , "clientImage" , "createdAt" , "updatedAt"
 })
 public class Client extends BaseEntity {
 
@@ -29,9 +29,9 @@ public class Client extends BaseEntity {
     private Long  clientId ;
     @Column(name = "client_name")
     private String clientName ;
-    @Column(name = "email")
+    @Column(name = "email" , unique = true)
     private String email ;
-    @Column(name = "phone_number")
+    @Column(name = "phone_number" , unique = true)
     private String phoneNumber;
     @Column(name = "address")
     private String address;

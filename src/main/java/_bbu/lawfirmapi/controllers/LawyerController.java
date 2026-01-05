@@ -37,9 +37,7 @@ public class LawyerController extends BaseResponse {
     private final LawyerService lawyerService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<AppUser>>> getAllUser(){
-
-
+    public ResponseEntity<ApiResponse<List<AppUserResponse>>> getAllUser(){
         return responseEntity(true ,
                 "Get all Lawyers successfully." ,
                 HttpStatus.OK ,

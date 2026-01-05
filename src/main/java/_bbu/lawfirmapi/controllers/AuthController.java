@@ -57,10 +57,12 @@ public class AuthController extends BaseResponse {
     @PostMapping("/login")
     @Operation(summary = "Login")
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request) throws Exception {
-        final UserDetails userDetails = adminService.loadUserByUsername(request.getEmail());
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        authenticate(request.getEmail() ,  request.getPassword());
 
-        authenticate(userDetails.getUsername() ,  request.getPassword());
+        final UserDetails userDetails = adminService.loadUserByUsername(request.getEmail());
+
+        System.out.println("Detail " + userDetails);
+
        final String token = jwtService.generateToken(userDetails);
         final String expiredTokenDateTime = helper.extractExpirationDateInCambodia(token);
         AuthResponse authResponse = new AuthResponse(token , userDetails ,expiredTokenDateTime );

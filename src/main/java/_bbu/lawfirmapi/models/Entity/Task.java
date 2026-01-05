@@ -1,5 +1,6 @@
 package _bbu.lawfirmapi.models.Entity;
 
+import _bbu.lawfirmapi.models.DTO.task.response.TaskResponse;
 import _bbu.lawfirmapi.models.Enumerations.TaskPriority;
 import _bbu.lawfirmapi.models.Enumerations.TaskStatus;
 import _bbu.lawfirmapi.utils.BaseEntity;
@@ -7,12 +8,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true , onlyExplicitlyIncluded = true)
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@AllArgsConstructor
 @Entity
 @Table(name = "tasks")
 public class Task extends BaseEntity {
@@ -23,7 +24,7 @@ public class Task extends BaseEntity {
     private Long taskId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_id" , referencedColumnName = "case_id")
-    private Case aCase ;
+    private Case legalCase;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appuser_id" , referencedColumnName = "appuser_id")
     private AppUser lawyer;
@@ -37,4 +38,22 @@ public class Task extends BaseEntity {
     private TaskPriority priority;
     @Column(name = "due_date")
     private LocalDateTime dueDate;
+
+    public Task(Objects o, Long caseId , Long lawyerId , String title , String description ,TaskStatus status , TaskPriority taskPriority , LocalDateTime dueDate){
+
+    }
+    public TaskResponse toResponse(){
+        return new TaskResponse(
+                this.taskId,
+                this.legalCase,
+                this.lawyer,
+                this.title,
+                this.description,
+                this.status,
+                this.priority,
+                this.dueDate
+        );
+
+    }
+
 }

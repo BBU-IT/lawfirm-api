@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import _bbu.lawfirmapi.exceptions.InvalidException;
+import _bbu.lawfirmapi.exceptions.NotFoundException;
 import _bbu.lawfirmapi.models.File.FileMetaData;
 import _bbu.lawfirmapi.services.file.FileService;
 import io.minio.*;
@@ -94,6 +95,67 @@ public class FileServiceImplement implements FileService {
         }
         return responseFiles;
     }
+    @Override
+    @SneakyThrows
+    public List<String>  getPosterImagesList(){
+        List<String> objectNames = new ArrayList<>();
+
+        Iterable<Result<Item>> results = minioClient.listObjects(
+                ListObjectsArgs.builder()
+                        .bucket(bucketName)
+                        .prefix("Poster/")  // Filter by law type prefix
+                        .build()
+        );
+
+        for (Result<Item> result : results) {
+            Item item = result.get();
+            objectNames.add(item.objectName());
+        }
+        if(objectNames.isEmpty()){
+            throw  new NotFoundException("No poster list found.");
+        }
+
+        return objectNames;
+    }
+    @Override
+    @SneakyThrows
+    public FileMetaData uploadPostImages(MultipartFile file) throws Exception {
+
+        // 1. Prefix (folder)
+        String prefix = "Poster/";
+
+        // 2. Get extension safely
+        String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
+
+        // 3. Generate unique filename
+        String fileName = prefix + UUID.randomUUID() + "." + extension;
+
+        // 4. Upload to MinIO
+        minioClient.putObject(
+                PutObjectArgs.builder()
+                        .bucket(bucketName)
+                        .object(fileName)
+                        .contentType(file.getContentType())
+                        .stream(file.getInputStream(), file.getSize(), -1)
+                        .build()
+        );
+
+        // 5. Preview URL (your existing API)
+        String fileUrl = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/api/v1/files/preview-file/")
+                .path(fileName)
+                .toUriString();
+
+        // 6. Return metadata
+        return FileMetaData.builder()
+                .fileName(fileName)
+                .fileType(file.getContentType())
+                .fileUrl(fileUrl)
+                .fileSize(file.getSize())
+                .build();
+    }
+
     @SneakyThrows
     public List<String> getAllImagesUrl(){
         List<String> listOfUrls = new ArrayList<>();
@@ -211,5 +273,19 @@ public String uploadPdfFile(MultipartFile file, String lawType) throws Exception
                         .extraQueryParams(reqParams)
                         .build());
         return url;
+    }
+    @Override
+    @SneakyThrows
+    public Void deletePosterByName(String posterName){
+        if (posterName == null || !posterName.startsWith("Poster/")) {
+            throw new IllegalArgumentException("Invalid poster path");
+        }
+        minioClient.removeObject(
+                RemoveObjectArgs.builder()
+                        .bucket(bucketName)
+                        .object(posterName)
+                        .build()
+        );
+        return null;
     }
 }

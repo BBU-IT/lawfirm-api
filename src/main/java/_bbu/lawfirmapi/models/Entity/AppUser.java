@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "app_users")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-
+//@JsonPropertyOrder({"appUserId" , "" })
 public class AppUser extends BaseEntity implements UserDetails  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

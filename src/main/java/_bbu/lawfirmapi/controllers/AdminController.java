@@ -26,12 +26,12 @@ import static org.hibernate.internal.CoreLogging.logger;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin")
-
+@SecurityRequirement(name = "bearerAuth")
 public class AdminController extends BaseResponse {
     private final AdminService adminService;
 
     @GetMapping("/lawyers")
-    public ResponseEntity<ApiResponse<Page<AppUser>>> getAllUser(
+    public ResponseEntity<ApiResponse<Page<AppUserResponse>>> getAllUser(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
             @RequestParam(defaultValue = "appUserId") String sortBy,
@@ -39,36 +39,43 @@ public class AdminController extends BaseResponse {
     ){
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
-        Page<AppUser> lawyers = adminService.getAllUser(pageable , page);
+        Page<AppUserResponse> lawyers = adminService.getAllUser(pageable , page);
         return responseEntity(true ,
                 "Get all lawyers successfully." ,
                 HttpStatus.OK ,
                 lawyers);
     }
-    @GetMapping("/lawyers/{lawyerId}")
-    public ResponseEntity<ApiResponse<AppUser>> fetchLawyerById(@PathVariable Long lawyerId){
+    @GetMapping("/lawyers/no-pagination")
+    public ResponseEntity<ApiResponse<List<AppUserResponse>>> fetchLawyerNoPagination(){
         return responseEntity(true ,
-                "Get lawyer with id " + lawyerId + " successfully.",
+                "Get all lawyers successfully." ,
+                HttpStatus.OK ,
+                adminService.getAllLawyerListNoPagination());
+    }
+    @GetMapping("/lawyers/{lawyerId}")
+    public ResponseEntity<ApiResponse<AppUserResponse>> fetchLawyerById(@PathVariable Long lawyerId){
+        return responseEntity(true ,
+                STR."Get lawyer with id \{lawyerId} successfully.",
                 HttpStatus.ACCEPTED,
                 adminService.getLawyerById(lawyerId)
                 );
     }
-    @SecurityRequirement(name = "bearerAuth")
+
     @PutMapping("/lawyers/{lawyerId}")
     public ResponseEntity<ApiResponse<AppUserResponse>> updateExistLawyerById(@RequestBody AppUserRequest appUserRequest ,
                                                                               @PathVariable Long lawyerId ){
         logger(appUserRequest.getClass());
         return responseEntity(true,
-                "Update lawyer id " + lawyerId + " successfully" ,
+                STR."Update lawyer id \{lawyerId} successfully",
                 HttpStatus.ACCEPTED,
                 adminService.modifiedExistLawyerById(appUserRequest , lawyerId));
     }
-    @SecurityRequirement(name = "bearerAuth")
+
 
     @DeleteMapping("/lawyers/{lawyerId}")
     public ResponseEntity<ApiResponse<Void>> removeExistLawyer(@PathVariable Long lawyerId ){
         return responseEntity(true,
-                "Delete lawyer id " + lawyerId+  " successfully",
+                STR."Delete lawyer id \{lawyerId} successfully",
                 HttpStatus.ACCEPTED,
                 adminService.removeExistLawyerById(lawyerId));
     }

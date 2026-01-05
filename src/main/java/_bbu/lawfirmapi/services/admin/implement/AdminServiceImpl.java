@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -38,24 +39,59 @@ public class AdminServiceImpl implements AdminService {
     private final ExpertiseRepository expertiseRepository;
     private final MethodHelper checkOutOfPage;
 
-    public AppUser getCurrentUser(){
-        return (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
-    @Override
-    public Page<AppUser> getAllUser(Pageable pageable , Integer requestPage){
-        Page<AppUser> lawyerList = appUserRepository.findAllLawyers(pageable);
-        checkOutOfPage.isInvalidPage(lawyerList.getTotalPages() , requestPage);
-        if (lawyerList.isEmpty()){
-            throw new NotFoundException("No appointment list here.");
+        public AppUser getCurrentUser() {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+
+
+            System.out.println("AUTH CLASS = " + auth.getClass());
+            System.out.println("PRINCIPAL = " + auth.getPrincipal());
+            System.out.println("AUTHORITIES = " + auth.getAuthorities());
+
+            if (auth == null || !auth.isAuthenticated()
+                    || auth.getPrincipal().equals("anonymousUser")) {
+                throw new RuntimeException("Unauthenticated");
+            }
+
+            String email = auth.getName();
+            return appUserRepository.findAppUserByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
         }
-        return lawyerList ;
-    }
+
+
 
     @Override
-    public AppUser getLawyerById(Long lawyerId){
-        return appUserRepository.findById(lawyerId).orElseThrow(() -> new NotFoundException("Lawyer with id " + lawyerId + " not found."));
-    }
+    public Page<AppUserResponse> getAllUser(Pageable pageable , Integer requestPage){
+        Page<AppUser> lawyerList = appUserRepository.findAllWithExpertisesAndPagination(pageable);
+        if (lawyerList.isEmpty()){
+            throw new NotFoundException("No lawyer list here.");
+        }
+        checkOutOfPage.isInvalidPage(lawyerList.getTotalPages() , requestPage);
+        System.out.println("My user " + getCurrentUser());
 
+        return lawyerList.map(AppUser::toResponse);
+    }
+    @Override
+    public AppUserResponse getLawyerById(Long lawyerId){
+
+        AppUser lawyer = appUserRepository.findLawyerByAppUserId(lawyerId)
+                .orElseThrow(
+                        () -> new NotFoundException("Lawyer with id " + lawyerId + " not found" )
+                );
+
+        return lawyer.toResponse();
+    }
+    @Override
+    public List<AppUserResponse> getAllLawyerListNoPagination(){
+        List<AppUser> lawyerList = appUserRepository.findAllWithExpertisesNoPagination();
+        if (lawyerList.isEmpty()){
+            throw new NotFoundException("No lawyer list here.");
+        }
+
+        return lawyerList.stream()
+                .map(AppUser::toResponse)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -78,7 +114,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AppUserResponse registerNewLawyer(AppUserRequest appUserRequest) {
-        System.out.println("My register request : " + appUserRequest);
+
         AppUser newLawyer = appUserRequest.toEntity();
         //  Check for existing email
         checkIsEmailExist(appUserRequest.getEmail());
@@ -94,7 +130,7 @@ public class AdminServiceImpl implements AdminService {
                 .map(Expertise::getExpertName)
                 .collect(Collectors.toSet());
 
-        System.out.println("Expertise list " +setOfExpertiseName);
+
 
         // Fetch role
         Role role = roleRepository.findById(appUserRequest.getRoleId())

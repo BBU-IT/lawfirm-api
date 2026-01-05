@@ -22,15 +22,19 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
 
     // Fetch all lawyers with their roles
+    // for admin
     @EntityGraph(attributePaths = {"role", "expertises"})
     @Query("SELECT u FROM AppUser u WHERE u.role.roleName = 'ROLE_LAWYER'")
-    Page<AppUser> findAllLawyers(Pageable pageable);
+    Page<AppUser> findAllWithExpertisesAndPagination(Pageable pageable);
+//    @EntityGraph(attributePaths = {"role", "expertises"})
+    @Query("SELECT u FROM AppUser u JOIN fetch u.expertises WHERE u.role.roleName = 'ROLE_LAWYER'")
+    List<AppUser> findAllWithExpertises();
 
-    @Query("SELECT u FROM AppUser u WHERE u.role.roleName = 'ROLE_LAWYER'")
-    List<AppUser> findLawyerList();
 
+    @Query("SELECT u FROM AppUser u JOIN fetch u.expertises WHERE u.role.roleName = 'ROLE_LAWYER'")
+    List<AppUser> findAllWithExpertisesNoPagination();
     @Query("SELECT u FROM AppUser u WHERE u.role.roleName = 'ROLE_LAWYER' AND u.appUserId = :lawyerId ")
-    AppUser findLawyerByAppUserId(@Param("lawyerId") Long lawyerId);
+    Optional<AppUser> findLawyerByAppUserId(@Param("lawyerId") Long lawyerId);
 
     // Basic existence check (no joins needed)
     boolean existsByEmail(String email);
@@ -39,4 +43,7 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     @Query("UPDATE AppUser a SET a.password = :newPassword WHERE a.email = :email ")
 
     int resetPassword(@Param("newPassword") String newPassword , @Param("email") String email );
+
+    @Query("SELECT u FROM AppUser u JOIN fetch u.expertises WHERE u.email = :email")
+    Optional<AppUser> findAppUserByEmail(@Param("email") String email);
 }

@@ -5,6 +5,7 @@ import _bbu.lawfirmapi.models.Enumerations.CaseStatus;
 import _bbu.lawfirmapi.utils.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,9 +17,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "cases")
+@Table(name = "cases" , uniqueConstraints = {
+        @UniqueConstraint(columnNames = {
+                "client_id",
+                "court_id",
+                "title",
+                "start_date"
+        })
+})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-
+@JsonPropertyOrder({"caseId" , "client" , "court" ,"title" , "description","status" , "startDate" , "endDate" , "createdAt" , "updatedAt"})
 public class Case extends BaseEntity {
 
     @Id
@@ -39,14 +47,12 @@ public class Case extends BaseEntity {
     @OneToOne(mappedBy = "aCase")
     @ToString.Exclude
     @JsonIgnore
-
     private Appointment appointment;
 
     @Column(name = "title")
     private String title;
 
     @Column(name = "description"  ,columnDefinition = "TEXT")
-
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -54,8 +60,8 @@ public class Case extends BaseEntity {
     private CaseStatus status ;
 
     @Column(name = "start_date")
-
     private LocalDateTime startDate;
+
     @Column(name = "end_date")
     private LocalDateTime endDate;
 

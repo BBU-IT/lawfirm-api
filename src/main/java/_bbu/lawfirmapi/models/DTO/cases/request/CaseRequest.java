@@ -21,7 +21,7 @@ public class CaseRequest {
     private String title;
     private String description;
     private CaseStatus status;
-    private LocalDateTime statedDate;
+    private LocalDateTime startedDate;
     private LocalDateTime endedDate;
 
     public Case toEntity() {
@@ -32,7 +32,7 @@ public class CaseRequest {
                 this.title,
                 this.description,
                 this.status,
-                this.statedDate,
+                this.startedDate,
                 this.endedDate
         );
     }

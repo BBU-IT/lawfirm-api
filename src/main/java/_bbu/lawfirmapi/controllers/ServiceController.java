@@ -25,7 +25,7 @@ public class ServiceController extends BaseResponse {
     @GetMapping
     public ResponseEntity<ApiResponse<Page<ServiceResponse>>> getAllService(
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "5") Integer size,
+            @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "serviceId") String sortBy,
             @RequestParam(defaultValue = "true") Boolean ascending
     ){

@@ -9,6 +9,7 @@ import _bbu.lawfirmapi.services.auth.AppUserService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -23,7 +24,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
-    private final AdminService adminService;
+    private final UserDetailsService userDetailsService;
+
 
 
     @Override
@@ -41,7 +43,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = adminService.loadUserByUsername(email);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
 
             if (jwtService.validateToken(token,  userDetails)) {

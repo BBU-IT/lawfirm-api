@@ -7,11 +7,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.HashSet;
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true , onlyExplicitlyIncluded = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,6 +22,7 @@ import java.util.Set;
 public class Expertise extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     @Column(name = "expertise_id")
     private Integer expertiseId;
 

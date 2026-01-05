@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,13 +22,14 @@ public class LawyerServiceImpl implements LawyerService {
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Override
-    public List<AppUser> fetchAllLawyers(){
+    @Transactional(readOnly = true)
+    public List<AppUserResponse> fetchAllLawyers() {
 
-//        if(appUserRepository.findLawyerList().isEmpty()){
-//            throw new NotFoundException("No list lawyer found.");
-//        }
-        return appUserRepository.findLawyerList();
+        List<AppUser> users = appUserRepository.findAllWithExpertises();
+
+        return users.stream()
+                .map(AppUser::toResponse)
+                .toList();
     }
     @Override
     public AppUser fetchLawyerById(Long lawyerId){
@@ -35,7 +37,10 @@ public class LawyerServiceImpl implements LawyerService {
             throw new NotFoundException("Lawyer with id " + lawyerId + " not found.");
 
         }
-        return appUserRepository.findLawyerByAppUserId(lawyerId);
+        return appUserRepository.findLawyerByAppUserId(lawyerId)
+                .orElseThrow(
+                        () -> new NotFoundException("Sorry lawyer with id " + lawyerId + " not found.")
+                );
     }
 
     @Override

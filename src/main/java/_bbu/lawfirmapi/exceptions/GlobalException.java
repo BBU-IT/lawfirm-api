@@ -16,6 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+//import org.springframework.web.server.ResponseStatusException;
 
 
 @RestControllerAdvice
@@ -67,6 +68,18 @@ public class GlobalException extends BaseResponse {
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String , Object>> handleResponseStatus(
+            ResponseStatusException ex) {
+       Map<String , Object> body = new HashMap<>();
+       body.put("status" , 409);
+       body.put("error" , "Conflict Request");
+       body.put("message" , ex.getMessage());
+       body.put("success" , false);
+
+       return new ResponseEntity<>(body , HttpStatus.CONFLICT);
+    }
+
 
 //    @ExceptionHandler(com.kshrd.lumnov.exception.WrongInputException.class)
 //    public ResponseEntity<?> wrongInputException(com.kshrd.lumnov.exception.WrongInputException e) {

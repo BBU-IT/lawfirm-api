@@ -58,14 +58,17 @@ public class SecurityConfig {
                                 "/api/v1/lawyers/**",
                                 // this endpoint will be protected for admin only the rest of get method for everyone
                                 "/api/v1/documents/**",
-                                "/api/v1/categories/**"
-
+                                "/api/v1/categories/**",
+//                                "/api/v1/admin/lawyers/**",
+                                "/api/v1/tasks/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET ,"/api/v1/admin/lawyers/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/admin/lawyers/**")
-                        .hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/admin/lawyers/**")
-                        .hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.GET ,"/api/v1/admin/lawyers/**").permitAll()
+//                        .requestMatchers(HttpMethod.DELETE, "/api/v1/admin/lawyers/**")
+//                        .hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.PUT, "/api/v1/admin/lawyers/**")
+//                        .hasRole("ADMIN")
+                                .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/admin/**").hasRole(roleStatus[1])
                         .requestMatchers("/api/v1/lawyers/**").hasAnyRole( roleStatus[0], roleStatus[1])
 //                        .requestMatchers( "/api/v1/clients/**").hasAnyRole(roleStatus[0], roleStatus[1])
 //                        .requestMatchers("/api/v1/files/get-file-list").hasAnyRole(roleStatus[0], roleStatus[1])

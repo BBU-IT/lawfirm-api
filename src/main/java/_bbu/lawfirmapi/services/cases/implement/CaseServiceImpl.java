@@ -15,9 +15,12 @@ import _bbu.lawfirmapi.services.cases.CaseService;
 import _bbu.lawfirmapi.utils.MethodHelper;
 import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,7 +49,24 @@ public class CaseServiceImpl implements CaseService  {
 
     }
     @Override
+    public Case getCaseById(Long caseId){
+        return caseRepository.findById(caseId).orElseThrow(
+                () -> new NotFoundException("Case with Id " + caseId + " not found.")
+        );
+    }
+    @SneakyThrows
+    @Override
     public CaseResponse createNewCase(CaseRequest request) {
+        boolean isExisting = caseRepository.existsByClient_ClientIdAndCourt_CourtId(
+                request.getClientId(),
+                request.getCourtId()
+        );
+        if(isExisting){
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "This case is already exist in the list."
+            );
+        }
         Client client = clientRepository.findById(request.getClientId())
                 .orElseThrow(() -> new RuntimeException("Client not found"));
         Court court = courtRepository.findById(request.getCourtId())
@@ -58,7 +78,7 @@ public class CaseServiceImpl implements CaseService  {
         newCase.setTitle(request.getTitle());
         newCase.setDescription(request.getDescription());
         newCase.setStatus(request.getStatus());
-        newCase.setStartDate(request.getStatedDate());
+        newCase.setStartDate(request.getStartedDate());
         newCase.setEndDate(request.getEndedDate());
         newCase.setCreatedAt(LocalDateTime.now());
         return caseRepository.save(newCase).toResponse();
@@ -78,7 +98,7 @@ public class CaseServiceImpl implements CaseService  {
         currentCase.setTitle(caseRequest.getTitle());
         currentCase.setDescription(caseRequest.getDescription());
         currentCase.setStatus(caseRequest.getStatus());
-        currentCase.setStartDate(caseRequest.getStatedDate());
+        currentCase.setStartDate(caseRequest.getStartedDate());
         currentCase.setEndDate(caseRequest.getEndedDate());
         currentCase.setUpdatedAt(LocalDateTime.now());
 

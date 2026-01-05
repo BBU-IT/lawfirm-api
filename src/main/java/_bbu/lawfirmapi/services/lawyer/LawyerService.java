@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface LawyerService {
 
-    List<AppUser> fetchAllLawyers ();
+    List<AppUserResponse> fetchAllLawyers ();
 
     AppUser fetchLawyerById(Long lawyerId);
 

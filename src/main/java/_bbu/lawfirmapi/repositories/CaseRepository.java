@@ -6,10 +6,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.cdi.JpaRepositoryExtension;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface CaseRepository extends JpaRepository<Case, Long> {
     @Query("SELECT DISTINCT c FROM Case c JOIN FETCH c.client  JOIN FETCH c.court ")
     List<Case> findAllWithCases();
+
+
+    boolean existsByClient_ClientIdAndCourt_CourtId(
+            Long clientId,
+            Long courtId
+    );
 }
