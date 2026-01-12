@@ -1,6 +1,7 @@
 package _bbu.lawfirmapi.services.client;
 
 import _bbu.lawfirmapi.models.DTO.client.request.ClientRequest;
+import _bbu.lawfirmapi.models.DTO.client.response.ClientListResponse;
 import _bbu.lawfirmapi.models.DTO.client.response.ClientResponse;
 import _bbu.lawfirmapi.models.Entity.Client;
 import jakarta.mail.MessagingException;
@@ -11,7 +12,10 @@ import java.util.List;
 
 public interface ClientService {
 
-    Page<Client> getAllClients(Pageable pageable , Integer requestedPage);
+    Page<Client> getAllDetailClientsByEmail(Pageable pageable , Integer requestedPage , String email);
+    List<Client> getAllClientList();
+
+    Page<ClientListResponse> getUniqueClient(Pageable pageable , Integer requestPage);
     Client getClientById(Long clientId);
     ClientResponse createNewClient(ClientRequest clientRequest) throws MessagingException;
     ClientResponse modifiedClientById(ClientRequest clientRequest , Long clientId);

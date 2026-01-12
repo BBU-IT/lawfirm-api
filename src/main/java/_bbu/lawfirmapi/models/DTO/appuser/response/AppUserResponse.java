@@ -5,6 +5,7 @@ import _bbu.lawfirmapi.models.Enumerations.Gender;
 import _bbu.lawfirmapi.models.Enumerations.LawyerStatus;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -13,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 
-public class AppUserResponse {
+public class AppUserResponse   {
     private Long appUserId;
     private String fullName;
     private Gender gender;
@@ -29,5 +30,7 @@ public class AppUserResponse {
     private String facebookLink;
     private String tiktokLink;
     private String telegramLink;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
 }

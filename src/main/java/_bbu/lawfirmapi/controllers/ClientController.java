@@ -1,6 +1,7 @@
 package _bbu.lawfirmapi.controllers;
 
 import _bbu.lawfirmapi.models.DTO.client.request.ClientRequest;
+import _bbu.lawfirmapi.models.DTO.client.response.ClientListResponse;
 import _bbu.lawfirmapi.models.DTO.client.response.ClientResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.ApiResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
@@ -27,8 +28,33 @@ public class ClientController extends BaseResponse {
 
     private final ClientService clientService;
 
+
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<Client>>> getAllClient(
+    public ResponseEntity<ApiResponse<Page<ClientListResponse>>> getAllClientListResponse(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "5") Integer size
+    ){
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.unsorted());
+        Page<ClientListResponse> clients = clientService.getUniqueClient(pageable , page );
+        return responseEntity(
+                true,
+                "Get all unique client list",
+                HttpStatus.OK,
+                clients
+        );
+    }
+
+    @GetMapping("/without-pagination")
+    public ResponseEntity<ApiResponse<List<Client>>> fetchAllClients(){
+        return responseEntity(true ,
+                "Get client list successfully.",
+                HttpStatus.OK,
+                clientService.getAllClientList());
+    }
+    @GetMapping("/request")
+
+    public ResponseEntity<ApiResponse<Page<Client>>> getClientByEmail(
+            @RequestParam String email,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
             @RequestParam(defaultValue = "clientId") String sortBy,
@@ -37,12 +63,15 @@ public class ClientController extends BaseResponse {
     ){
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
-        Page<Client> clients = clientService.getAllClients(pageable , page);
+        Page<Client> clients = clientService.getAllDetailClientsByEmail(pageable , page ,email );
         return responseEntity(true ,
                 "Get all client list",
                 HttpStatus.OK,
                 clients);
     }
+
+
+
 
     @GetMapping("/{clientId}")
     public ResponseEntity<ApiResponse<Client>> retrieveClientById(@PathVariable Long clientId){

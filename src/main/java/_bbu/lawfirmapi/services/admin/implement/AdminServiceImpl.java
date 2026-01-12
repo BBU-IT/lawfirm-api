@@ -4,10 +4,12 @@ import _bbu.lawfirmapi.exceptions.EmailAlreadyExistException;
 import _bbu.lawfirmapi.exceptions.NotFoundException;
 import _bbu.lawfirmapi.models.DTO.appuser.request.AppUserRequest;
 import _bbu.lawfirmapi.models.DTO.appuser.response.AppUserResponse;
+import _bbu.lawfirmapi.models.DTO.shared.response.ChartResponse;
 import _bbu.lawfirmapi.models.Entity.AppUser;
 import _bbu.lawfirmapi.models.Entity.Expertise;
 import _bbu.lawfirmapi.models.Entity.Role;
 import _bbu.lawfirmapi.repositories.AppUserRepository;
+import _bbu.lawfirmapi.repositories.ClientRepository;
 import _bbu.lawfirmapi.repositories.ExpertiseRepository;
 import _bbu.lawfirmapi.repositories.RoleRepository;
 import _bbu.lawfirmapi.services.admin.AdminService;
@@ -24,6 +26,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,16 +41,13 @@ public class AdminServiceImpl implements AdminService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final ExpertiseRepository expertiseRepository;
+    private final ClientRepository clientRepo;
     private final MethodHelper checkOutOfPage;
 
-        public AppUser getCurrentUser() {
+
+    private final String adminEmail = "gclawgroup168@gmail.com";
+    public AppUser getCurrentAdminEntity() {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-
-
-            System.out.println("AUTH CLASS = " + auth.getClass());
-            System.out.println("PRINCIPAL = " + auth.getPrincipal());
-            System.out.println("AUTHORITIES = " + auth.getAuthorities());
 
             if (auth == null || !auth.isAuthenticated()
                     || auth.getPrincipal().equals("anonymousUser")) {
@@ -54,11 +55,53 @@ public class AdminServiceImpl implements AdminService {
             }
 
             String email = auth.getName();
-            return appUserRepository.findAppUserByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+            AppUser currentProfile =  appUserRepository.findAppUserByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            return currentProfile;
+    }
+
+
+    @Override
+    public AppUserResponse getCurrentAdminProfile() {
+        return getCurrentAdminEntity().toResponse();
+    }
+
+
+    @Override
+    public AppUserResponse updateProfileAdmin(AppUserRequest appUserRequest) {
+
+        AppUser admin = getCurrentAdminEntity();
+
+        Set<Expertise> expertiseEntities = appUserRequest.getExpertiseIdList().stream()
+                .map(id -> expertiseRepository.findById(id)
+                        .orElseThrow(() -> new NotFoundException(
+                                "Expertise with id " + id + " not found")))
+                .collect(Collectors.toSet());
+
+        Role role = roleRepository.findById(appUserRequest.getRoleId())
+                .orElseThrow(() -> new NotFoundException(
+                        "Role id " + appUserRequest.getRoleId() + " not found"));
+
+        admin.setFullName(appUserRequest.getFullName());
+        admin.setGender(appUserRequest.getGender());
+        admin.setLawyerStatus(appUserRequest.getLawyerStatus());
+        admin.setPhoneNumber(appUserRequest.getPhoneNumber());
+        admin.setTitle(appUserRequest.getTitle());
+        admin.setDescription(appUserRequest.getDescription());
+        admin.setFacebookLink(appUserRequest.getFacebookLink());
+        admin.setTiktokLink(appUserRequest.getTiktokLink());
+        admin.setTelegramLink(appUserRequest.getTelegramLink());
+        admin.setImage(appUserRequest.getImage());
+        admin.setRole(role);
+        admin.setExpertises(expertiseEntities);
+
+        if (appUserRequest.getPassword() != null &&
+                !appUserRequest.getPassword().isBlank()) {
+            admin.setPassword(passwordEncoder.encode(appUserRequest.getPassword()));
         }
 
-
+        return appUserRepository.save(admin).toResponse();
+    }
 
     @Override
     public Page<AppUserResponse> getAllUser(Pageable pageable , Integer requestPage){
@@ -67,7 +110,7 @@ public class AdminServiceImpl implements AdminService {
             throw new NotFoundException("No lawyer list here.");
         }
         checkOutOfPage.isInvalidPage(lawyerList.getTotalPages() , requestPage);
-        System.out.println("My user " + getCurrentUser());
+
 
         return lawyerList.map(AppUser::toResponse);
     }
@@ -125,12 +168,6 @@ public class AdminServiceImpl implements AdminService {
                         .orElseThrow(() -> new NotFoundException("Expertise with id " + id + " not found")))
                 .collect(Collectors.toSet());
 
-        // Prepare expertise get name only
-        Set<String> setOfExpertiseName = expertiseEntities.stream()
-                .map(Expertise::getExpertName)
-                .collect(Collectors.toSet());
-
-
 
         // Fetch role
         Role role = roleRepository.findById(appUserRequest.getRoleId())
@@ -158,7 +195,6 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AppUserResponse modifiedExistLawyerById(AppUserRequest appUserRequest , Long lawyerId){
-        checkIsEmailExist(appUserRequest.getEmail());
 
         AppUser currentLawyer = appUserRepository.findById(lawyerId).orElseThrow(
                 () -> new NotFoundException("Lawyer Id " + lawyerId + " not found.")
@@ -175,10 +211,6 @@ public class AdminServiceImpl implements AdminService {
                         .orElseThrow(() -> new NotFoundException("Expertise with id " + id + " not found")))
                 .collect(Collectors.toSet());
 
-        // Prepare expertise get name only
-        Set<String> setOfExpertiseName = expertiseEntities.stream()
-                .map(Expertise::getExpertName)
-                .collect(Collectors.toSet());
 
         currentLawyer.setFullName(appUserRequest.getFullName());
         currentLawyer.setEmail(appUserRequest.getEmail());
@@ -208,5 +240,50 @@ public class AdminServiceImpl implements AdminService {
         }
             appUserRepository.deleteById(appUserId);
         return null;
+    }
+
+    @Override
+    public List<Integer> fetchMonthlyStats(int year){
+        List<Object[]> result = clientRepo.getMonthlyStatistic(year);
+        int[] data = new int[12];
+
+        for (Object[] row : result) {
+            int month = ((Number) row[0]).intValue() - 1;
+            int count = ((Number) row[1]).intValue();
+            data[month] = count;
+        }
+        return Arrays.stream(data).boxed().toList();
+    }
+    @Override
+    public List<Integer> fetchQuarterlyStats(int year){
+        List<Object[]> result = clientRepo.getQuarterlyStatistic(year);
+        int[] data = new int[4];
+
+        for (Object[] row : result) {
+            int month = ((Number) row[0]).intValue() - 1;
+            int count = ((Number) row[1]).intValue();
+            data[month] = count;
+        }
+        return Arrays.stream(data).boxed().toList();
+    }
+    @Override
+    public ChartResponse fetchAnnualStats(){
+        List<Object[]> result = clientRepo.getAnnualStatistic();
+        List<String> categories  = new ArrayList<>();
+        List<Integer> data = new ArrayList<>();
+        for (Object[] row : result) {
+            String year = row[0].toString();
+            int count = ((Number) row[1]).intValue();
+
+            categories.add(year);
+            data.add(count);
+        }
+
+        return  new ChartResponse(
+                "annually",
+                null,
+                categories,
+                data
+        );
     }
 }

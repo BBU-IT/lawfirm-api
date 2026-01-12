@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -42,6 +44,8 @@ public class Client extends BaseEntity {
     private ClientStatus status;
     @Column(name = "client_image")
     private String clientImage;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "client" , cascade = CascadeType.ALL)
     // "client"that map by id field name in table which has relation with

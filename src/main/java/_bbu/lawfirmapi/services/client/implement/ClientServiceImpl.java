@@ -2,6 +2,7 @@ package _bbu.lawfirmapi.services.client.implement;
 
 import _bbu.lawfirmapi.exceptions.NotFoundException;
 import _bbu.lawfirmapi.models.DTO.client.request.ClientRequest;
+import _bbu.lawfirmapi.models.DTO.client.response.ClientListResponse;
 import _bbu.lawfirmapi.models.DTO.client.response.ClientResponse;
 import _bbu.lawfirmapi.models.Entity.AppUser;
 import _bbu.lawfirmapi.models.Entity.Client;
@@ -25,6 +26,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,20 +35,19 @@ public class ClientServiceImpl implements ClientService {
     private  final ClientRepository clientRepository;
     private final SpringTemplateEngine templateEngine;
     private final JavaMailSender javaMailSender;
-    private MethodHelper checkOutOfPage;
+    private final MethodHelper checkOutOfPage;
     @Value("${spring.mail.username}")
     private String adminEmail;
     public AppUser getCurrentUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        System.out.println("DD" + authentication);
         if(authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")){
             return null;
         }
         return (AppUser) authentication.getPrincipal();
     }
 
-    public Page<Client> getAllClients(Pageable pageable , Integer requestedPage) {
+    public Page<Client> getAllDetailClientsByEmail(Pageable pageable , Integer requestedPage , String email) {
 //        AppUser currentUser = getCurrentUser();
 //
 //        System.out.println("Client " + currentUser);
@@ -60,9 +61,20 @@ public class ClientServiceImpl implements ClientService {
 //        if (roleName.equals("ROLE_ANONYMOUS")) {
 //            throw new RuntimeException("You don't have access to this endpoint.");
 //        }
-        Page<Client> clients = clientRepository.findAll(pageable); // Get ALL clients
+        Page<Client> clients = clientRepository.findByEmail(pageable , email); // Get ALL clients
 
-//        checkOutOfPage.isInvalidPage(clients.getTotalPages() , requestedPage);
+        checkOutOfPage.isInvalidPage(clients.getTotalPages() , requestedPage);
+
+        if (clients.isEmpty()) {
+            throw new NotFoundException("No client list found");
+        }
+    
+        return clients;
+    }
+
+    @Override
+    public List<Client> getAllClientList(){
+        List<Client> clients = clientRepository.findAll(); // Get ALL clients
 
         if (clients.isEmpty()) {
             throw new NotFoundException("No client list found");
@@ -71,6 +83,19 @@ public class ClientServiceImpl implements ClientService {
         return clients;
     }
 
+
+    @Override
+    public Page<ClientListResponse> getUniqueClient(Pageable pageable , Integer requestPage ){
+        Page<ClientListResponse> clients = clientRepository.findAllUniqueClients(pageable , requestPage ); // Get ALL clients
+
+        checkOutOfPage.isInvalidPage(clients.getTotalPages() , requestPage);
+
+        if (clients.isEmpty()) {
+            throw new NotFoundException("No client list found");
+        }
+
+        return clients;
+    }
     @Override
     public Client getClientById(Long clientId){
         return clientRepository.findById(clientId).
@@ -102,7 +127,7 @@ public class ClientServiceImpl implements ClientService {
 
         Client client = request.toEntity();
         client.setClientName(request.getClientName());
-        client.setEmail(request.getEmail());
+        client.setEmail(request.getEmail().toLowerCase().trim());
         client.setStatus(request.getStatus());
         client.setPhoneNumber(request.getPhoneNumber());
         client.setAddress(request.getAddress());
@@ -118,7 +143,7 @@ public class ClientServiceImpl implements ClientService {
                 orElseThrow(() -> new NotFoundException("Client not found"));
         previousClient = clientRequest.toEntity();
         previousClient.setClientName(clientRequest.getClientName());
-        previousClient.setEmail(clientRequest.getEmail());
+        previousClient.setEmail(clientRequest.getEmail().trim());
         previousClient.setStatus(clientRequest.getStatus());
         previousClient.setPhoneNumber(clientRequest.getPhoneNumber());
         previousClient.setAddress(clientRequest.getAddress());

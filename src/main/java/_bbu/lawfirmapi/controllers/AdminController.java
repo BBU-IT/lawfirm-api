@@ -4,9 +4,11 @@ import _bbu.lawfirmapi.models.DTO.appuser.request.AppUserRequest;
 import _bbu.lawfirmapi.models.DTO.appuser.response.AppUserResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.ApiResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
+import _bbu.lawfirmapi.models.DTO.shared.response.ChartResponse;
 import _bbu.lawfirmapi.models.Entity.AppUser;
 import _bbu.lawfirmapi.models.Entity.Appointment;
 import _bbu.lawfirmapi.services.admin.AdminService;
+import _bbu.lawfirmapi.utils.ChartConstants;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.mybatis.logging.Logger;
@@ -29,6 +31,13 @@ import static org.hibernate.internal.CoreLogging.logger;
 @SecurityRequirement(name = "bearerAuth")
 public class AdminController extends BaseResponse {
     private final AdminService adminService;
+    private final ChartConstants chartConstants;
+
+    private void validateYear(Integer year) {
+        if (year == null) {
+            throw new IllegalArgumentException("Year is required for this period");
+        }
+    }
 
     @GetMapping("/lawyers")
     public ResponseEntity<ApiResponse<Page<AppUserResponse>>> getAllUser(
@@ -45,6 +54,13 @@ public class AdminController extends BaseResponse {
                 HttpStatus.OK ,
                 lawyers);
     }
+    @GetMapping("/admin-profile")
+    public ResponseEntity<ApiResponse<AppUserResponse>> fetchAdminProfile(){
+        return responseEntity(true ,
+                "Get current admin profile successfully." ,
+                HttpStatus.OK ,
+                adminService.getCurrentAdminProfile());
+    }
     @GetMapping("/lawyers/no-pagination")
     public ResponseEntity<ApiResponse<List<AppUserResponse>>> fetchLawyerNoPagination(){
         return responseEntity(true ,
@@ -52,6 +68,50 @@ public class AdminController extends BaseResponse {
                 HttpStatus.OK ,
                 adminService.getAllLawyerListNoPagination());
     }
+    @GetMapping("/statistics/clients")
+    public ResponseEntity<ApiResponse<ChartResponse>> clientStatistics(
+            @RequestParam String period,
+            @RequestParam(required = false) Integer year
+    ) {
+
+        ChartResponse chart;
+
+        switch (period.toLowerCase()) {
+            case "monthly" -> {
+                validateYear(year);
+                chart = new ChartResponse(
+                        "monthly",
+                        year,
+                        chartConstants.MONTH_CATEGORIES,
+                        adminService.fetchMonthlyStats(year)
+                );
+            }
+
+            case "quarterly" -> {
+                validateYear(year);
+                chart = new ChartResponse(
+                        "quarterly",
+                        year,
+                        chartConstants.QUARTER_CATEGORIES,
+                        adminService.fetchQuarterlyStats(year)
+                );
+            }
+
+            case "annually" -> {
+                        chart = adminService.fetchAnnualStats();
+            }
+
+            default -> throw new IllegalArgumentException("Invalid period");
+        }
+
+        return responseEntity(
+                true,
+                "Get client statistics successfully",
+                HttpStatus.OK,
+                chart
+        );
+    }
+
     @GetMapping("/lawyers/{lawyerId}")
     public ResponseEntity<ApiResponse<AppUserResponse>> fetchLawyerById(@PathVariable Long lawyerId){
         return responseEntity(true ,
@@ -69,6 +129,14 @@ public class AdminController extends BaseResponse {
                 STR."Update lawyer id \{lawyerId} successfully",
                 HttpStatus.ACCEPTED,
                 adminService.modifiedExistLawyerById(appUserRequest , lawyerId));
+    }
+    @PutMapping("/update-profile")
+    public ResponseEntity<ApiResponse<AppUserResponse>> updateExistLawyerById(@RequestBody AppUserRequest appUserRequest ){
+        logger(appUserRequest.getClass());
+        return responseEntity(true,
+                STR."Update your profile successfully",
+                HttpStatus.ACCEPTED,
+                adminService.updateProfileAdmin(appUserRequest));
     }
 
 

@@ -5,6 +5,7 @@ import _bbu.lawfirmapi.models.DTO.shared.response.ApiResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
 import _bbu.lawfirmapi.models.Entity.AppUser;
 import _bbu.lawfirmapi.models.Entity.Appointment;
+import _bbu.lawfirmapi.models.Entity.Task;
 import _bbu.lawfirmapi.repositories.AppUserRepository;
 import _bbu.lawfirmapi.services.admin.AdminService;
 import _bbu.lawfirmapi.services.auth.AppUserService;
@@ -36,6 +37,7 @@ public class LawyerController extends BaseResponse {
     private final AdminService adminService;
     private final LawyerService lawyerService;
 
+
     @GetMapping
     public ResponseEntity<ApiResponse<List<AppUserResponse>>> getAllUser(){
         return responseEntity(true ,
@@ -51,6 +53,23 @@ public class LawyerController extends BaseResponse {
                 lawyerService.fetchLawyerById(lawyerId)
         );
     }
+    @GetMapping("/task-list-by-lawyer")
+    public ResponseEntity<ApiResponse<Page<Task>>> fetchTaskByLawyer(
+            @RequestParam String email,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "taskId") String sortBy,
+            @RequestParam(defaultValue = "true") Boolean ascending
+    ) {
+        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page -1 , size , sort);
+        Page<Task> tasksList =lawyerService.getTaskByLawyerEmail(pageable , page , email);
+        return responseEntity(true,
+                "Getting task list successfully.",
+                HttpStatus.OK,
+                tasksList);
+    }
+
         @PutMapping("/reset-password")
     @Operation(summary = "Reset Password")
     public ResponseEntity<ApiResponse<Void>> resetLawyerPassword(@RequestParam String email, @RequestParam String newPassword) {

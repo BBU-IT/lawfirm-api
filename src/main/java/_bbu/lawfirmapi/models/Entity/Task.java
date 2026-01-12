@@ -36,10 +36,13 @@ public class Task extends BaseEntity {
     private TaskStatus status;
     @Enumerated(EnumType.STRING)
     private TaskPriority priority;
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
     @Column(name = "due_date")
     private LocalDateTime dueDate;
 
-    public Task(Objects o, Long caseId , Long lawyerId , String title , String description ,TaskStatus status , TaskPriority taskPriority , LocalDateTime dueDate){
+
+    public Task(Objects o, Long caseId , Long lawyerId , String title , String description ,TaskStatus status , TaskPriority taskPriority , LocalDateTime startDate, LocalDateTime dueDate ){
 
     }
     public TaskResponse toResponse(){
@@ -51,6 +54,7 @@ public class Task extends BaseEntity {
                 this.description,
                 this.status,
                 this.priority,
+                this.startDate,
                 this.dueDate
         );
 

@@ -1,6 +1,7 @@
 package _bbu.lawfirmapi.repositories;
 
 import _bbu.lawfirmapi.models.DTO.client.request.ClientRequest;
+import _bbu.lawfirmapi.models.DTO.client.response.ClientListResponse;
 import _bbu.lawfirmapi.models.DTO.client.response.ClientResponse;
 import _bbu.lawfirmapi.models.Entity.Client;
 import org.apache.ibatis.annotations.Param;
@@ -17,5 +18,42 @@ import java.util.List;
 @Repository
 public interface ClientRepository extends JpaRepository<Client , Long> {
 
-//    @Query("SELECT COUNT(*)  ")
+    @Query("""
+        SELECT MONTH(c.createdAt) , COUNT (c)
+            FROM Client c
+                WHERE YEAR(c.createdAt) = :year
+                    GROUP BY MONTH (c.createdAt)
+    """)
+    List<Object[]> getMonthlyStatistic(@Param("year") int year);
+    @Query("""
+    SELECT
+        ((MONTH(c.createdAt) - 1) / 3) + 1,
+        COUNT(c)
+    FROM Client c
+    WHERE YEAR(c.createdAt) = :year
+    GROUP BY ((MONTH(c.createdAt) - 1) / 3) + 1
+    ORDER BY ((MONTH(c.createdAt) - 1) / 3) + 1
+""")
+    List<Object[]> getQuarterlyStatistic(@Param("year") int year);
+
+    @Query("""
+        SELECT YEAR(c.createdAt) , COUNT (c)
+            FROM Client c
+                    GROUP BY YEAR (c.createdAt)
+                        ORDER BY YEAR (c.createdAt)
+    """)
+    List<Object[]> getAnnualStatistic();
+
+    @Query("""
+    SELECT new _bbu.lawfirmapi.models.DTO.client.response.ClientListResponse(
+    
+        c.email,
+        MAX(c.clientName),
+        COUNT(c.clientId)
+    )
+    FROM Client c
+    GROUP BY c.email
+""")
+    Page<ClientListResponse> findAllUniqueClients(Pageable pageable , Integer requestPage);
+    Page<Client> findByEmail(Pageable pageable , @Param("email") String email);
 }

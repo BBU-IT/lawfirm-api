@@ -73,6 +73,7 @@ public class TaskServiceImpl implements TaskService {
         newTask.setDescription(taskRequest.getDescription());
         newTask.setPriority(taskRequest.getTaskPriority());
         newTask.setStatus(taskRequest.getStatus());
+        newTask.setStartDate(taskRequest.getStartedDate());
         newTask.setDueDate(taskRequest.getDueDate());
 
         return taskRepo.save(newTask).toResponse();
@@ -105,6 +106,8 @@ public class TaskServiceImpl implements TaskService {
         currentTask.setDescription(taskRequest.getDescription());
         currentTask.setStatus(taskRequest.getStatus());
         currentTask.setPriority(taskRequest.getTaskPriority());
+        currentTask.setStartDate(taskRequest.getStartedDate());
+
         currentTask.setDueDate(taskRequest.getDueDate());
 
         TaskResponse savedUpatedTask = taskRepo.save(currentTask).toResponse();

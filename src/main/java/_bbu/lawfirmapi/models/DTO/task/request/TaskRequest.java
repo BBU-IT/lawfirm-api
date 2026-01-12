@@ -19,8 +19,8 @@ public class TaskRequest {
     private String description;
     private TaskStatus status;
     private TaskPriority taskPriority;
+    private LocalDateTime startedDate;
     private LocalDateTime dueDate;
-
     public Task toEntity(){
         return new Task(
                 null ,
@@ -30,6 +30,7 @@ public class TaskRequest {
                 this.description,
                 this.status,
                 this.taskPriority,
+                this.startedDate,
                 this.dueDate
         );
     }

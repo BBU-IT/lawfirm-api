@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "app_users")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@ToString
 //@JsonPropertyOrder({"appUserId" , "" })
 public class AppUser extends BaseEntity implements UserDetails  {
     @Id
@@ -117,7 +118,9 @@ public class AppUser extends BaseEntity implements UserDetails  {
                 this.title,
                 this.facebookLink,
                 this.tiktokLink,
-                this.telegramLink
+                this.telegramLink,
+                this.getCreatedAt(),
+                this.getUpdatedAt()
         );
     }
 
