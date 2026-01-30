@@ -16,7 +16,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class AppointmentRequest {
 
-    private Long caseId;
+    private Long taskId;
     private String appointmentDate;
     private String appointmentTime;
     private MeetingType meetingType;
@@ -27,7 +27,7 @@ public class AppointmentRequest {
     public Appointment toEntity(){
         return new Appointment(
                 null,
-                caseId,
+                taskId,
                 appointmentDate,
                 appointmentTime,
                 meetingType,

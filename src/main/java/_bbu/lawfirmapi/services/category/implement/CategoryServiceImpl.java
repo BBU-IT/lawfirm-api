@@ -1,6 +1,7 @@
 package _bbu.lawfirmapi.services.category.implement;
 
 import _bbu.lawfirmapi.exceptions.NotFoundException;
+import _bbu.lawfirmapi.exceptions.ResponseStatusException;
 import _bbu.lawfirmapi.models.DTO.category.request.CateRequest;
 import _bbu.lawfirmapi.models.DTO.category.response.CateResponse;
 import _bbu.lawfirmapi.models.Entity.Category;
@@ -53,6 +54,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CateResponse createNewCategory(CateRequest cateRequest) {
 
+        boolean isExistingCategory = categoryRepo.existsByCategoryName(cateRequest.getCategoryName());
+        if(isExistingCategory){
+            throw new ResponseStatusException(
+                    "This category is already exist in the list."
+            );
+        }
+
         Category newCategory = cateRequest.toEntity();
         newCategory.setCategoryName(cateRequest.getCategoryName().toUpperCase());
         newCategory.setCreatedAt(LocalDateTime.now());
@@ -65,6 +73,12 @@ public class CategoryServiceImpl implements CategoryService {
         Category currentCate = categoryRepo.findById(cateId).orElseThrow(
                 () -> new NotFoundException("Category with id " + cateId +  " not found.")
         );
+        boolean isExistingCategory = categoryRepo.existsByCategoryName(cateRequest.getCategoryName());
+        if(isExistingCategory){
+            throw new ResponseStatusException(
+                    "This category is already exist in the list."
+            );
+        }
         currentCate.setCategoryName(cateRequest.getCategoryName().toUpperCase());
         currentCate.setUpdatedAt(LocalDateTime.now());
         CateResponse saveUpdateCate = categoryRepo.save(currentCate).toResponse();

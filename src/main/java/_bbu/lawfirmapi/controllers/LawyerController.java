@@ -70,21 +70,21 @@ public class LawyerController extends BaseResponse {
                 tasksList);
     }
 
-        @PutMapping("/reset-password")
-    @Operation(summary = "Reset Password")
-    public ResponseEntity<ApiResponse<Void>> resetLawyerPassword(@RequestParam String email, @RequestParam String newPassword) {
-
-        // validation
-//            @NotBlank(message = "Password is required") @Size(min = 8, max = 100,
-//                    message = "Password must be between 8 and 100 characters") @Pattern(
-//                    regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$",
-//                    message = "Password must contain at least one digit, one lowercase, one uppercase, and one special character")
-        return responseEntity(true ,
-                "Password has been reset successfully.",
-                HttpStatus.ACCEPTED,
-                lawyerService.changeLawyerPasswordByEmail(newPassword , email)
-                );
-    }
+//        @PutMapping("/reset-password")
+//    @Operation(summary = "Reset Password")
+//    public ResponseEntity<ApiResponse<Void>> resetLawyerPassword(@RequestParam String email, @RequestParam String newPassword) {
+//
+//        // validation
+////            @NotBlank(message = "Password is required") @Size(min = 8, max = 100,
+////                    message = "Password must be between 8 and 100 characters") @Pattern(
+////                    regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$",
+////                    message = "Password must contain at least one digit, one lowercase, one  uppercase, and one special character")
+//        return responseEntity(true ,
+//                "Password has been reset successfully.",
+//                HttpStatus.ACCEPTED,
+//                lawyerService.changeLawyerPasswordByEmail(newPassword , email)
+//                );
+//    }
     @PutMapping("/{lawyerId}")
     public ResponseEntity<ApiResponse<AppUserResponse>> updateExistLawyerById(@RequestBody AppUserRequest appUserRequest , @PathVariable Long lawyerId ){
         return responseEntity(true,

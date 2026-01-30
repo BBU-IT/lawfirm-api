@@ -14,9 +14,11 @@ public interface CaseRepository extends JpaRepository<Case, Long> {
     @Query("SELECT DISTINCT c FROM Case c JOIN FETCH c.client  JOIN FETCH c.court ")
     List<Case> findAllWithCases();
 
-
-    boolean existsByClient_ClientIdAndCourt_CourtId(
+    boolean existsByClient_ClientIdAndCourt_CourtIdAndTitleAndStartDate(
             Long clientId,
-            Long courtId
+            Long courtId,
+            String title,
+            LocalDateTime startDate
     );
+
 }

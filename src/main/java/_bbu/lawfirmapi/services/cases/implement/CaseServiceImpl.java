@@ -1,6 +1,7 @@
 package _bbu.lawfirmapi.services.cases.implement;
 
 import _bbu.lawfirmapi.exceptions.NotFoundException;
+import _bbu.lawfirmapi.exceptions.ResponseStatusException;
 import _bbu.lawfirmapi.models.DTO.cases.request.CaseRequest;
 import _bbu.lawfirmapi.models.DTO.cases.response.CaseResponse;
 import _bbu.lawfirmapi.models.Entity.AppUser;
@@ -20,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,6 +49,14 @@ public class CaseServiceImpl implements CaseService  {
 
     }
     @Override
+    @SneakyThrows
+    public List<Case> getCaseNoPagination(){
+        if(caseRepository.findAll().isEmpty()){
+            throw new NotFoundException("List case not found.");
+        }
+        return caseRepository.findAll();
+    }
+    @Override
     public Case getCaseById(Long caseId){
         return caseRepository.findById(caseId).orElseThrow(
                 () -> new NotFoundException("Case with Id " + caseId + " not found.")
@@ -57,13 +65,14 @@ public class CaseServiceImpl implements CaseService  {
     @SneakyThrows
     @Override
     public CaseResponse createNewCase(CaseRequest request) {
-        boolean isExisting = caseRepository.existsByClient_ClientIdAndCourt_CourtId(
+        boolean isExisting = caseRepository.existsByClient_ClientIdAndCourt_CourtIdAndTitleAndStartDate(
                 request.getClientId(),
-                request.getCourtId()
+                request.getCourtId(),
+                request.getTitle(),
+                request.getStartedDate()
         );
         if(isExisting){
             throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
                     "This case is already exist in the list."
             );
         }

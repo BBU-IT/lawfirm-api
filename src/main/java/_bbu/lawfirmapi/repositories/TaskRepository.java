@@ -15,6 +15,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
 
     boolean existsByLawyer_AppUserIdAndLegalCase_CaseId(Long lawyerAppUserId, Long legalCaseCaseId);
-
     Page<Task> findTaskByLawyerEmail(Pageable pageable, String lawyer_email);
 }

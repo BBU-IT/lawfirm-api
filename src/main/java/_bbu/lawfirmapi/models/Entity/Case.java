@@ -44,11 +44,6 @@ public class Case extends BaseEntity {
     @ToString.Exclude
     private Court court;
 
-    @OneToOne(mappedBy = "aCase")
-    @ToString.Exclude
-    @JsonIgnore
-    private Appointment appointment;
-
     @Column(name = "title")
     private String title;
 
@@ -77,7 +72,8 @@ public class Case extends BaseEntity {
 
 
     public CaseResponse toResponse(){
-        return new CaseResponse(this.caseId ,
+        return new CaseResponse(
+                this.caseId ,
                 this.client ,
                 this.court ,
                 this.title ,

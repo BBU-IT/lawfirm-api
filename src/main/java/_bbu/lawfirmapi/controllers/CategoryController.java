@@ -10,6 +10,7 @@ import _bbu.lawfirmapi.models.Entity.Category;
 import _bbu.lawfirmapi.models.Entity.Document;
 import _bbu.lawfirmapi.services.category.CategoryService;
 import _bbu.lawfirmapi.services.doc.DocService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/categories")
+@SecurityRequirement(name = "bearerAuth")
 public class CategoryController  extends BaseResponse {
 
     private final CategoryService categoryService;

@@ -11,6 +11,7 @@ import java.util.List;
 public interface CaseService {
 
     Page<Case> getCaseList(Pageable pageable , Integer requestedPage);
+    List<Case> getCaseNoPagination();
     Case getCaseById(Long caseId);
 
     CaseResponse createNewCase(CaseRequest caseRequest);

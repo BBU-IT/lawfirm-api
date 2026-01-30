@@ -71,8 +71,8 @@ public class FileController extends BaseResponse {
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
     @SneakyThrows
-    @GetMapping("/preview-file/{file-name}")
-    public ResponseEntity<?> getFileByFileName(@PathVariable("file-name") String fileName) {
+    @GetMapping("/preview-file")
+    public ResponseEntity<byte[]> getFileByFileName(@RequestParam String fileName) {
 
         InputStream inputStream = fileService.getFileByFileName(fileName);
 
@@ -190,22 +190,22 @@ public class FileController extends BaseResponse {
             );
 
     }
-    @GetMapping("/poster-list")
+    @GetMapping("/banner-list")
     public ResponseEntity<ApiResponse<List<String>>> fetchPostList() throws  Exception{
        return responseEntity(
                 true ,
                 "Get post list successfully",
                 HttpStatus.OK,
-                fileService.getPosterImagesList()
+                fileService.getBannerImagesList()
         );
     }
-    @PostMapping( value = "/upload-poster", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping( value = "/upload-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<FileMetaData>> insertNewPoster(MultipartFile file) throws  Exception {
         return responseEntity(
                 true ,
                 "Get new post name " + file.getName() + " successfully",
                 HttpStatus.CREATED,
-                fileService.uploadPostImages(file)
+                fileService.uploadBannerImages(file)
         );
     }
     @DeleteMapping("/{posterName}")

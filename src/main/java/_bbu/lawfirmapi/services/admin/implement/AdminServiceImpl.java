@@ -37,7 +37,11 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
+
+
+    // injection
     private final AppUserRepository appUserRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final ExpertiseRepository expertiseRepository;

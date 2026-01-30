@@ -33,7 +33,6 @@ public class AppUser extends BaseEntity implements UserDetails  {
     private Long appUserId;
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-
     @JoinColumn(name = "role_id" , referencedColumnName = "role_id")
     private Role role;
     @ManyToMany(fetch = FetchType.LAZY)
@@ -48,6 +47,10 @@ public class AppUser extends BaseEntity implements UserDetails  {
     private Set<Expertise> expertises;
     @Column(name = "full_name")
     private String fullName;
+    @OneToMany(mappedBy = "appUser" ,cascade = CascadeType.ALL)
+    @JsonIgnore
+    @ToString.Exclude
+    private List<Document> documents;
     @Column(name = "gender")
     private Gender gender;
     @Column(name = "lawyer_status")
@@ -73,6 +76,10 @@ public class AppUser extends BaseEntity implements UserDetails  {
     @Column(name = "title")
     private String title;
 
+    @OneToMany(mappedBy = "appUser" , cascade = CascadeType.ALL)
+    @JsonIgnore
+    @ToString.Exclude
+    private List<Verification> verifications;
 
     public AppUser(Object o,
                    String fullName,

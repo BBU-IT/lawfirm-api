@@ -97,13 +97,13 @@ public class FileServiceImplement implements FileService {
     }
     @Override
     @SneakyThrows
-    public List<String>  getPosterImagesList(){
+    public List<String>  getBannerImagesList(){
         List<String> objectNames = new ArrayList<>();
 
         Iterable<Result<Item>> results = minioClient.listObjects(
                 ListObjectsArgs.builder()
                         .bucket(bucketName)
-                        .prefix("Poster/")  // Filter by law type prefix
+                        .prefix("Banner/")  // Filter by law type prefix
                         .build()
         );
 
@@ -112,17 +112,17 @@ public class FileServiceImplement implements FileService {
             objectNames.add(item.objectName());
         }
         if(objectNames.isEmpty()){
-            throw  new NotFoundException("No poster list found.");
+            throw  new NotFoundException("No poster banner found.");
         }
 
         return objectNames;
     }
     @Override
     @SneakyThrows
-    public FileMetaData uploadPostImages(MultipartFile file) throws Exception {
+    public FileMetaData uploadBannerImages(MultipartFile file) throws Exception {
 
         // 1. Prefix (folder)
-        String prefix = "Poster/";
+        String prefix = "Banner/";
 
         // 2. Get extension safely
         String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());

@@ -6,6 +6,7 @@ import _bbu.lawfirmapi.models.DTO.shared.response.ApiResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
 import _bbu.lawfirmapi.models.Entity.Document;
 import _bbu.lawfirmapi.services.doc.DocService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,8 @@ public class DocumentController  extends BaseResponse {
 
     private final DocService docService;
 
-    @GetMapping
+
+    @GetMapping("/all-docs")
     public ResponseEntity<ApiResponse<Page<DocResponse>>> getDocsWithPagination(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
@@ -49,6 +51,8 @@ public class DocumentController  extends BaseResponse {
                 HttpStatus.OK,
                 docService.fetchAllDocs());
     }
+    @SecurityRequirement(name = "bearerAuth")
+
     @GetMapping("/{documentId:\\d+}")
     public ResponseEntity<ApiResponse<DocResponse>> getDocById(@PathVariable @Valid @Positive Long documentId){
         return responseEntity(true ,
@@ -56,6 +60,7 @@ public class DocumentController  extends BaseResponse {
                 HttpStatus.ACCEPTED,
                 docService.fetchDocById(documentId));
     }
+
     @GetMapping("/filter-by-category")
     public ResponseEntity<ApiResponse<List<DocResponse>>> getDocListWithCategory(@RequestParam String  categoryName){
         return responseEntity(true ,
@@ -71,6 +76,8 @@ public class DocumentController  extends BaseResponse {
                 HttpStatus.ACCEPTED,
                 docService.fetchDocByKeyword(keyword , categoryName));
     }
+    @SecurityRequirement(name = "bearerAuth")
+
     @PostMapping
     public ResponseEntity<ApiResponse<DocResponse>> insertNewDoc(@RequestBody DocRequest docRequest){
         return responseEntity(true ,
@@ -78,6 +85,8 @@ public class DocumentController  extends BaseResponse {
                 HttpStatus.CREATED,
                 docService.createNewDocument(docRequest));
     }
+    @SecurityRequirement(name = "bearerAuth")
+
     @PutMapping("/{documentId}")
     public ResponseEntity<ApiResponse<DocResponse>> updateDocById(
             @PathVariable @Valid @Positive Long documentId ,
@@ -88,6 +97,8 @@ public class DocumentController  extends BaseResponse {
                 HttpStatus.ACCEPTED,
                 docService.modifiedExistDocumentById(documentId , docRequest));
     }
+    @SecurityRequirement(name = "bearerAuth")
+
     @DeleteMapping("/{documentId}")
     public ResponseEntity<ApiResponse<Void>> deleteDocById(@PathVariable @Valid @Positive Long documentId){
         return responseEntity(true ,

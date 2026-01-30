@@ -20,13 +20,14 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/appointments")
-
+@SecurityRequirement(name = "bearerAuth")
 public class AppointmentController extends BaseResponse {
 
     private final AppointmentService appointmentService;
 
+
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<Appointment>>> fetchAllAppointment(
+    public ResponseEntity<ApiResponse<Page<AppointmentResponse>>> fetchAllAppointment(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
             @RequestParam(defaultValue = "appointmentId") String sortBy,
@@ -35,7 +36,7 @@ public class AppointmentController extends BaseResponse {
 
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
-        Page<Appointment> appointmentList = appointmentService.getAllAppointments(pageable , page);
+        Page<AppointmentResponse> appointmentList = appointmentService.getAllAppointments(pageable , page);
         return responseEntity(true ,
                 "Get appointment List"  ,
                 HttpStatus.OK ,
@@ -43,9 +44,9 @@ public class AppointmentController extends BaseResponse {
 
     }
     @GetMapping("/{appointmentId}")
-    public ResponseEntity<ApiResponse<Appointment>> fetchAppointmentById (@PathVariable Long appointmentId){
+    public ResponseEntity<ApiResponse<AppointmentResponse>> fetchAppointmentById (@PathVariable Long appointmentId){
         return responseEntity(true ,
-                "Get appointment with id "+ appointmentId + " successfully" ,
+                STR."Get appointment with id \{appointmentId} successfully",
                 HttpStatus.ACCEPTED ,
                 appointmentService.getAppointmentById(appointmentId));
     }

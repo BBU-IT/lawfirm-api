@@ -9,6 +9,7 @@ import io.jsonwebtoken.Claims;
 import jakarta.persistence.criteria.Join;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -41,6 +42,18 @@ public  class MethodHelper {
             Join<Document, Category> categoryJoin = root.join("category");
             return cb.like(cb.upper(categoryJoin.get("categoryName")), "%" + name.toUpperCase() + "%");
         };
+    }
+
+
+
+    public boolean isLawyer(Authentication auth) {
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_LAWYER"));
+    }
+
+    public boolean isAdmin(Authentication auth) {
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
     }
 
 

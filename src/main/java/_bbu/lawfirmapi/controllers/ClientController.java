@@ -52,14 +52,12 @@ public class ClientController extends BaseResponse {
                 clientService.getAllClientList());
     }
     @GetMapping("/request")
-
     public ResponseEntity<ApiResponse<Page<Client>>> getClientByEmail(
             @RequestParam String email,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
             @RequestParam(defaultValue = "clientId") String sortBy,
             @RequestParam(defaultValue = "true") Boolean ascending
-
     ){
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
@@ -69,10 +67,6 @@ public class ClientController extends BaseResponse {
                 HttpStatus.OK,
                 clients);
     }
-
-
-
-
     @GetMapping("/{clientId}")
     public ResponseEntity<ApiResponse<Client>> retrieveClientById(@PathVariable Long clientId){
         return responseEntity(true ,
@@ -103,6 +97,6 @@ public class ClientController extends BaseResponse {
                 "Delete client id " + clientId + " successfully",
                 HttpStatus.ACCEPTED,
                 clientService.removeClientById(clientId)
-                );
+        );
     }
 }

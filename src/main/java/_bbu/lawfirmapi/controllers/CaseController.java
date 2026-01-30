@@ -32,10 +32,9 @@ public class CaseController extends BaseResponse {
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "caseId") String sortBy,
             @RequestParam(defaultValue = "true") Boolean ascending
-    ){
+    ) {
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
-
         Page<Case> caseList =   caseService.getCaseList(pageable , page);
         return responseEntity(true,
                 "Get all cases successfully",
@@ -43,11 +42,18 @@ public class CaseController extends BaseResponse {
                 caseList);
     }
 
+    @GetMapping("/no-pagination")
+    public ResponseEntity<ApiResponse<List<Case>>> fetchCaseList(){
+        return responseEntity(true ,
+                "Get case list successfully",
+                HttpStatus.ACCEPTED,
+                caseService.getCaseNoPagination());
+    }
     @GetMapping("/{caseId}")
 
     public ResponseEntity<ApiResponse<Case>> fetchCaseById(@PathVariable Long caseId){
         return responseEntity(true ,
-                "Get case with id " + caseId +" successfully",
+                "Get case with id " + caseId + " successfully",
                 HttpStatus.ACCEPTED,
                 caseService.getCaseById(caseId));
     }

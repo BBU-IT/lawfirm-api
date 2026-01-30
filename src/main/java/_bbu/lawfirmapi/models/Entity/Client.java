@@ -49,9 +49,10 @@ public class Client extends BaseEntity {
 
     @OneToMany(mappedBy = "client" , cascade = CascadeType.ALL)
     // "client"that map by id field name in table which has relation with
-    @JsonIgnore  // Add this
+    @JsonIgnore
     @ToString.Exclude
     private List<Case> cases;
+
 
     public Client(Object o, String clientName, String email, ClientStatus status, String phoneNumber, String address, String complaint, String clientImage ) {
     }

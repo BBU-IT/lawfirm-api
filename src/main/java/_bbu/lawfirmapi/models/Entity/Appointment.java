@@ -28,14 +28,18 @@ public class Appointment extends BaseEntity {
     @Column(name = "appointment_id")
     private Long appointmentId;
 
-
     @OneToOne(fetch = FetchType.LAZY)  // "appointment" matches Case.appointment
-    @JoinColumn(name = "case_id" , referencedColumnName = "case_id")
+    @JoinColumn(name = "task_id" , referencedColumnName = "task_id")
     @ToString.Exclude
     @JsonIgnore
-    private Case aCase;
+    private Task task;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "appuser_id" , referencedColumnName = "appuser_id")
+//    private AppUser lawyer;
 
     @Column(name = "appointment_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private String appointmentDate;
 
     @Column(name = "appointment_time" , columnDefinition = "TEXT" )
@@ -56,7 +60,7 @@ public class Appointment extends BaseEntity {
     private AppointmentStatus status;
 
 
-    public Appointment(Long o, Long caseId, String appointmentDate, String appointmentTime, MeetingType meetingType, String location, String purpose, AppointmentStatus status) {
+    public Appointment(Long o, Long taskId, String appointmentDate, String appointmentTime, MeetingType meetingType, String location, String purpose, AppointmentStatus status) {
     }
 
 
@@ -64,13 +68,15 @@ public class Appointment extends BaseEntity {
 
         return new AppointmentResponse(
                 appointmentId,
-                aCase,
+                task,
                 appointmentDate,
                 appointmentTime,
                 meetingType,
                 location,
                 purpose,
-                status
+                status,
+                this.getCreatedAt(),
+                this.getUpdatedAt()
         );
     }
 }

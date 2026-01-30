@@ -11,12 +11,17 @@ import _bbu.lawfirmapi.models.DTO.auth.request.AuthRequest;
 import _bbu.lawfirmapi.models.DTO.auth.response.AuthResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.ApiResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
+import _bbu.lawfirmapi.models.Entity.AppUser;
 import _bbu.lawfirmapi.services.admin.AdminService;
 import _bbu.lawfirmapi.jwt.JwtService;
+import _bbu.lawfirmapi.services.auth.AppUserService;
 import _bbu.lawfirmapi.utils.MethodHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,6 +46,7 @@ public class AuthController extends BaseResponse {
     private final JwtService jwtService;
     private final AdminService adminService;
     private final MethodHelper helper;
+    private final AppUserService appUserService;
 
 
     private void authenticate(String email , String password) throws Exception {
@@ -61,7 +67,6 @@ public class AuthController extends BaseResponse {
 
         final UserDetails userDetails = adminService.loadUserByUsername(request.getEmail());
 
-        System.out.println("Detail " + userDetails);
 
        final String token = jwtService.generateToken(userDetails);
         final String expiredTokenDateTime = helper.extractExpirationDateInCambodia(token);
@@ -82,4 +87,20 @@ public class AuthController extends BaseResponse {
                 HttpStatus.CREATED,
                 adminService.registerNewLawyer(request));
     }
+
+    @PutMapping("/reset-password")
+    @Operation(summary = "Reset Password")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(@RequestParam String email, @RequestParam String newPassword) {
+//        @NotBlank(message = "Password is required") @Size(min = 8, max = 100,
+//                message = "Password must be between 8 and 100 characters") @Pattern(
+//                regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$",
+//                message = "Password must contain at least one digit, one lowercase, one uppercase, and one special character")
+        return responseEntity(true ,
+                "Password has been reset successfully.",
+                HttpStatus.OK,
+                appUserService.resetNewPasswordByEmail(email, newPassword)
+                );
+
+    }
+
 }

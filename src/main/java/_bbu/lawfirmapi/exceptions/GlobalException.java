@@ -111,6 +111,11 @@ public class GlobalException extends BaseResponse {
         return problemDetailResponseEntityCustom(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(ExpireOTPCodeException.class)
+    public ResponseEntity<?> handleExpiredOTP(ExpireOTPCodeException e) {
+        return problemDetailResponseEntityCustom(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     // @ExceptionHandler(SQLException.class)
     // public ResponseEntity<?> handleSQLException(SQLException e) {
     // return problemDetailResponseEntityCustom(e.getMessage(),

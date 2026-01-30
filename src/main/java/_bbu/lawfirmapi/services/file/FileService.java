@@ -13,8 +13,8 @@ public interface FileService {
     List<String> filterFileByLawType(String lawType) throws Exception;
     String getPdfPreviewUrl(String objectName) throws  Exception;
     FileMetaData uploadFile(MultipartFile file);
-    List<String> getPosterImagesList();
-    FileMetaData uploadPostImages(MultipartFile file) throws  Exception ;
+    List<String> getBannerImagesList();
+    FileMetaData uploadBannerImages(MultipartFile file) throws  Exception ;
     InputStream getFileByFileName(String fileName);
 
     List<FileMetaData> bulkUploadFile(List<MultipartFile> files);

@@ -32,7 +32,9 @@ public class Document extends BaseEntity {
 //    @JsonIgnore
     @JsonBackReference
     private Category category;
-
+    @ManyToOne(fetch = FetchType.LAZY )
+    @JoinColumn(name = "appuser_id" , nullable = true)
+    private AppUser appUser;
     public Document(Object o, String title, String fileCover, String fileUrl , Long categoryId) {
     }
 

@@ -4,6 +4,8 @@ import _bbu.lawfirmapi.models.DTO.task.response.TaskResponse;
 import _bbu.lawfirmapi.models.Enumerations.TaskPriority;
 import _bbu.lawfirmapi.models.Enumerations.TaskStatus;
 import _bbu.lawfirmapi.utils.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +18,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Entity
 @Table(name = "tasks")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Task extends BaseEntity {
 
     @Id
@@ -41,6 +44,10 @@ public class Task extends BaseEntity {
     @Column(name = "due_date")
     private LocalDateTime dueDate;
 
+    @OneToOne(mappedBy = "task")
+    @ToString.Exclude
+    @JsonIgnore
+    private Appointment appointment;
 
     public Task(Objects o, Long caseId , Long lawyerId , String title , String description ,TaskStatus status , TaskPriority taskPriority , LocalDateTime startDate, LocalDateTime dueDate ){
 

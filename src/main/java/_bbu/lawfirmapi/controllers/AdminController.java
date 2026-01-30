@@ -27,9 +27,10 @@ import static org.hibernate.internal.CoreLogging.logger;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/api/v1/admins")
 @SecurityRequirement(name = "bearerAuth")
 public class AdminController extends BaseResponse {
+
     private final AdminService adminService;
     private final ChartConstants chartConstants;
 
@@ -86,7 +87,6 @@ public class AdminController extends BaseResponse {
                         adminService.fetchMonthlyStats(year)
                 );
             }
-
             case "quarterly" -> {
                 validateYear(year);
                 chart = new ChartResponse(
