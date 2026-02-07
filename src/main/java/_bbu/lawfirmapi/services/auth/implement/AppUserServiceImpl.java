@@ -68,7 +68,7 @@ public class AppUserServiceImpl implements AppUserService {
     public String sendNews(String email){
 
         // prepare mail to user
-        MimeMessage mimeMessage =javaMailSender.createMimeMessage();
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());

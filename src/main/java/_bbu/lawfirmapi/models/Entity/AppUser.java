@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "app_users")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonPropertyOrder({"appUserId" , "fullName", "gender","lawyerStatus", "email" , "phoneNumber","password" , "image" , "facebookLink" , "tiktokLink" , "telegramLink" ,"description" , "title","name" , "username" , "role", "expertises", "createdAt" , "updatedAt" })
+
 @ToString
 //@JsonPropertyOrder({"appUserId" , "" })
 public class AppUser extends BaseEntity implements UserDetails  {
@@ -35,6 +37,7 @@ public class AppUser extends BaseEntity implements UserDetails  {
     @ToString.Exclude
     @JoinColumn(name = "role_id" , referencedColumnName = "role_id")
     private Role role;
+    @JsonManagedReference
     @ManyToMany(fetch = FetchType.LAZY)
     // create for many-many between appuser & expertise
     @JoinTable(
@@ -42,8 +45,8 @@ public class AppUser extends BaseEntity implements UserDetails  {
             joinColumns = @JoinColumn(name = "appuser_id"),
             inverseJoinColumns = @JoinColumn(name = "expertise_id")
     )
-    @ToString.Exclude
-    @JsonIgnore
+//    @ToString.Exclude
+//    @JsonIgnore
     private Set<Expertise> expertises;
     @Column(name = "full_name")
     private String fullName;
@@ -59,7 +62,6 @@ public class AppUser extends BaseEntity implements UserDetails  {
     private String email;
     @Column(name = "phone_number")
     private String phoneNumber;
-
     @Column(name = "password")
     private String password;
     @Column(name = "image")

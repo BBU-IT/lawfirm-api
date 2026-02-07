@@ -2,6 +2,7 @@ package _bbu.lawfirmapi.models.Entity;
 
 import _bbu.lawfirmapi.models.DTO.expertise.response.ExpertiseResponse;
 import _bbu.lawfirmapi.utils.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -29,6 +30,7 @@ public class Expertise extends BaseEntity {
     @Column(name = "expert_name")
     private String expertName;
 
+    @JsonBackReference
     @ManyToMany(mappedBy = "expertises" )
     @JsonIgnore
     private Set<AppUser> lawyerProfiles;

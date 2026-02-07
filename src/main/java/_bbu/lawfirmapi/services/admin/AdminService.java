@@ -26,6 +26,8 @@ public interface AdminService extends UserDetailsService {
     List<AppUserResponse> getAllLawyerListNoPagination();
 
     List<Integer> fetchMonthlyStats(int year);
+    List<Integer> fetchOnlyMonthStats();
+
     List<Integer> fetchQuarterlyStats(int year);
     ChartResponse fetchAnnualStats();
 

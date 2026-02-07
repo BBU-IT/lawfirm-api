@@ -83,7 +83,6 @@ public class ClientServiceImpl implements ClientService {
         return clients;
     }
 
-
     @Override
     public Page<ClientListResponse> getUniqueClient(Pageable pageable , Integer requestPage ){
         Page<ClientListResponse> clients = clientRepository.findAllUniqueClients(pageable , requestPage ); // Get ALL clients

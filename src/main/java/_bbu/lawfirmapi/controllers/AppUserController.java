@@ -16,13 +16,15 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/api/v1/app-user")
 @RequiredArgsConstructor
-// this controller is use for lawyer which is appuser for track email to notification  for client
+// this controller is use for lawyer which is app user for track email to notification  for client
 public class AppUserController {
     private final AppUserService appUserService;
     @PostMapping("/send")
     @Operation(summary = "Send new event")
     public ResponseEntity<?> resentOTP(@RequestParam String email) {
+
         String resent = appUserService.sendNews(email);
+
         ApiResponse<AppUserResponse> response = ApiResponse.<AppUserResponse>builder().success(true)
                 .message(resent).status(HttpStatus.OK).code(HttpStatus.OK.value())
                 .timestamps(LocalDateTime.now()).build();

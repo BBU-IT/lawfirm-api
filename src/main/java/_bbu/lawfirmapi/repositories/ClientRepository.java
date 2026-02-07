@@ -1,5 +1,6 @@
 package _bbu.lawfirmapi.repositories;
 
+import _bbu.lawfirmapi.models.DTO.MonthlyStatistic;
 import _bbu.lawfirmapi.models.DTO.client.request.ClientRequest;
 import _bbu.lawfirmapi.models.DTO.client.response.ClientListResponse;
 import _bbu.lawfirmapi.models.DTO.client.response.ClientResponse;
@@ -25,6 +26,19 @@ public interface ClientRepository extends JpaRepository<Client , Long> {
                     GROUP BY MONTH (c.createdAt)
     """)
     List<Object[]> getMonthlyStatistic(@Param("year") int year);
+
+    @Query("""
+    SELECT new _bbu.lawfirmapi.models.DTO.MonthlyStatistic(
+        MONTH(c.createdAt),
+        COUNT(c)
+    )
+    FROM Client c
+    GROUP BY MONTH(c.createdAt)
+""")
+    List<MonthlyStatistic> getOnlyMonthlyStatistic();
+
+
+
     @Query("""
     SELECT
         ((MONTH(c.createdAt) - 1) / 3) + 1,

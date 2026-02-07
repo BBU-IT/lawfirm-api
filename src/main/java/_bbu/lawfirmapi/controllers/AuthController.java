@@ -48,7 +48,6 @@ public class AuthController extends BaseResponse {
     private final MethodHelper helper;
     private final AppUserService appUserService;
 
-
     private void authenticate(String email , String password) throws Exception {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
@@ -66,7 +65,6 @@ public class AuthController extends BaseResponse {
         authenticate(request.getEmail() ,  request.getPassword());
 
         final UserDetails userDetails = adminService.loadUserByUsername(request.getEmail());
-
 
        final String token = jwtService.generateToken(userDetails);
         final String expiredTokenDateTime = helper.extractExpirationDateInCambodia(token);

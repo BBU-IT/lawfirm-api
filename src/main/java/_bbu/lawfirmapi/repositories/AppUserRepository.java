@@ -17,21 +17,19 @@ import java.util.Optional;
 @Repository
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
-    @Query("SELECT u FROM AppUser u JOIN FETCH u.role WHERE u.email = :email")
+    @Query("SELECT u FROM AppUser u LEFT JOIN FETCH u.expertises JOIN FETCH u.role WHERE u.email = :email")
     AppUser findByEmailWithRole(@Param("email") String email);
-
-
     // Fetch all lawyers with their roles
     // for admin
     @EntityGraph(attributePaths = {"role", "expertises"})
     @Query("SELECT u FROM AppUser u WHERE u.role.roleName = 'ROLE_LAWYER'")
     Page<AppUser> findAllWithExpertisesAndPagination(Pageable pageable);
 //    @EntityGraph(attributePaths = {"role", "expertises"})
-    @Query("SELECT u FROM AppUser u JOIN fetch u.expertises WHERE u.role.roleName = 'ROLE_LAWYER'")
+    @Query("SELECT u FROM AppUser u JOIN FETCH u.expertises WHERE u.role.roleName = 'ROLE_LAWYER'")
     List<AppUser> findAllWithExpertises();
 
 
-    @Query("SELECT u FROM AppUser u JOIN fetch u.expertises WHERE u.role.roleName = 'ROLE_LAWYER'")
+    @Query("SELECT u FROM AppUser u JOIN FETCH u.expertises WHERE u.role.roleName = 'ROLE_LAWYER'")
     List<AppUser> findAllWithExpertisesNoPagination();
     @Query("SELECT u FROM AppUser u WHERE u.role.roleName = 'ROLE_LAWYER' AND u.appUserId = :lawyerId ")
     Optional<AppUser> findLawyerByAppUserId(@Param("lawyerId") Long lawyerId);
@@ -44,6 +42,6 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
     int resetPassword(@Param("newPassword") String newPassword , @Param("email") String email );
 
-    @Query("SELECT u FROM AppUser u JOIN fetch u.expertises WHERE u.email = :email")
+    @Query("SELECT u FROM AppUser u JOIN FETCH u.expertises WHERE u.email = :email")
     Optional<AppUser> findAppUserByEmail(@Param("email") String email);
 }

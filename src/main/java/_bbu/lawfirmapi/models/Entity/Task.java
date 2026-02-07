@@ -6,6 +6,7 @@ import _bbu.lawfirmapi.models.Enumerations.TaskStatus;
 import _bbu.lawfirmapi.utils.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +20,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "tasks")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonPropertyOrder({"taskId" , "legalCase" , "lawyer" , "title" , "description" , "status" , "priority","startDate" , "dueDate" , "createdAt" , "updatedAt"})
 public class Task extends BaseEntity {
 
     @Id

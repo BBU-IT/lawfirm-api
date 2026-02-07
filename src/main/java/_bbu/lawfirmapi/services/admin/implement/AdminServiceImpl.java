@@ -2,6 +2,7 @@ package _bbu.lawfirmapi.services.admin.implement;
 
 import _bbu.lawfirmapi.exceptions.EmailAlreadyExistException;
 import _bbu.lawfirmapi.exceptions.NotFoundException;
+import _bbu.lawfirmapi.models.DTO.MonthlyStatistic;
 import _bbu.lawfirmapi.models.DTO.appuser.request.AppUserRequest;
 import _bbu.lawfirmapi.models.DTO.appuser.response.AppUserResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.ChartResponse;
@@ -50,6 +51,8 @@ public class AdminServiceImpl implements AdminService {
 
 
     private final String adminEmail = "gclawgroup168@gmail.com";
+
+
     public AppUser getCurrentAdminEntity() {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -66,7 +69,9 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    public AppUserResponse getCurrentAdminProfile() {
+    public AppUserResponse getCurrentAdminProfile()  {
+
+
         return getCurrentAdminEntity().toResponse();
     }
 
@@ -103,8 +108,8 @@ public class AdminServiceImpl implements AdminService {
                 !appUserRequest.getPassword().isBlank()) {
             admin.setPassword(passwordEncoder.encode(appUserRequest.getPassword()));
         }
-
-        return appUserRepository.save(admin).toResponse();
+        AppUserResponse updated = appUserRepository.save(admin).toResponse();
+        return updated;
     }
 
     @Override
@@ -144,7 +149,9 @@ public class AdminServiceImpl implements AdminService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         AppUser userDetail = appUserRepository.findByEmailWithRole(email);
-        
+
+
+//        System.out.println("User Helo" + ge());
 
         if (userDetail == null) {
             throw new UsernameNotFoundException("User does not exist");
@@ -258,6 +265,35 @@ public class AdminServiceImpl implements AdminService {
         }
         return Arrays.stream(data).boxed().toList();
     }
+    @Override
+    public List<Integer> fetchOnlyMonthStats() {
+
+        List<MonthlyStatistic> result = clientRepo.getOnlyMonthlyStatistic();
+        int[] data = new int[12];
+
+        System.out.println("result " + result);
+
+        for (MonthlyStatistic row : result) {
+
+            // handle is null
+            if (row.getMonth() == null || row.getTotal() == null) {
+                continue;
+            }
+
+            // 1–12 = 0–11
+            int monthIndex = row.getMonth() - 1;
+
+            // Prevent invalid index
+            if (monthIndex < 0 || monthIndex > 11) {
+                continue;
+            }
+
+            data[monthIndex] = row.getTotal().intValue();
+        }
+
+        return Arrays.stream(data).boxed().toList();
+    }
+
     @Override
     public List<Integer> fetchQuarterlyStats(int year){
         List<Object[]> result = clientRepo.getQuarterlyStatistic(year);

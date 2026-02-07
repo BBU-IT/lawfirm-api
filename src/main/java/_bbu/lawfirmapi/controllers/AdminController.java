@@ -101,6 +101,14 @@ public class AdminController extends BaseResponse {
                         chart = adminService.fetchAnnualStats();
             }
 
+            case "only-month" -> {
+                chart = new ChartResponse(
+                        "only-month",
+                        0,
+                        chartConstants.MONTH_CATEGORIES,
+                        adminService.fetchOnlyMonthStats()
+                );
+            }
             default -> throw new IllegalArgumentException("Invalid period");
         }
 
@@ -134,7 +142,7 @@ public class AdminController extends BaseResponse {
     public ResponseEntity<ApiResponse<AppUserResponse>> updateExistLawyerById(@RequestBody AppUserRequest appUserRequest ){
         logger(appUserRequest.getClass());
         return responseEntity(true,
-                STR."Update your profile successfully",
+                STR."Update admin profile successfully",
                 HttpStatus.ACCEPTED,
                 adminService.updateProfileAdmin(appUserRequest));
     }

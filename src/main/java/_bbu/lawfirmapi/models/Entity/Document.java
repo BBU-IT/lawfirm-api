@@ -4,6 +4,7 @@ import _bbu.lawfirmapi.models.DTO.doc.response.DocResponse;
 import _bbu.lawfirmapi.utils.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "documents")
+@JsonPropertyOrder({"docId", "title" , "fileCover" , "fileUrl"})
 public class Document extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

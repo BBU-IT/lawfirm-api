@@ -1,6 +1,5 @@
 package _bbu.lawfirmapi.services.appointment.implement;
 
-
 import _bbu.lawfirmapi.exceptions.NotFoundException;
 import _bbu.lawfirmapi.models.DTO.appointment.request.AppointmentRequest;
 import _bbu.lawfirmapi.models.DTO.appointment.response.AppointmentResponse;
@@ -41,6 +40,9 @@ public class AppointServiceImpl implements AppointmentService {
 
         return auth;
     }
+
+
+
     @Override
     public AppointmentResponse getAppointmentById(Long id) {
 
@@ -76,6 +78,8 @@ public class AppointServiceImpl implements AppointmentService {
         }
         return appointmentsList.map(Appointment::toResponse);
     }
+
+
     @Override
     public AppointmentResponse createNewAppointment(AppointmentRequest appointmentRequest) {
 
