@@ -36,9 +36,6 @@ public interface ClientRepository extends JpaRepository<Client , Long> {
     GROUP BY MONTH(c.createdAt)
 """)
     List<MonthlyStatistic> getOnlyMonthlyStatistic();
-
-
-
     @Query("""
     SELECT
         ((MONTH(c.createdAt) - 1) / 3) + 1,
@@ -69,5 +66,48 @@ public interface ClientRepository extends JpaRepository<Client , Long> {
     GROUP BY c.email
 """)
     Page<ClientListResponse> findAllUniqueClients(Pageable pageable , Integer requestPage);
-    Page<Client> findByEmail(Pageable pageable , @Param("email") String email);
+
+    @Query(
+            value = """
+        SELECT new _bbu.lawfirmapi.models.DTO.client.response.ClientListResponse(
+            c.email,
+            MAX(c.clientName),
+            COUNT(c.clientId)
+        )
+        FROM Client c
+        WHERE (:email IS NULL OR LOWER(c.email) LIKE LOWER(CONCAT('%', :email, '%')))
+        GROUP BY c.email
+    """,
+            countQuery = """
+        SELECT COUNT(DISTINCT c.email)
+        FROM Client c
+        WHERE (:email IS NULL OR LOWER(c.email) LIKE LOWER(CONCAT('%', :email, '%')))
+    """
+    )
+    Page<ClientListResponse> findClientRequestByEmail(
+            @Param("email") String email,
+            Pageable pageable,
+            Integer requestedPage
+    );
+
+    @Query("""
+    SELECT c FROM Client c
+    WHERE LOWER(c.clientName) LIKE LOWER(CONCAT('%' ,:keyword  ,'%'))
+    OR LOWER(c.email) LIKE LOWER(CONCAT('%' , :keyword , '%'))
+    OR LOWER(c.phoneNumber) LIKE LOWER(CONCAT('%' , :keyword , '%'))
+    OR LOWER(c.address) LIKE LOWER(CONCAT('%' , :keyword , '%'))
+    OR LOWER(c.complaint) LIKE LOWER(CONCAT('%' , :keyword , '%'))
+""")
+    Page<Client> searchClients(@Param("keyword") String keyword , Pageable pageable);
+    @Query("""
+    SELECT c FROM Client c
+    WHERE LOWER(c.clientName) LIKE LOWER(CONCAT('%' ,:keyword  ,'%'))
+    AND LOWER(c.email) LIKE LOWER(CONCAT('%' , :email , '%'))
+    OR LOWER(c.phoneNumber) LIKE LOWER(CONCAT('%' , :keyword , '%'))
+    OR LOWER(c.address) LIKE LOWER(CONCAT('%' , :keyword , '%'))
+    OR LOWER(c.complaint) LIKE LOWER(CONCAT('%' , :keyword , '%'))
+""")
+    Page<Client> searchDetailClientRequest(@Param("keyword") String keyword , @Param("email") String email, Pageable pageable);
+
+    Page<Client> findByEmail(Pageable pageable, String email);
 }

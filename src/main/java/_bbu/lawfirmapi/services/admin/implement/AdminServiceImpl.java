@@ -148,10 +148,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        AppUser userDetail = appUserRepository.findByEmailWithRole(email);
-
-
-//        System.out.println("User Helo" + ge());
+        AppUser userDetail = appUserRepository.findByEmailWithRole(email.trim());
 
         if (userDetail == null) {
             throw new UsernameNotFoundException("User does not exist");
@@ -165,7 +162,6 @@ public class AdminServiceImpl implements AdminService {
             throw new EmailAlreadyExistException("Email already exists: " + email);
         }
     }
-
     @Override
     public AppUserResponse registerNewLawyer(AppUserRequest appUserRequest) {
 
@@ -187,9 +183,9 @@ public class AdminServiceImpl implements AdminService {
         newLawyer.setFullName(appUserRequest.getFullName());
         newLawyer.setGender(appUserRequest.getGender());
         newLawyer.setLawyerStatus(appUserRequest.getLawyerStatus());
-        newLawyer.setEmail(appUserRequest.getEmail());
+        newLawyer.setEmail(appUserRequest.getEmail().trim());
         newLawyer.setPhoneNumber(appUserRequest.getPhoneNumber());
-        newLawyer.setPassword(passwordEncoder.encode(appUserRequest.getPassword()));
+        newLawyer.setPassword(passwordEncoder.encode(appUserRequest.getPassword().trim()));
         newLawyer.setRole(role);
         newLawyer.setExpertises(expertiseEntities);
         newLawyer.setImage(appUserRequest.getImage());
@@ -224,11 +220,11 @@ public class AdminServiceImpl implements AdminService {
 
 
         currentLawyer.setFullName(appUserRequest.getFullName());
-        currentLawyer.setEmail(appUserRequest.getEmail());
+        currentLawyer.setEmail(appUserRequest.getEmail().trim());
         currentLawyer.setGender(appUserRequest.getGender());
         currentLawyer.setLawyerStatus(appUserRequest.getLawyerStatus());
         currentLawyer.setPhoneNumber(appUserRequest.getPhoneNumber());
-        currentLawyer.setPassword(appUserRequest.getPassword());
+        currentLawyer.setPassword(appUserRequest.getPassword().trim());
         currentLawyer.setImage(appUserRequest.getImage());
         currentLawyer.setDescription(appUserRequest.getDescription());
         currentLawyer.setTitle(appUserRequest.getTitle());
@@ -271,7 +267,6 @@ public class AdminServiceImpl implements AdminService {
         List<MonthlyStatistic> result = clientRepo.getOnlyMonthlyStatistic();
         int[] data = new int[12];
 
-        System.out.println("result " + result);
 
         for (MonthlyStatistic row : result) {
 

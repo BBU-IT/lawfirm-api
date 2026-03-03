@@ -20,7 +20,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "tasks")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@JsonPropertyOrder({"taskId" , "legalCase" , "lawyer" , "title" , "description" , "status" , "priority","startDate" , "dueDate" , "createdAt" , "updatedAt"})
+@JsonPropertyOrder({"taskId" , "legalCase" , "lawyer" , "title" , "description" , "status" , "priority","startedDate" , "dueDate" , "createdAt" , "updatedAt"})
 public class Task extends BaseEntity {
 
     @Id
@@ -42,7 +42,7 @@ public class Task extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private TaskPriority priority;
     @Column(name = "start_date")
-    private LocalDateTime startDate;
+    private LocalDateTime startedDate;
     @Column(name = "due_date")
     private LocalDateTime dueDate;
 
@@ -51,7 +51,7 @@ public class Task extends BaseEntity {
     @JsonIgnore
     private Appointment appointment;
 
-    public Task(Objects o, Long caseId , Long lawyerId , String title , String description ,TaskStatus status , TaskPriority taskPriority , LocalDateTime startDate, LocalDateTime dueDate ){
+    public Task(Objects o, Long caseId , Long lawyerId , String title , String description ,TaskStatus status , TaskPriority taskPriority , LocalDateTime startedDate, LocalDateTime dueDate ){
 
     }
     public TaskResponse toResponse(){
@@ -63,7 +63,7 @@ public class Task extends BaseEntity {
                 this.description,
                 this.status,
                 this.priority,
-                this.startDate,
+                this.startedDate,
                 this.dueDate
         );
 

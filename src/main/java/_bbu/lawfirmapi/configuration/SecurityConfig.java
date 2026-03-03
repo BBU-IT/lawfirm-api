@@ -45,14 +45,14 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/api/v1/auths/**",
-                                "/api/v1/appointments/**",
+//                                "/api/v1/appointments/**",
                                 "/api/v1/courts/**",
                                 "/api/v1/cases/**",
                                 "/api/v1/expertises/**",
                                 "/api/v1/app-user/**",
                                 "/api/v1/files/**",
                                 "/api/v1/services/**",
-                                "/api/v1/clients/**",
+//                                "/api/v1/clients/**",
                                 "/api/v1/lawyers/**",
                                 // this endpoint will be protected for admin only the rest of get method for everyone
 //                                "/api/v1/documents/**",
@@ -63,16 +63,18 @@ public class SecurityConfig {
                                 "/api/v1/verifications/**"
                         ).permitAll()
                         .requestMatchers("/api/v1/admins/**").hasRole(roleStatus[1])
+                                .requestMatchers("/api/v1/clients/**").hasRole(roleStatus[1])
 //                        .requestMatchers(HttpMethod.DELETE, "/api/v1/admin/lawyers/**")
 //                        .hasRole("ADMIN")
 //                        .requestMatchers(HttpMethod.PUT, "/api/v1/admin/lawyers/**")
 //                        .hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.GET , "/api/v1/documents/filter-by-category" ,
+                       .requestMatchers(HttpMethod.GET , "/api/v1/documents/filter-by-category" ,
                                         "/api/v1/documents/search-document",
                                         "/api/v1/documents/without-pagination",
                                         "/all-docs").permitAll()
-                        .requestMatchers("/api/v1/appointments/**").hasAnyRole(roleStatus[0] , roleStatus[1] )
+                        .requestMatchers("/api/v1/appointments/**").hasAnyRole(roleStatus[0] , roleStatus[1])
                         .requestMatchers("/api/v1/admin/**").hasRole(roleStatus[1])
+//                                .requestMatchers("/api/v1/appointments/**").hasAnyRole(roleStatus[0] , roleStatus[1])
                                 .requestMatchers(HttpMethod.GET,
                                         "/api/v1/documents/**"
                                 ).hasAnyRole(roleStatus[0], roleStatus[1])

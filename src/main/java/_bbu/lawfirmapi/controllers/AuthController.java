@@ -62,7 +62,7 @@ public class AuthController extends BaseResponse {
     @PostMapping("/login")
     @Operation(summary = "Login")
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request) throws Exception {
-        authenticate(request.getEmail() ,  request.getPassword());
+        authenticate(request.getEmail().trim() ,  request.getPassword().trim());
 
         final UserDetails userDetails = adminService.loadUserByUsername(request.getEmail());
 
@@ -85,7 +85,6 @@ public class AuthController extends BaseResponse {
                 HttpStatus.CREATED,
                 adminService.registerNewLawyer(request));
     }
-
     @PutMapping("/reset-password")
     @Operation(summary = "Reset Password")
     public ResponseEntity<ApiResponse<Void>> resetPassword(@RequestParam String email, @RequestParam String newPassword) {

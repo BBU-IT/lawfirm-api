@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/clients")
-//@SecurityRequirement(name = "bearerAuth")
+@SecurityRequirement(name = "bearerAuth")
 
 public class ClientController extends BaseResponse {
 
@@ -50,6 +51,49 @@ public class ClientController extends BaseResponse {
                 "Get client list successfully.",
                 HttpStatus.OK,
                 clientService.getAllClientList());
+    }
+//    @GetMapping("/search-client-req")
+//    public ResponseEntity<ApiResponse<Page<ClientListResponse>>> searchClientRequestList(
+////            @RequestParam String keyword,
+//            @RequestParam(required = false) String email,
+//            @PageableDefault(
+//                    sort = "email",
+//                    direction = Sort.Direction.ASC
+//            )
+//            @RequestParam(defaultValue = "1") Integer page,
+//            @RequestParam(defaultValue = "5") Integer size,
+//            @RequestParam(defaultValue = "clientId") String sortBy,
+//            @RequestParam(defaultValue = "true") Boolean ascending
+//    ){
+//        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+//        Pageable pageable = PageRequest.of(page - 1, size, sort);
+//        Page<ClientListResponse> clients = clientService.searchClientRequestByEmail(pageable , page ,email );
+//        return responseEntity(true ,
+//                "Search client by email's keyword " + email +" successfully.",
+//                HttpStatus.OK,
+//                clients);
+//    }
+    @GetMapping("/search-client-req")
+    public ResponseEntity<ApiResponse<Page<ClientListResponse>>> searchClientRequestList(
+            @RequestParam(required = false) String email,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "5") Integer size
+    ) {
+        Pageable pageable = PageRequest.of(
+                page - 1,
+                size,
+                Sort.by("email").ascending()
+        );
+
+        Page<ClientListResponse> clients =
+                clientService.searchClientRequestByEmail(pageable,page , email);
+
+        return responseEntity(
+                true,
+                "Search client by email's keyword " + email + " successfully.",
+                HttpStatus.OK,
+                clients
+        );
     }
     @GetMapping("/request")
     public ResponseEntity<ApiResponse<Page<Client>>> getClientByEmail(

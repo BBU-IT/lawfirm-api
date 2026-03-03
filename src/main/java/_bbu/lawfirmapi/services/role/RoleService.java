@@ -10,7 +10,7 @@ public interface RoleService  {
     // jpa
     List<Role> getAllRoles();
    Role findRoleByRoleId(Integer roleId);
-
+    Role findRoleByKeyword(String keyword);
     RoleResponse createNewRoleList (RoleRequest newRoleRequest);
 
     RoleResponse updateRoleById(Integer roleId, RoleRequest updateRole);

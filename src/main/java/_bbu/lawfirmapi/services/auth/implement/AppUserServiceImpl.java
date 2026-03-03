@@ -95,7 +95,7 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
      public  AppUserResponse verifyOTPByEmail(String email, String otp, Boolean isOTPRegister) throws MessagingException {
 
-        Verification userVerification = verificationRepo.findTopByEmailOrderByExpireDateTimeDesc(email)
+        Verification userVerification = verificationRepo.findTopByEmailOrderByExpireDateTimeDesc(email.trim())
                 .orElseGet(Verification::new);
 
         // validate user verify is null
@@ -110,7 +110,7 @@ public class AppUserServiceImpl implements AppUserService {
         if (!userVerification.getVerifiedCode().equals(otp)) {
             throw new InvalidException("Invalid OTP.");
         }
-        AppUser appUser = appUserRepository.findAppUserByEmail(email)
+        AppUser appUser = appUserRepository.findAppUserByEmail(email.trim())
                 .orElseThrow(() -> new NotFoundException("App user not found."));
         // send to email of admin for approval
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -139,9 +139,9 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public Void resetNewPasswordByEmail(String email ,  String newPassword){
 
-        String newPasswordEncoder = passwordEncoder.encode(newPassword);
+        String newPasswordEncoder = passwordEncoder.encode(newPassword.trim());
 
-        int updatedNewPassword = appUserRepository.resetPassword(newPasswordEncoder , email);
+        int updatedNewPassword = appUserRepository.resetPassword(newPasswordEncoder , email.trim());
 
         if(updatedNewPassword == 0){
             throw new RuntimeException("User not found");

@@ -7,6 +7,7 @@ import _bbu.lawfirmapi.models.DTO.task.response.TaskResponse;
 import _bbu.lawfirmapi.models.Entity.AppUser;
 import _bbu.lawfirmapi.models.Entity.Case;
 import _bbu.lawfirmapi.models.Entity.Task;
+import _bbu.lawfirmapi.models.Enumerations.TaskStatus;
 import _bbu.lawfirmapi.repositories.AppUserRepository;
 import _bbu.lawfirmapi.repositories.CaseRepository;
 import _bbu.lawfirmapi.repositories.TaskRepository;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -49,6 +52,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public List<Task> filterTaskByStatus(TaskStatus status){
+
+        List<Task> filteredTask = taskRepo.findTaskByStatus(status);
+        return filteredTask;
+    }
+    @Override
     public TaskResponse createNewTask(TaskRequest taskRequest) {
         boolean isExisting = taskRepo.existsByLawyer_AppUserIdAndLegalCase_CaseId(
                 taskRequest.getLawyerId(),
@@ -73,7 +82,7 @@ public class TaskServiceImpl implements TaskService {
         newTask.setDescription(taskRequest.getDescription());
         newTask.setPriority(taskRequest.getTaskPriority());
         newTask.setStatus(taskRequest.getStatus());
-        newTask.setStartDate(taskRequest.getStartedDate());
+        newTask.setStartedDate(taskRequest.getStartedDate());
         newTask.setDueDate(taskRequest.getDueDate());
 
         return taskRepo.save(newTask).toResponse();
@@ -106,7 +115,7 @@ public class TaskServiceImpl implements TaskService {
         currentTask.setDescription(taskRequest.getDescription());
         currentTask.setStatus(taskRequest.getStatus());
         currentTask.setPriority(taskRequest.getTaskPriority());
-        currentTask.setStartDate(taskRequest.getStartedDate());
+        currentTask.setStartedDate(taskRequest.getStartedDate());
 
         currentTask.setDueDate(taskRequest.getDueDate());
 

@@ -5,6 +5,7 @@ import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
 import _bbu.lawfirmapi.models.DTO.task.request.TaskRequest;
 import _bbu.lawfirmapi.models.DTO.task.response.TaskResponse;
 import _bbu.lawfirmapi.models.Entity.Task;
+import _bbu.lawfirmapi.models.Enumerations.TaskStatus;
 import _bbu.lawfirmapi.services.task.TaskService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,6 +43,17 @@ public class TaskController extends BaseResponse {
                 tasksList);
      }
 
+     @GetMapping("/filter")
+     public ResponseEntity<ApiResponse<List<Task>>> filterTask(
+
+             @RequestParam TaskStatus taskStatus
+
+             ){
+         return responseEntity(true,
+                 "Get task with status" + taskStatus +" successfully.",
+                 HttpStatus.CREATED,
+                 taskService.filterTaskByStatus(taskStatus));
+     }
      @GetMapping("/{taskId}")
     public ResponseEntity<ApiResponse<Task>> getTaskById(
 

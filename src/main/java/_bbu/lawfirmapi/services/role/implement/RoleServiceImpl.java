@@ -32,11 +32,19 @@ public class RoleServiceImpl implements RoleService {
     }
     @Override
     public List<Role> getAllRoles(){
-        System.out.println("My Current User : " + getCurrentUser());
+
         System.out.println(roleRepository.findAll().isEmpty());
         return Optional.of(roleRepository.findAll())
                 .filter(list -> !list.isEmpty())
                 .orElseThrow(() -> new NotFoundException("None any role founded"));
+    }
+    @Override
+    public Role findRoleByKeyword(String keyword){
+
+        if(keyword.isBlank()){
+            throw new NotFoundException("Cannot search your empty word");
+        }
+        return roleRepository.searchByRoleName(keyword.trim());
     }
     @Override
     public Role findRoleByRoleId(Integer roleId){

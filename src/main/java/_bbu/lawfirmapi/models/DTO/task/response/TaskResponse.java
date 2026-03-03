@@ -20,6 +20,6 @@ public class TaskResponse {
     private String description;
     private TaskStatus status;
     private TaskPriority priority;
-    private LocalDateTime  startDate;
+    private LocalDateTime  startedDate;
     private LocalDateTime dueDate;
 }

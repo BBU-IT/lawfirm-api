@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 public interface ServiceLawyerService {
 
     ServiceResponse getLawyerServiceById(Long serviceId);
-
+//    Page<ServiceResponse> fetchServiceByKeyword(String keyword);
     Page<ServiceResponse> getAllLawyerService(Pageable pageable , Integer requestedPage);
     ServiceResponse createNewLawyerService(ServiceRequest serviceRequest);
     ServiceResponse modifiedExistingLawyerServiceById(Long serviceId, ServiceRequest serviceRequest);

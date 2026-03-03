@@ -53,6 +53,8 @@ public class Client extends BaseEntity {
     @ToString.Exclude
     private List<Case> cases;
 
+//    private Long requestCount;
+
 
     public Client(Object o, String clientName, String email, ClientStatus status, String phoneNumber, String address, String complaint, String clientImage ) {
     }

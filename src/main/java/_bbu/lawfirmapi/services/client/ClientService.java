@@ -12,9 +12,10 @@ import java.util.List;
 
 public interface ClientService {
 
-    Page<Client> getAllDetailClientsByEmail(Pageable pageable , Integer requestedPage , String email);
-    List<Client> getAllClientList();
 
+    Page<Client> getAllDetailClientsByEmail(Pageable pageable , Integer requestedPage , String email );
+    List<Client> getAllClientList();
+    Page<ClientListResponse> searchClientRequestByEmail(Pageable pageable , Integer requestPage,  String email );
     Page<ClientListResponse> getUniqueClient(Pageable pageable , Integer requestPage);
     Client getClientById(Long clientId);
     ClientResponse createNewClient(ClientRequest clientRequest) throws MessagingException;

@@ -52,7 +52,14 @@ public class ServiceLawyerImplement implements ServiceLawyerService {
         }
         return serviceList;
     }
-
+//
+//    @Override
+//    public Page<ServiceResponse> fetchServiceByKeyword(String keyword){
+//
+//        Page<ServiceResponse> serviceResponses = serviceRepo.searchServiceByKeyword(keyword);
+//
+//        return null;
+//    }
     @Override
     public ServiceResponse createNewLawyerService(ServiceRequest serviceRequest) {
         _bbu.lawfirmapi.models.Entity.Service newService = serviceRequest.toEntity();

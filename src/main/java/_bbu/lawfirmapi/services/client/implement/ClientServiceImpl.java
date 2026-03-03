@@ -95,6 +95,21 @@ public class ClientServiceImpl implements ClientService {
 
         return clients;
     }
+    // search client by keyword
+
+    @Override
+    public Page<ClientListResponse> searchClientRequestByEmail(Pageable pageable,  Integer requestPage ,  String email) {
+        Page<ClientListResponse> clients = clientRepository.findClientRequestByEmail(email , pageable , requestPage );
+
+        checkOutOfPage.isInvalidPage(clients.getTotalPages() , requestPage);
+
+        if (clients.isEmpty()) {
+            throw new NotFoundException("No client list found");
+        }
+
+        return clients;
+    }
+
     @Override
     public Client getClientById(Long clientId){
         return clientRepository.findById(clientId).

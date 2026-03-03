@@ -123,7 +123,7 @@ public class AdminController extends BaseResponse {
     @GetMapping("/lawyers/{lawyerId}")
     public ResponseEntity<ApiResponse<AppUserResponse>> fetchLawyerById(@PathVariable Long lawyerId){
         return responseEntity(true ,
-                STR."Get lawyer with id \{lawyerId} successfully.",
+                "Get lawyer with id "  + lawyerId  +  " successfully.",
                 HttpStatus.ACCEPTED,
                 adminService.getLawyerById(lawyerId)
                 );
@@ -134,7 +134,7 @@ public class AdminController extends BaseResponse {
                                                                               @PathVariable Long lawyerId ){
         logger(appUserRequest.getClass());
         return responseEntity(true,
-                STR."Update lawyer id \{lawyerId} successfully",
+                "Update lawyer id " + lawyerId + " successfully",
                 HttpStatus.ACCEPTED,
                 adminService.modifiedExistLawyerById(appUserRequest , lawyerId));
     }
@@ -142,16 +142,15 @@ public class AdminController extends BaseResponse {
     public ResponseEntity<ApiResponse<AppUserResponse>> updateExistLawyerById(@RequestBody AppUserRequest appUserRequest ){
         logger(appUserRequest.getClass());
         return responseEntity(true,
-                STR."Update admin profile successfully",
+                "Update admin profile successfully",
                 HttpStatus.ACCEPTED,
                 adminService.updateProfileAdmin(appUserRequest));
     }
 
-
     @DeleteMapping("/lawyers/{lawyerId}")
     public ResponseEntity<ApiResponse<Void>> removeExistLawyer(@PathVariable Long lawyerId ){
         return responseEntity(true,
-                STR."Delete lawyer id \{lawyerId} successfully",
+                "Delete lawyer id " + lawyerId + " successfully",
                 HttpStatus.ACCEPTED,
                 adminService.removeExistLawyerById(lawyerId));
     }

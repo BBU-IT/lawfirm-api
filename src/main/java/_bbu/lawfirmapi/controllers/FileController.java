@@ -72,7 +72,7 @@ public class FileController extends BaseResponse {
     }
     @SneakyThrows
     @GetMapping("/preview-file")
-    public ResponseEntity<byte[]> getFileByFileName(@RequestParam String fileName) {
+    public ResponseEntity<byte[]> getFileByFileName(@RequestParam(required = false) String fileName) {
 
         InputStream inputStream = fileService.getFileByFileName(fileName);
 

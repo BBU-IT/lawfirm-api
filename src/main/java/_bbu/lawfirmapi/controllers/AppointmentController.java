@@ -1,5 +1,6 @@
 package _bbu.lawfirmapi.controllers;
 
+import _bbu.lawfirmapi.models.DTO.appointment.request.AppointmentFilterRequest;
 import _bbu.lawfirmapi.models.DTO.appointment.request.AppointmentRequest;
 import _bbu.lawfirmapi.models.DTO.appointment.response.AppointmentResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.ApiResponse;
@@ -43,6 +44,42 @@ public class AppointmentController extends BaseResponse {
                 appointmentList);
 
     }
+
+
+    @GetMapping("/filter-appointment")
+    public ResponseEntity<ApiResponse<Page<AppointmentResponse>>> fetchFilteredAppointment(
+            @ModelAttribute AppointmentFilterRequest requestFilter,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "5") Integer size,
+            @RequestParam(defaultValue = "appointmentId") String sortBy,
+            @RequestParam(defaultValue = "true") Boolean ascending
+            ){
+
+        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        Page<AppointmentResponse> appointmentList = appointmentService.getFilterAppointment(requestFilter , pageable , page  );
+        return responseEntity(true ,
+                "Filter appointment with " + requestFilter + " successfully" ,
+                HttpStatus.OK ,
+                appointmentList);
+    }
+    @GetMapping("/search-appointment")
+    public ResponseEntity<ApiResponse<Page<AppointmentResponse>>> fetchAppointmentByKeyword(
+            @RequestParam String keyword ,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "5") Integer size,
+            @RequestParam(defaultValue = "appointmentId") String sortBy,
+            @RequestParam(defaultValue = "true") Boolean ascending
+            ){
+        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        Page<AppointmentResponse> appointmentList = appointmentService.searchAllAppointmentBy(pageable , page , keyword);
+        return responseEntity(true ,
+                "Search appointment list by " + keyword + " successfully." ,
+                HttpStatus.OK ,
+                appointmentList);
+    }
+
     @GetMapping("/{appointmentId}")
     public ResponseEntity<ApiResponse<AppointmentResponse>> fetchAppointmentById (@PathVariable Long appointmentId){
         return responseEntity(true ,
@@ -50,14 +87,13 @@ public class AppointmentController extends BaseResponse {
                 HttpStatus.ACCEPTED ,
                 appointmentService.getAppointmentById(appointmentId));
     }
-
     @PostMapping
     public ResponseEntity<ApiResponse<AppointmentResponse>> createNewAppointment(@RequestBody AppointmentRequest appointmentRequest){
 
         return responseEntity(true ,
                 "Create new appointment successfully" ,
                 HttpStatus.CREATED ,
-                appointmentService.createNewAppointment(appointmentRequest) );
+                appointmentService.createNewAppointment(appointmentRequest));
     }
     @PutMapping(value = "/{appointmentId}" , consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<AppointmentResponse>> updateExistingAppointmentById( @PathVariable Long appointmentId,  @RequestBody AppointmentRequest appointmentRequest){

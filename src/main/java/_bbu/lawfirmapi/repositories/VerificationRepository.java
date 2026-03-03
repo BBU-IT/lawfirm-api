@@ -8,6 +8,5 @@ import java.util.Optional;
 public interface VerificationRepository extends JpaRepository<Verification , Long> {
 
 
-
     Optional<Verification> findTopByEmailOrderByExpireDateTimeDesc(String email);
 }

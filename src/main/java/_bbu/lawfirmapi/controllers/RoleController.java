@@ -32,8 +32,15 @@ public class RoleController extends BaseResponse {
     public ResponseEntity<ApiResponse<Role>> getRoleById(@PathVariable Integer roleId){
         return responseEntity(true,
                 "Getting Role " + roleService.findRoleByRoleId(roleId).getRoleName() + " success" ,
-                HttpStatus.OK ,
+                HttpStatus.OK,
                 roleService.findRoleByRoleId(roleId));
+    }
+    @GetMapping("/search-role")
+    public ResponseEntity<ApiResponse<Role>> getRoleByKeyWord(@RequestParam String keyword){
+        return responseEntity(true,
+                "Getting Role with keyword" + keyword  + " successfully" ,
+                HttpStatus.OK ,
+                roleService.findRoleByKeyword(keyword));
     }
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping
