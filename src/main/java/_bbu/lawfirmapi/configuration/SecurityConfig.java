@@ -60,10 +60,11 @@ public class SecurityConfig {
 //                                "/api/v1/admin/lawyers/**",
                                 "/api/v1/tasks/**",
                                 "/api/v1/roles/**",
-                                "/api/v1/verifications/**"
+                                "/api/v1/verifications/**",
+                                "/api/v1/clients/**"
                         ).permitAll()
                         .requestMatchers("/api/v1/admins/**").hasRole(roleStatus[1])
-                                .requestMatchers("/api/v1/clients/**").hasRole(roleStatus[1])
+  //                              .requestMatchers("/api/v1/clients/**").hasRole(roleStatus[1])
 //                        .requestMatchers(HttpMethod.DELETE, "/api/v1/admin/lawyers/**")
 //                        .hasRole("ADMIN")
 //                        .requestMatchers(HttpMethod.PUT, "/api/v1/admin/lawyers/**")

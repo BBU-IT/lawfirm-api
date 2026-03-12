@@ -87,11 +87,13 @@ public class AuthController extends BaseResponse {
     }
     @PutMapping("/reset-password")
     @Operation(summary = "Reset Password")
-    public ResponseEntity<ApiResponse<Void>> resetPassword(@RequestParam String email, @RequestParam String newPassword) {
-//        @NotBlank(message = "Password is required") @Size(min = 8, max = 100,
-//                message = "Password must be between 8 and 100 characters") @Pattern(
-//                regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$",
-//                message = "Password must contain at least one digit, one lowercase, one uppercase, and one special character")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(@RequestParam String email, @RequestParam
+    @NotBlank(message = "Password is required") @Size(min = 8, max = 100,
+            message = "Password must be between 8 and 100 characters") @Pattern(
+            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$",
+            message = "Password must contain at least one digit, one lowercase, one uppercase, and one special character")
+    String newPassword) {
+
         return responseEntity(true ,
                 "Password has been reset successfully.",
                 HttpStatus.OK,

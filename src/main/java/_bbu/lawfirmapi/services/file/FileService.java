@@ -21,5 +21,7 @@ public interface FileService {
 
     List<String> getAllImagesUrl();
 
-    Void deletePosterByName(String posterName);
+    Void deleteBannerByName(String posterName);
+
+    FileMetaData editBannerByName(String oldBannerName, MultipartFile newFile) throws Exception;
 }

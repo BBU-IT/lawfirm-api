@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/clients")
-@SecurityRequirement(name = "bearerAuth")
+//@SecurityRequirement(name = "bearerAuth")
 
 public class ClientController extends BaseResponse {
 
@@ -127,9 +127,9 @@ public class ClientController extends BaseResponse {
     }
 
     @PutMapping("/{clientId}")
-    public ResponseEntity<ApiResponse<ClientResponse>> modifiedClientById(
+    public ResponseEntity<ApiResponse<ClientResponse>> modifiedClientById (
             @RequestBody ClientRequest clientRequest ,
-            @PathVariable @Valid @Positive Long clientId){
+            @PathVariable @Valid @Positive Long clientId) throws  MessagingException{
         return responseEntity(true,
                 "Update client id " + clientId + " successfully",
                 HttpStatus.ACCEPTED,

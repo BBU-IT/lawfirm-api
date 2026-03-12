@@ -69,8 +69,22 @@ public class LawyerServiceImpl implements LawyerService {
         }
 
         return null;
+    }
+
+    @Override
+    public List<AppUserResponse> findLawyerByUsernameORPhoneNumberOREmail(String keyword){
+
+
+        List<AppUser> searchedLawyer = appUserRepository.searchLawyersByKeyword(keyword);
+
+
+
+
+        return searchedLawyer.stream().map(AppUser::toResponse).toList();
 
     }
+
+
 
 
 

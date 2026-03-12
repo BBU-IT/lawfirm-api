@@ -19,6 +19,6 @@ public interface ClientService {
     Page<ClientListResponse> getUniqueClient(Pageable pageable , Integer requestPage);
     Client getClientById(Long clientId);
     ClientResponse createNewClient(ClientRequest clientRequest) throws MessagingException;
-    ClientResponse modifiedClientById(ClientRequest clientRequest , Long clientId);
+    ClientResponse modifiedClientById(ClientRequest clientRequest , Long clientId) throws MessagingException;
     Void removeClientById(Long clientId);
 }

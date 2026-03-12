@@ -8,6 +8,11 @@ public enum ClientStatus {
     @Schema(description = "Client has submitted but not processed yet")
     PENDING,
 
+    @Schema(description = "Client has rejected")
+    REJECTED,
+    @Schema(description = "Client has been approved")
+    APPROVED,
+
     @Schema(description = "Client's case is in progress")
     IN_PROGRESS,
 

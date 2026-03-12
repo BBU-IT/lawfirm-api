@@ -1,5 +1,6 @@
 package _bbu.lawfirmapi.services.appointment.implement;
 
+import _bbu.lawfirmapi.exceptions.InvalidException;
 import _bbu.lawfirmapi.exceptions.NotFoundException;
 import _bbu.lawfirmapi.models.DTO.appointment.request.AppointmentFilterRequest;
 import _bbu.lawfirmapi.models.DTO.appointment.request.AppointmentRequest;
@@ -137,19 +138,23 @@ public class AppointServiceImpl implements AppointmentService {
     @Override
     public AppointmentResponse createNewAppointment(AppointmentRequest appointmentRequest) {
 
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Appointment newAppointment = appointmentRequest.toEntity();
-//        if(!methodHelper.isLawyer(auth)){
-//            throw new AccessDeniedException("Only lawyers can create the new appointment");
-//        }
-
         Task assignedTask = taskRepo.findById(appointmentRequest.getTaskId())
                         .orElseThrow(
                                 () -> new NotFoundException("task not found.")
                         );
+
+        Long lawyerId = assignedTask.getLawyer().getAppUserId();
+        String appointmentDate = appointmentRequest.getAppointmentDate();
+        String appointmentTime = appointmentRequest.getAppointmentTime();
+
+        if (appointmentRepo.existsByLawyerAndDateAndTime(lawyerId, appointmentDate, appointmentTime)) {
+            throw new InvalidException("Appointment of this task already exists for this lawyer on the same date and time");
+        }
+
+        Appointment newAppointment = appointmentRequest.toEntity();
         newAppointment.setTask(assignedTask);
-        newAppointment.setAppointmentDate(appointmentRequest.getAppointmentDate());
-        newAppointment.setAppointmentTime(appointmentRequest.getAppointmentTime());
+        newAppointment.setAppointmentDate(appointmentDate);
+        newAppointment.setAppointmentTime(appointmentTime);
         newAppointment.setMeetingType(appointmentRequest.getMeetingType());
         newAppointment.setLocation(appointmentRequest.getLocation());
         newAppointment.setPurpose(appointmentRequest.getPurpose());
@@ -167,13 +172,24 @@ public class AppointServiceImpl implements AppointmentService {
                 .orElseThrow(
                         () -> new NotFoundException("task id not found.")
                 );
+
+        Long lawyerId = assignedTask.getLawyer().getAppUserId();
+        String appointmentDate = appointmentRequest.getAppointmentDate();
+        String appointmentTime = appointmentRequest.getAppointmentTime();
+
+        boolean duplicateExists = appointmentRepo.existsByLawyerAndDateAndTime(lawyerId, appointmentDate, appointmentTime);
+        if (duplicateExists) {
+            throw new InvalidException("Appointment of this task already exists for this lawyer on the same date and time");
+        }
+
         currentAppointment.setTask(assignedTask);
-        currentAppointment.setAppointmentDate(appointmentRequest.getAppointmentDate());
-        currentAppointment.setAppointmentTime(appointmentRequest.getAppointmentTime());
+        currentAppointment.setAppointmentDate(appointmentDate);
+        currentAppointment.setAppointmentTime(appointmentTime);
         currentAppointment.setMeetingType(appointmentRequest.getMeetingType());
         currentAppointment.setLocation(appointmentRequest.getLocation());
         currentAppointment.setPurpose(appointmentRequest.getPurpose());
         currentAppointment.setStatus(appointmentRequest.getStatus());
+        currentAppointment.setUpdatedAt(LocalDateTime.now());
 
         Appointment updatedAppointment = appointmentRepo.save(currentAppointment);
         return updatedAppointment.toResponse();

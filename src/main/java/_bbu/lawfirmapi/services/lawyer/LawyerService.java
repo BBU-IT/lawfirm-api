@@ -18,6 +18,8 @@ public interface LawyerService {
 
     Void changeLawyerPasswordByEmail( String newPassword , String email);
 
+    List<AppUserResponse> findLawyerByUsernameORPhoneNumberOREmail(String keyword);
+
 
 
 }

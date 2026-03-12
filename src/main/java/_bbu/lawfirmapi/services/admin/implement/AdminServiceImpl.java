@@ -91,10 +91,12 @@ public class AdminServiceImpl implements AdminService {
                 .orElseThrow(() -> new NotFoundException(
                         "Role id " + appUserRequest.getRoleId() + " not found"));
 
+        String restOfPhoneNumber = appUserRequest.getPhoneNumber().trim().strip();
+        String phoneNumberNoWhiteSpace = restOfPhoneNumber.replaceAll("\\s+","");
         admin.setFullName(appUserRequest.getFullName());
         admin.setGender(appUserRequest.getGender());
         admin.setLawyerStatus(appUserRequest.getLawyerStatus());
-        admin.setPhoneNumber(appUserRequest.getPhoneNumber());
+        admin.setPhoneNumber(phoneNumberNoWhiteSpace);
         admin.setTitle(appUserRequest.getTitle());
         admin.setDescription(appUserRequest.getDescription());
         admin.setFacebookLink(appUserRequest.getFacebookLink());
@@ -307,6 +309,7 @@ public class AdminServiceImpl implements AdminService {
         List<String> categories  = new ArrayList<>();
         List<Integer> data = new ArrayList<>();
         for (Object[] row : result) {
+            if (row[0] == null) continue;
             String year = row[0].toString();
             int count = ((Number) row[1]).intValue();
 

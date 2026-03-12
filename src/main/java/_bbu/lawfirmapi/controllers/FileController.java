@@ -74,6 +74,10 @@ public class FileController extends BaseResponse {
     @GetMapping("/preview-file")
     public ResponseEntity<byte[]> getFileByFileName(@RequestParam(required = false) String fileName) {
 
+        if (fileName == null || fileName.isBlank()) {
+            return ResponseEntity.badRequest().body("File name is required".getBytes());
+        }
+
         InputStream inputStream = fileService.getFileByFileName(fileName);
 
 
@@ -208,13 +212,13 @@ public class FileController extends BaseResponse {
                 fileService.uploadBannerImages(file)
         );
     }
-    @DeleteMapping("/{posterName}")
-    public ResponseEntity<ApiResponse<Void>> removePosterByName(@RequestParam  String posterName){
+    @DeleteMapping("/delete-banner")
+    public ResponseEntity<ApiResponse<Void>> removeBannerByName(@RequestParam  String bannerName){
         return responseEntity(
                 true ,
-                "Delete poster name " + posterName + " successfully",
+                "Delete banner name " + bannerName + " successfully",
                 HttpStatus.OK,
-                fileService.deletePosterByName(posterName)
+                fileService.deleteBannerByName(bannerName)
         );
     }
 

@@ -21,5 +21,14 @@ public interface AppointmentRepository  extends JpaRepository<Appointment , Long
     @Query("SELECT a FROM Appointment  a JOIN FETCH a.task WHERE a.appointmentId = :appointmentId AND a.task.lawyer.email = :email")
     Optional<Appointment> findAppointmentByAppointmentId(@Param("appointmentId") Long appointmentId , @Param("email") String email);
 
+    @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM Appointment a " +
+           "JOIN a.task t " +
+           "WHERE t.lawyer.appUserId = :lawyerId " +
+           "AND a.appointmentDate = :appointmentDate " +
+           "AND a.appointmentTime = :appointmentTime")
+    boolean existsByLawyerAndDateAndTime(
+            @Param("lawyerId") Long lawyerId,
+            @Param("appointmentDate") String appointmentDate,
+            @Param("appointmentTime") String appointmentTime);
 
 }

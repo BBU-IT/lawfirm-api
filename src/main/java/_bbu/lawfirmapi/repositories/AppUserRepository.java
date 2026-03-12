@@ -44,4 +44,20 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
     @Query("SELECT u FROM AppUser u JOIN FETCH u.expertises WHERE u.email = :email")
     Optional<AppUser> findAppUserByEmail(@Param("email") String email);
+
+    @Query("""
+    SELECT a
+    FROM AppUser a
+    JOIN a.role r
+    JOIN a.expertises e
+    WHERE r.roleName = 'ROLE_LAWYER'
+      AND (
+            LOWER(a.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+         OR LOWER(a.email) LIKE LOWER(CONCAT('%', :keyword, '%'))
+         OR LOWER(a.phoneNumber) LIKE LOWER(CONCAT('%', :keyword, '%'))
+         OR LOWER(e.expertName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+         
+      )
+""")
+    List<AppUser> searchLawyersByKeyword(@Param("keyword") String keyword);
 }

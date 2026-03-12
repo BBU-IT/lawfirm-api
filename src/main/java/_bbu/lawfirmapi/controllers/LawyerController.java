@@ -53,6 +53,16 @@ public class LawyerController extends BaseResponse {
                 lawyerService.fetchLawyerById(lawyerId)
         );
     }
+    @GetMapping("/search-lawyer")
+    public ResponseEntity<ApiResponse<List<AppUserResponse>>> searchLawyerByUserNamePhoneNumberEmail(
+            @RequestParam(required = false) String keyword
+    ) {
+
+        return responseEntity(true,
+                "Search laywer successfully.",
+                HttpStatus.OK,
+                lawyerService.findLawyerByUsernameORPhoneNumberOREmail(keyword ));
+    }
     @GetMapping("/task-list-by-lawyer")
     public ResponseEntity<ApiResponse<Page<Task>>> fetchTaskByLawyer(
             @RequestParam String email,

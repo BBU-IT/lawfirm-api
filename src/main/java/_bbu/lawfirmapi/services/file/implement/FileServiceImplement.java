@@ -31,7 +31,6 @@ public class FileServiceImplement implements FileService {
     private String bucketName;
     @Value("${minio.url}")
     private String minioUrl;
-
     private void verifyFileExtension(MultipartFile file) {
         // validate file extension allow only ending with .png, .svg, .jpg, .jpeg, or .gif
         List<String> allowFileExtensions =
@@ -78,7 +77,12 @@ public class FileServiceImplement implements FileService {
     @SneakyThrows
     @Override
     public InputStream getFileByFileName(String fileName ) {
-
+        if (fileName == null || fileName.isBlank()) {
+            throw new IllegalArgumentException("File name must not be null or empty");
+        }
+        if (fileName.startsWith("http")) {
+            throw new IllegalArgumentException("Invalid file name: URL not allowed. Use the filename returned from upload.");
+        }
         return minioClient
                 .getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
     }
@@ -95,6 +99,7 @@ public class FileServiceImplement implements FileService {
         }
         return responseFiles;
     }
+
     @Override
     @SneakyThrows
     public List<String>  getBannerImagesList(){
@@ -276,9 +281,9 @@ public String uploadPdfFile(MultipartFile file, String lawType) throws Exception
     }
     @Override
     @SneakyThrows
-    public Void deletePosterByName(String posterName){
-        if (posterName == null || !posterName.startsWith("Poster/")) {
-            throw new IllegalArgumentException("Invalid poster path");
+    public Void deleteBannerByName(String posterName){
+        if (posterName == null || !posterName.startsWith("Banner/")) {
+            throw new IllegalArgumentException("Invalid banner path");
         }
         minioClient.removeObject(
                 RemoveObjectArgs.builder()
@@ -287,5 +292,16 @@ public String uploadPdfFile(MultipartFile file, String lawType) throws Exception
                         .build()
         );
         return null;
+    }
+    @Override
+    @SneakyThrows
+    public FileMetaData editBannerByName(String oldBannerName, MultipartFile newFile) throws Exception {
+        if (oldBannerName == null || oldBannerName.isBlank()) {
+            throw new IllegalArgumentException("Old banner name is required");
+        }
+
+        deleteBannerByName(oldBannerName);
+
+        return uploadBannerImages(newFile);
     }
 }

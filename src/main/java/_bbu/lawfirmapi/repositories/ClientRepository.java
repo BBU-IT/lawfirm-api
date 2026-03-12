@@ -47,17 +47,18 @@ public interface ClientRepository extends JpaRepository<Client , Long> {
 """)
     List<Object[]> getQuarterlyStatistic(@Param("year") int year);
 
-    @Query("""
-        SELECT YEAR(c.createdAt) , COUNT (c)
+    @Query(value = """
+        SELECT EXTRACT(YEAR FROM c.createdAt) , COUNT(c)
             FROM Client c
-                    GROUP BY YEAR (c.createdAt)
-                        ORDER BY YEAR (c.createdAt)
+            WHERE c.createdAt IS NOT NULL
+                    GROUP BY EXTRACT(YEAR FROM c.createdAt)
+                        ORDER BY EXTRACT(YEAR FROM c.createdAt)
     """)
     List<Object[]> getAnnualStatistic();
 
     @Query("""
     SELECT new _bbu.lawfirmapi.models.DTO.client.response.ClientListResponse(
-    
+   
         c.email,
         MAX(c.clientName),
         COUNT(c.clientId)
