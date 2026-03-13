@@ -123,4 +123,22 @@ public class CaseServiceImpl implements CaseService  {
     }
 
 
+    ///  filter
+
+    @Override
+    public Page<Case> fetchCaseByYearAndMonthAndDay(int year, int month, int day, Pageable pageable) {
+
+        return caseRepository.findByYearAndMonthAndDay(year , month,day , pageable);
+    }
+
+    @Override
+    public Page<Case> fetchCaseByYearAndMonth(int year, int month, Pageable pageable) {
+        return caseRepository.findByYearAndMonth(year , month , pageable);
+
+    }
+
+    @Override
+    public Page<Case> fetchCaseByYear(int year, Pageable pageable) {
+        return caseRepository.findByYear(year , pageable);
+    }
 }

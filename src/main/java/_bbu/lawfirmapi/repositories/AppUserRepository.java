@@ -60,4 +60,19 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
       )
 """)
     List<AppUser> searchLawyersByKeyword(@Param("keyword") String keyword);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE AppUser u SET u.failedAttemptCount = u.failedAttemptCount + 1 WHERE u.email = :email")
+    void incrementFailedAttempt(@Param("email") String email);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE AppUser u SET u.failedAttemptCount = 0, u.accountLocked = false, u.lockoutTime = null WHERE u.email = :email")
+    void resetFailedAttempt(@Param("email") String email);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE AppUser u SET u.accountLocked = true, u.lockoutTime = :lockoutTime WHERE u.email = :email")
+    void lockAccount(@Param("email") String email, @Param("lockoutTime") java.time.LocalDateTime lockoutTime);
 }

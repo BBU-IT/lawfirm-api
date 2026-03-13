@@ -27,6 +27,7 @@ public class ClientRequest {
     private String address;
     private String complaint;
     private String clientImage;
+    private String feedBack;
 
     public Client toEntity(){
         return new Client(
@@ -37,6 +38,7 @@ public class ClientRequest {
                 this.phoneNumber,
                 this.address,
                 this.complaint,
+                this.feedBack,
                 this.clientImage
         );
     }

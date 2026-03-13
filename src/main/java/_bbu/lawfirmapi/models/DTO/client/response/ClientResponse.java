@@ -21,6 +21,7 @@ public class ClientResponse {
     private String address;
     private String complaint ;
     private String clientImage;
+    private String feedBack;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

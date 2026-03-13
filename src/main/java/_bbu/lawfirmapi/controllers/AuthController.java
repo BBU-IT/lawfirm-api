@@ -1,6 +1,7 @@
 package _bbu.lawfirmapi.controllers;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Objects;
 
@@ -12,6 +13,7 @@ import _bbu.lawfirmapi.models.DTO.auth.response.AuthResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.ApiResponse;
 import _bbu.lawfirmapi.models.DTO.shared.response.BaseResponse;
 import _bbu.lawfirmapi.models.Entity.AppUser;
+import _bbu.lawfirmapi.repositories.AppUserRepository;
 import _bbu.lawfirmapi.services.admin.AdminService;
 import _bbu.lawfirmapi.jwt.JwtService;
 import _bbu.lawfirmapi.services.auth.AppUserService;
@@ -42,18 +44,58 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class AuthController extends BaseResponse {
 //    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    private static final int MAX_ATTEMPTS = 3;
+    private static final int LOCKOUT_MINUTES = 15;
+
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final AdminService adminService;
     private final MethodHelper helper;
     private final AppUserService appUserService;
+    private final AppUserRepository appUserRepository;
 
     private void authenticate(String email , String password) throws Exception {
+        AppUser user = appUserRepository.findAppUserByEmail(email).orElse(null);
+        
+        if (user != null) {
+            if (user.getAccountLocked() != null && user.getAccountLocked()) {
+                if (user.getLockoutTime() != null) {
+                    long minutesSinceLockout = ChronoUnit.MINUTES.between(user.getLockoutTime(), LocalDateTime.now());
+                    if (minutesSinceLockout >= LOCKOUT_MINUTES) {
+                        appUserRepository.resetFailedAttempt(email);
+                        user.setAccountLocked(false);
+                        user.setFailedAttemptCount(0);
+                        appUserRepository.save(user);
+                    } else {
+                        long remainingMinutes = LOCKOUT_MINUTES - minutesSinceLockout;
+                        throw new InvalidException("Account locked. Try again in " + remainingMinutes + " minutes.");
+                    }
+                }
+            }
+        }
+
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+            if (user != null) {
+                appUserRepository.resetFailedAttempt(email);
+            }
         } catch (DisabledException e) {
             throw new RuntimeException("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
+            if (user != null) {
+
+                int attempts = (user.getFailedAttemptCount() != null ? user.getFailedAttemptCount() : 0) + 1;
+
+                if (attempts >= MAX_ATTEMPTS) {
+                    appUserRepository.lockAccount(email, LocalDateTime.now());
+                    throw new InvalidException("Too many failed attempts. Account locked for " + LOCKOUT_MINUTES + " minutes.");
+                } else {
+                    appUserRepository.incrementFailedAttempt(email);
+                    int remainingAttempts = MAX_ATTEMPTS - attempts;
+                    throw new InvalidException(
+                            "Invalid password. You have " + remainingAttempts + " attempts remaining.");
+                }
+            }
             throw new InvalidException(
                     "Invalid username, email, or password. Please check your credentials and try again.");
         }

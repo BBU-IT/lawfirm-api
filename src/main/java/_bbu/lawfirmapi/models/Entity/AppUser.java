@@ -72,11 +72,18 @@ public class AppUser extends BaseEntity implements UserDetails  {
     private String tiktokLink;
     @Column(name = "telegram_link")
     private String telegramLink;
+    @Column(name = "failed_attempt_count")
+    private Integer failedAttemptCount = 0;
+    @Column(name = "lockout_time")
+    private java.time.LocalDateTime lockoutTime;
+    @Column(name = "account_locked")
+    private Boolean accountLocked = false;
 
     @Column (name = "description" , columnDefinition = "TEXT")
     private String description;
     @Column(name = "title")
     private String title;
+
 
     @OneToMany(mappedBy = "appUser" , cascade = CascadeType.ALL)
     @JsonIgnore

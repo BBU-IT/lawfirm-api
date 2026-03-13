@@ -44,6 +44,9 @@ public class Client extends BaseEntity {
     private ClientStatus status;
     @Column(name = "client_image")
     private String clientImage;
+    @Column(name = "feed_back" )
+    private String feedBack;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -56,7 +59,7 @@ public class Client extends BaseEntity {
 //    private Long requestCount;
 
 
-    public Client(Object o, String clientName, String email, ClientStatus status, String phoneNumber, String address, String complaint, String clientImage ) {
+    public Client(Object o, String clientName, String email, ClientStatus status, String phoneNumber, String address, String complaint, String feedBack,  String clientImage ) {
     }
 
     public ClientResponse toResponse(){
@@ -69,6 +72,7 @@ public class Client extends BaseEntity {
                 this.address ,
                 this.complaint ,
                 this.clientImage ,
+                this.feedBack,
                 this.getCreatedAt() ,
                 this.getUpdatedAt());
     }

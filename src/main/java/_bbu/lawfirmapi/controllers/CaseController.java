@@ -58,6 +58,56 @@ public class CaseController extends BaseResponse {
                 caseService.getCaseById(caseId));
     }
 
+    @GetMapping("/filter-by-year")
+    public ResponseEntity<ApiResponse<Page<Case>>> filterByYear(
+            @RequestParam Integer year,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "caseId") String sortBy,
+            @RequestParam(defaultValue = "true") Boolean ascending
+    ) {
+        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        return responseEntity(true,
+                "Get cases by year " + year + " successfully",
+                HttpStatus.OK,
+                caseService.fetchCaseByYear(year, pageable));
+    }
+
+    @GetMapping("/filter-by-month")
+    public ResponseEntity<ApiResponse<Page<Case>>> filterByMonth(
+            @RequestParam Integer year,
+            @RequestParam Integer month,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "caseId") String sortBy,
+            @RequestParam(defaultValue = "true") Boolean ascending
+    ) {
+        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        return responseEntity(true,
+                "Get cases by year " + year + " and month " + month + " successfully",
+                HttpStatus.OK,
+                caseService.fetchCaseByYearAndMonth(year, month, pageable));
+    }
+
+    @GetMapping("/filter-by-day")
+    public ResponseEntity<ApiResponse<Page<Case>>> filterByDay(
+            @RequestParam Integer year,
+            @RequestParam Integer month,
+            @RequestParam Integer day,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "caseId") String sortBy,
+            @RequestParam(defaultValue = "true") Boolean ascending
+    ) {
+        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        return responseEntity(true,
+                "Get cases by date " + year + "-" + month + "-" + day + " successfully",
+                HttpStatus.OK,
+                caseService.fetchCaseByYearAndMonthAndDay(year, month, day, pageable));
+    }
 
     @PostMapping
     public ResponseEntity<ApiResponse<CaseResponse>> createNewCase(@RequestBody CaseRequest caseRequest){
@@ -84,6 +134,9 @@ public class CaseController extends BaseResponse {
                 HttpStatus.ACCEPTED,
                 caseService.removeCaseById(caseId));
     }
+
+
+
 
 
 }

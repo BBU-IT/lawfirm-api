@@ -12,6 +12,12 @@ public interface CaseService {
 
     Page<Case> getCaseList(Pageable pageable , Integer requestedPage);
     List<Case> getCaseNoPagination();
+    Page<Case> fetchCaseByYear(int year , Pageable pageable);
+
+    Page<Case> fetchCaseByYearAndMonth(int year ,int month , Pageable pageable );
+
+    Page<Case> fetchCaseByYearAndMonthAndDay(int year , int month, int day , Pageable pageable);
+
     Case getCaseById(Long caseId);
 
     CaseResponse createNewCase(CaseRequest caseRequest);

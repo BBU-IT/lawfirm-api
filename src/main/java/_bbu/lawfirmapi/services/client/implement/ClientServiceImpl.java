@@ -120,6 +120,7 @@ public class ClientServiceImpl implements ClientService {
                 savedClient.getClientImage(),
                 savedClient.getStatus(),
                 savedClient.getComplaint(),
+                savedClient.getFeedBack(),
                 savedClient.getClientId(),
                 savedClient.getCreatedAt(),
                 savedClient.getUpdatedAt()
@@ -143,6 +144,7 @@ public class ClientServiceImpl implements ClientService {
                 updatedClient.getClientImage(),
                 updatedClient.getStatus(),
                 updatedClient.getComplaint(),
+                updatedClient.getFeedBack(),
                 updatedClient.getClientId(),
                 updatedClient.getCreatedAt(),
                 updatedClient.getCreatedAt()
@@ -168,6 +170,7 @@ public class ClientServiceImpl implements ClientService {
         client.setPhoneNumber(request.getPhoneNumber());
         client.setAddress(request.getAddress());
         client.setComplaint(request.getComplaint());
+        client.setFeedBack(request.getFeedBack());
         client.setClientImage(request.getClientImage());
         client.setCreatedAt(LocalDateTime.now());
         client.setUpdatedAt(LocalDateTime.now());
@@ -183,6 +186,7 @@ public class ClientServiceImpl implements ClientService {
             String clientImage,
             ClientStatus status,
             String complaint,
+            String feedBack,
             Long clientId,
             LocalDateTime createdAt,
             LocalDateTime updatedAt
@@ -206,6 +210,7 @@ public class ClientServiceImpl implements ClientService {
         context.setVariable("message", getEmailMessage(status, clientName));
         context.setVariable("caseLink", buildCaseLink(clientId));
         context.setVariable("complaint", complaint);
+        context.setVariable("feedBack" , feedBack);
         context.setVariable("clientImage", clientImage);
         context.setVariable("createdAt" , createdAt);
         context.setVariable("updatedAt" , updatedAt);
