@@ -56,14 +56,17 @@ public class AdminServiceImpl implements AdminService {
     public AppUser getCurrentAdminEntity() {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+//        System.out.println("DD" + auth);
             if (auth == null || !auth.isAuthenticated()
                     || auth.getPrincipal().equals("anonymousUser")) {
                 throw new RuntimeException("Unauthenticated");
             }
 
             String email = auth.getName();
-            AppUser currentProfile =  appUserRepository.findAppUserByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+            AppUser currentProfile = appUserRepository.findByEmailWithRole(email)
+                    .orElseThrow(() -> new NotFoundException("Admin with email " + email +  " not found."));
+//            System.out.println("Current User: " + currentProfile.getEmail() + " | Role: " + currentProfile.getRole());
+
             return currentProfile;
     }
 
@@ -71,10 +74,8 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public AppUserResponse getCurrentAdminProfile()  {
 
-
         return getCurrentAdminEntity().toResponse();
     }
-
 
     @Override
     public AppUserResponse updateProfileAdmin(AppUserRequest appUserRequest) {
@@ -150,7 +151,9 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        AppUser userDetail = appUserRepository.findByEmailWithRole(email.trim());
+        AppUser userDetail = appUserRepository.findByEmailWithRole(email.trim()).orElseThrow(
+                () -> new NotFoundException("user with email " + email +  " not found.")
+        );
 
         if (userDetail == null) {
             throw new UsernameNotFoundException("User does not exist");

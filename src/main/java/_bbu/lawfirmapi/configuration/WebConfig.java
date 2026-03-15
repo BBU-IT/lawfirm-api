@@ -15,7 +15,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(@NotNull CorsRegistry registry) {
                 registry.addMapping("/api/v1/**")
-                        .allowedOrigins("http://localhost:5173" , "http://localhost:5174" , "https://inanely-pseudoanatomical-holley.ngrok-free.dev"  )
+                        .allowedOrigins("http://localhost:5173" , "http://localhost:5174" , "https://inanely-pseudoanatomical-holley.ngrok-free.dev" , "https://seng-kimnam.github.io/"  )
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .allowCredentials(true);

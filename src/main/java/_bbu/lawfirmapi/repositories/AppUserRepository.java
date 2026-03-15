@@ -18,7 +18,9 @@ import java.util.Optional;
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
     @Query("SELECT u FROM AppUser u LEFT JOIN FETCH u.expertises JOIN FETCH u.role WHERE u.email = :email")
-    AppUser findByEmailWithRole(@Param("email") String email);
+    Optional<AppUser> findByEmailWithRole(@Param("email") String email);
+//    @Query("SELECT u FROM AppUser u LEFT JOIN FETCH u.expertises JOIN FETCH u.role WHERE u.email = :email")
+//    AppUser findByEmailWithRoleLaywer(@Param("email") String email);
     // Fetch all lawyers with their roles
     // for admin
     @EntityGraph(attributePaths = {"role", "expertises"})

@@ -53,7 +53,7 @@ public class SecurityConfig {
                                 "/api/v1/files/**",
                                 "/api/v1/services/**",
 //                                "/api/v1/clients/**",
-                                "/api/v1/lawyers/**",
+//                                "/api/v1/lawyers/**",
                                 // this endpoint will be protected for admin only the rest of get method for everyone
 //                                "/api/v1/documents/**",
                                 "/api/v1/categories/**",
@@ -90,7 +90,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE,
                                         "/api/v1/documents/**"
                                 ).hasAnyRole(roleStatus[0], roleStatus[1])
-                        .requestMatchers("/api/v1/lawyers/**").hasAnyRole( roleStatus[0], roleStatus[1])                             .requestMatchers("/api/v1/categories/**").hasRole(roleStatus[0])
+                        .requestMatchers("/api/v1/lawyers/**").hasAnyRole( roleStatus[0])                             .requestMatchers("/api/v1/categories/**").hasRole(roleStatus[0])
 //                        .requestMatchers( "/api/v1/clients/**").hasAnyRole(roleStatus[0], roleStatus[1])
 //                        .requestMatchers("/api/v1/files/get-file-list").hasAnyRole(roleStatus[0], roleStatus[1])
 //                        .requestMatchers("/api/v1/roles/**").hasRole(roleStatus[1])

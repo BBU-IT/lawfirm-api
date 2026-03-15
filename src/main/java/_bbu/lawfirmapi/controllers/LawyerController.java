@@ -11,6 +11,7 @@ import _bbu.lawfirmapi.services.admin.AdminService;
 import _bbu.lawfirmapi.services.auth.AppUserService;
 import _bbu.lawfirmapi.services.lawyer.LawyerService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -29,7 +30,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/lawyers")
-
+@SecurityRequirement(name = "bearerAuth")
 public class LawyerController extends BaseResponse {
 
     private final AppUserRepository appUserRepository;
@@ -45,6 +46,7 @@ public class LawyerController extends BaseResponse {
                 HttpStatus.OK ,
                 lawyerService.fetchAllLawyers());
     }
+
     @GetMapping("/{lawyerId}")
     public ResponseEntity<ApiResponse<AppUser>> fetchLawyerById(@PathVariable Long lawyerId){
         return responseEntity(true ,
@@ -52,6 +54,13 @@ public class LawyerController extends BaseResponse {
                 HttpStatus.ACCEPTED,
                 lawyerService.fetchLawyerById(lawyerId)
         );
+    }
+    @GetMapping("/lawyer-profile")
+    public ResponseEntity<ApiResponse<AppUserResponse>> fetchLawyerProfile(){
+        return responseEntity(true ,
+                "Get current lawyer profile successfully." ,
+                HttpStatus.OK ,
+                lawyerService.getCurrentLawyerProfile());
     }
     @GetMapping("/search-lawyer")
     public ResponseEntity<ApiResponse<List<AppUserResponse>>> searchLawyerByUserNamePhoneNumberEmail(

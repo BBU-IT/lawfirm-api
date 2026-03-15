@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.ast.Not;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,11 +80,32 @@ public class LawyerServiceImpl implements LawyerService {
         List<AppUser> searchedLawyer = appUserRepository.searchLawyersByKeyword(keyword);
 
 
-
-
         return searchedLawyer.stream().map(AppUser::toResponse).toList();
+    }
+    public AppUser getCurrentLawyerEntity() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+
+        if (auth == null || !auth.isAuthenticated()
+                || auth.getPrincipal().equals("anonymousUser")) {
+            throw new RuntimeException("Unauthenticated");
+        }
+
+        String email = auth.getName();
+        AppUser currentProfile = appUserRepository.findByEmailWithRole(email)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        return currentProfile;
+    }
+
+    @Override
+    public AppUserResponse getCurrentLawyerProfile(){
+
+        return getCurrentLawyerEntity().toResponse();
 
     }
+
 
 
 

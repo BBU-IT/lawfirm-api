@@ -13,7 +13,7 @@ public interface LawyerService {
 
     Page<Task> getTaskByLawyerEmail( Pageable pageable, Integer requestPage ,  String email );
     List<AppUserResponse> fetchAllLawyers ();
-
+    AppUserResponse getCurrentLawyerProfile();
     AppUser fetchLawyerById(Long lawyerId);
 
     Void changeLawyerPasswordByEmail( String newPassword , String email);
