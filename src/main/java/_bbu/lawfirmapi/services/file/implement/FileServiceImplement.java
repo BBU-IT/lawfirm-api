@@ -7,7 +7,13 @@ import java.util.stream.Collectors;
 
 import _bbu.lawfirmapi.exceptions.InvalidException;
 import _bbu.lawfirmapi.exceptions.NotFoundException;
+import _bbu.lawfirmapi.models.DTO.client.response.ClientListResponse;
+import _bbu.lawfirmapi.models.DTO.client.response.ClientResponse;
+import _bbu.lawfirmapi.models.Entity.Client;
 import _bbu.lawfirmapi.models.File.FileMetaData;
+import _bbu.lawfirmapi.models.Entity.ClientDocument;
+import _bbu.lawfirmapi.repositories.ClientDocumentRepository;
+import _bbu.lawfirmapi.repositories.ClientRepository;
 import _bbu.lawfirmapi.services.file.FileService;
 import io.minio.*;
 import io.minio.http.Method;
@@ -26,19 +32,21 @@ import lombok.SneakyThrows;
 @RequiredArgsConstructor
 public class FileServiceImplement implements FileService {
     private final MinioClient minioClient;
+    private final ClientDocumentRepository clientDocumentRepository;
+    private final ClientRepository clientRepo;
 
     @Value("${minio.bucket.name}")
     private String bucketName;
     @Value("${minio.url}")
     private String minioUrl;
     private void verifyFileExtension(MultipartFile file) {
-        // validate file extension allow only ending with .png, .svg, .jpg, .jpeg, or .gif
+        // validate file extension allow only ending with .png, .svg, .jpg, .jpeg, .gif, .webp or .pdf
         List<String> allowFileExtensions =
-                List.of("image/png", "image/svg+xml", "image/jpg", "image/jpeg", "image/gif" , "application /pdf");
+                List.of("image/png", "image/svg+xml", "image/jpg", "image/jpeg", "image/gif", "image/webp", "application/pdf");
 
         if (!allowFileExtensions.contains(file.getContentType()) || file.getContentType() == null) {
             throw new InvalidException(
-                    "Profile image must be a valid image URL ending with .png, .svg, .jpg, .jpeg, or .gif");
+                    "Profile image must be a valid image URL ending with .png, .svg, .jpg, .jpeg, .gif, .webp or .pdf");
         }
     }
 
@@ -53,7 +61,9 @@ public class FileServiceImplement implements FileService {
                 .build());
 
         String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/api/v1/files/preview-file/" + fileName).toUriString();
+                .path("/api/v1/files/preview-file")
+                .queryParam("fileName" , fileName)
+                .toUriString();
 
         return FileMetaData.builder().fileName(fileName).fileType(file.getContentType())
                 .fileUrl(fileUrl).fileSize(file.getSize()).build();
@@ -148,8 +158,8 @@ public class FileServiceImplement implements FileService {
         // 5. Preview URL (your existing API)
         String fileUrl = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
-                .path("/api/v1/files/preview-file/")
-                .path(fileName)
+                .path("/api/v1/files/preview-file")
+                .queryParam("fileName" , fileName)
                 .toUriString();
 
         // 6. Return metadata
@@ -303,5 +313,186 @@ public String uploadPdfFile(MultipartFile file, String lawType) throws Exception
         deleteBannerByName(oldBannerName);
 
         return uploadBannerImages(newFile);
+    }
+
+    // last update code of thesis
+    @Override
+    public Object uploadClientDocuments(Long clientId, List<MultipartFile> files, String description) throws Exception {
+        if (clientId == null) {
+            throw new IllegalArgumentException("Client ID is required");
+        }
+        if (files == null || files.isEmpty()) {
+            throw new IllegalArgumentException("Files are required");
+        }
+        Client clientWhoseUpload = clientRepo.findById(clientId)
+                .orElseThrow(() -> new NotFoundException("client request with id " + clientId));
+
+        ClientListResponse clientListResponse = clientRepo.findUniqueClientByEmail(clientWhoseUpload.getEmail());
+        String clientName = clientListResponse.getClientName();
+        List<Map<String, String>> documentList = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            String fileName = clientName + "-" + clientId + "-" + UUID.randomUUID() + "." + StringUtils.getFilenameExtension(file.getOriginalFilename());
+
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(fileName)
+                            .contentType(file.getContentType())
+                            .stream(file.getInputStream(), file.getSize(), -1)
+                            .build()
+            );
+
+            String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/api/v1/files/preview-file")
+                    .queryParam("fileName" , fileName)
+                    .toUriString();
+
+            Map<String, String> docInfo = new HashMap<>();
+            docInfo.put("name", file.getOriginalFilename());
+            docInfo.put("fileName", fileName);
+            docInfo.put("fileUrl", fileUrl);
+            docInfo.put("fileType", file.getContentType());
+            docInfo.put("fileSize", String.valueOf(file.getSize()));
+            documentList.add(docInfo);
+        }
+
+        Optional<ClientDocument> existingDoc = clientDocumentRepository.findByClientId(clientId);
+        ClientDocument clientDocument;
+
+        if (existingDoc.isPresent()) {
+            clientDocument = existingDoc.get();
+            clientDocument.getDocuments().addAll(documentList);
+        } else {
+            clientDocument = new ClientDocument();
+            clientDocument.setClientId(clientId);
+            clientDocument.setDocuments(documentList);
+        }
+
+        if (description != null && !description.isBlank()) {
+            clientDocument.setDescription(description);
+        }
+
+        return clientDocumentRepository.save(clientDocument);
+    }
+
+    @Override
+    public Object getClientDocuments(Long clientId) {
+        if (clientId == null) {
+            throw new IllegalArgumentException("Client ID is required");
+        }
+        return clientDocumentRepository.findByClientId(clientId)
+                .orElseThrow(() -> new NotFoundException("No documents found for client ID: " + clientId));
+    }
+
+    @Override
+    public Object getAllClientDocuments(String keyword) {
+        List<ClientDocument> allDocs = clientDocumentRepository.findAll();
+
+        if (allDocs.isEmpty()) {
+            throw new NotFoundException("No client documents found");
+        }
+
+        String normalizedKeyword = keyword != null ? keyword.trim().toLowerCase() : "";
+        List<Map<String, Object>> result = new ArrayList<>();
+        Set<Long> seenClientIds = new HashSet<>();
+
+        for (ClientDocument doc : allDocs) {
+            if (seenClientIds.contains(doc.getClientId())) {
+                continue;
+            }
+
+            Client client = clientRepo.findById(doc.getClientId()).orElse(null);
+            String clientName = client != null && client.getClientName() != null
+                    ? client.getClientName()
+                    : "";
+
+            boolean matchesSearch = normalizedKeyword.isBlank()
+                    || clientName.toLowerCase().contains(normalizedKeyword)
+                    || hasMatchingDocumentName(doc.getDocuments(), normalizedKeyword);
+
+            if (!matchesSearch) {
+                continue;
+            }
+
+            seenClientIds.add(doc.getClientId());
+
+            Map<String, Object> docInfo = new HashMap<>();
+            docInfo.put("id", doc.getId());
+            docInfo.put("clientId", doc.getClientId());
+            docInfo.put("clientName", clientName);
+            docInfo.put("clientEmail", client != null ? client.getEmail() : "");
+            docInfo.put("description", doc.getDescription());
+            docInfo.put("documents", doc.getDocuments());
+            docInfo.put("createdAt", doc.getCreatedAt());
+            docInfo.put("updatedAt", doc.getUpdatedAt());
+            result.add(docInfo);
+        }
+
+        if (result.isEmpty()) {
+            throw new NotFoundException("No client documents found matching: " + keyword);
+        }
+
+        return result;
+    }
+
+    private boolean hasMatchingDocumentName(List<Map<String, String>> documents, String keyword) {
+        if (documents == null || keyword.isBlank()) {
+            return false;
+        }
+
+        for (Map<String, String> document : documents) {
+            String documentName = document.get("name");
+            if (documentName != null && documentName.toLowerCase().contains(keyword)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public Object searchClientDocuments(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            throw new IllegalArgumentException("Search keyword is required");
+        }
+
+        List<ClientDocument> allDocs = clientDocumentRepository.findAll();
+        
+        if (allDocs.isEmpty()) {
+            throw new NotFoundException("No documents found");
+        }
+
+        String lowerKeyword = keyword.toLowerCase();
+        List<Map<String, String>> matchingFiles = new ArrayList<>();
+        
+        for (ClientDocument doc : allDocs) {
+            Client client = clientRepo.findById(doc.getClientId()).orElse(null);
+            String clientName = (client != null && client.getClientName() != null) 
+                ? client.getClientName().toLowerCase() 
+                : "";
+            
+            if (doc.getDocuments() != null) {
+                for (Map<String, String> file : doc.getDocuments()) {
+                    String fileName = file.get("name") != null ? file.get("name").toLowerCase() : "";
+                    if (clientName.contains(lowerKeyword) || fileName.contains(lowerKeyword)) {
+                        Map<String, String> matchedFile = new HashMap<>(file);
+                        matchedFile.put("id" , doc.getId().toString());
+                        matchedFile.put("clientId", doc.getClientId().toString());
+                        matchedFile.put("clientName", client != null ? client.getClientName() : "");
+                        matchedFile.put("description" , doc.getDescription());
+                        matchedFile.put("createdAt" , doc.getCreatedAt().toString());
+                        matchedFile.put("updatedAt" , doc.getUpdatedAt().toString());
+                        matchingFiles.add(matchedFile);
+                    }
+                }
+            }
+        }
+
+        if (matchingFiles.isEmpty()) {
+            throw new NotFoundException("No documents found matching: " + keyword);
+        }
+        
+        return matchingFiles;
     }
 }

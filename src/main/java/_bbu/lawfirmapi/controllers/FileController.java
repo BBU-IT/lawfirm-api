@@ -78,6 +78,11 @@ public class FileController extends BaseResponse {
             return ResponseEntity.badRequest().body("File name is required".getBytes());
         }
 
+        if (fileName.equalsIgnoreCase("default-avatar.jpg") || 
+            fileName.equalsIgnoreCase("default-avatar.png")) {
+            return ResponseEntity.notFound().build();
+        }
+
         InputStream inputStream = fileService.getFileByFileName(fileName);
 
 
@@ -219,6 +224,54 @@ public class FileController extends BaseResponse {
                 "Delete banner name " + bannerName + " successfully",
                 HttpStatus.OK,
                 fileService.deleteBannerByName(bannerName)
+        );
+    }
+
+    @PostMapping(value = "/upload-client-documents", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Object>> uploadClientDocuments(
+            @RequestParam Long clientId,
+            @RequestParam("files") List<MultipartFile> files,
+            @RequestParam(required = false) String description
+    ) throws Exception {
+        return responseEntity(
+                true,
+                "Documents uploaded successfully",
+                HttpStatus.CREATED,
+                fileService.uploadClientDocuments(clientId, files, description)
+        );
+    }
+
+    @GetMapping("/client-request-documents/{clientId}")
+    public ResponseEntity<ApiResponse<Object>> getClientDocuments(@PathVariable Long clientId) {
+        return responseEntity(
+                true,
+                "Get client documents successfully",
+                HttpStatus.OK,
+                fileService.getClientDocuments(clientId)
+        );
+    }
+
+    @GetMapping("/client-documents/all")
+    public ResponseEntity<ApiResponse<Object>> getAllClientDocuments(
+            @RequestParam(required = false) String keyword
+    ) {
+        return responseEntity(
+                true,
+                "Get all client documents successfully",
+                HttpStatus.OK,
+                fileService.getAllClientDocuments(keyword)
+        );
+    }
+
+    @GetMapping("/client-documents/search")
+    public ResponseEntity<ApiResponse<Object>> searchClientDocuments(
+            @RequestParam String keyword
+    ) {
+        return responseEntity(
+                true,
+                "Search results for: " + keyword,
+                HttpStatus.OK,
+                fileService.searchClientDocuments(keyword)
         );
     }
 

@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@EqualsAndHashCode(callSuper = true, exclude = {"expertises", "cases"})
+@EqualsAndHashCode(callSuper = true, exclude = {"expertises"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -73,11 +73,11 @@ public class AppUser extends BaseEntity implements UserDetails  {
     @Column(name = "telegram_link")
     private String telegramLink;
     @Column(name = "failed_attempt_count")
-    private Integer failedAttemptCount = 0;
+    private  Integer failedAttemptCount = 0;
     @Column(name = "lockout_time")
     private java.time.LocalDateTime lockoutTime;
     @Column(name = "account_locked")
-    private Boolean accountLocked = false;
+    private  Boolean accountLocked = false;
 
     @Column (name = "description" , columnDefinition = "TEXT")
     private String description;

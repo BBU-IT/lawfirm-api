@@ -30,7 +30,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/lawyers")
-@SecurityRequirement(name = "bearerAuth")
 public class LawyerController extends BaseResponse {
 
     private final AppUserRepository appUserRepository;
@@ -47,6 +46,7 @@ public class LawyerController extends BaseResponse {
                 lawyerService.fetchAllLawyers());
     }
 
+
     @GetMapping("/{lawyerId}")
     public ResponseEntity<ApiResponse<AppUser>> fetchLawyerById(@PathVariable Long lawyerId){
         return responseEntity(true ,
@@ -55,6 +55,7 @@ public class LawyerController extends BaseResponse {
                 lawyerService.fetchLawyerById(lawyerId)
         );
     }
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/lawyer-profile")
     public ResponseEntity<ApiResponse<AppUserResponse>> fetchLawyerProfile(){
         return responseEntity(true ,

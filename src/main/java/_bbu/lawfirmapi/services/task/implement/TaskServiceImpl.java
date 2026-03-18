@@ -132,4 +132,34 @@ public class TaskServiceImpl implements TaskService {
         taskRepo.deleteById(taskId);
         return null;
     }
+
+    @Override
+    public List<Task> getTasksByCurrentLawyer(Long lawyerId) {
+        if (lawyerId == null) {
+            throw new NotFoundException("Lawyer ID is required");
+        }
+        if (!appUserRepo.existsById(lawyerId)) {
+            throw new NotFoundException("Lawyer with ID " + lawyerId + " not found");
+        }
+        List<Task> tasks = taskRepo.findByLawyerAppUserId(lawyerId);
+        if (tasks.isEmpty()) {
+            throw new NotFoundException("No tasks found for this lawyer");
+        }
+        return tasks;
+    }
+
+    @Override
+    public Page<Task> getTasksByCurrentLawyer(Long lawyerId, Pageable pageable) {
+        if (lawyerId == null) {
+            throw new NotFoundException("Lawyer ID is required");
+        }
+        if (!appUserRepo.existsById(lawyerId)) {
+            throw new NotFoundException("Lawyer with ID " + lawyerId + " not found");
+        }
+        Page<Task> tasks = taskRepo.findByLawyerAppUserId(lawyerId, pageable);
+        if (tasks.isEmpty()) {
+            throw new NotFoundException("No tasks found for this lawyer");
+        }
+        return tasks;
+    }
 }

@@ -19,7 +19,7 @@ import java.util.Set;
 @Table(name = "expertises")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @JsonPropertyOrder({"expertiseId", "expertName", "createdAt", "updatedAt"})
-@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 public class Expertise extends BaseEntity {
 
@@ -36,12 +36,12 @@ public class Expertise extends BaseEntity {
 
     @ManyToMany(mappedBy = "expertises")
     @JsonIgnore
-    @ToString.Exclude
+//    @ToString.Exclude
     private Set<AppUser> lawyerProfiles;
 
     @OneToMany(mappedBy = "expertise", cascade = CascadeType.ALL)
     @JsonIgnore
-    @ToString.Exclude
+//    @ToString.Exclude
     private Set<Service> serviceSet;
 
     public Expertise(Object o, String expertName) {

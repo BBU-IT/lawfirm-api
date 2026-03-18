@@ -24,4 +24,11 @@ public interface FileService {
     Void deleteBannerByName(String posterName);
 
     FileMetaData editBannerByName(String oldBannerName, MultipartFile newFile) throws Exception;
+
+    // last update methods of thesis
+
+    Object uploadClientDocuments(Long clientId, List<MultipartFile> files, String description) throws Exception;
+    Object getClientDocuments(Long clientId);
+    Object getAllClientDocuments(String keyword);
+    Object searchClientDocuments(String keyword);
 }

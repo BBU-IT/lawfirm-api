@@ -101,7 +101,7 @@ public class ClientController extends BaseResponse {
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
             @RequestParam(defaultValue = "clientId") String sortBy,
-            @RequestParam(defaultValue = "true") Boolean ascending
+            @RequestParam(defaultValue = "false") Boolean ascending
     ){
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);

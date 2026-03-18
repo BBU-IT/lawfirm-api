@@ -61,7 +61,6 @@ public class LawyerServiceImpl implements LawyerService {
     @Override
     public Void changeLawyerPasswordByEmail(String newPassword , String email){
 
-
         String newPasswordEncoder = passwordEncoder.encode(newPassword);
 
         int updatedNewPassword = appUserRepository.resetPassword(newPasswordEncoder , email);

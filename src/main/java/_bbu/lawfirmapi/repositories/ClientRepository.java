@@ -111,4 +111,26 @@ public interface ClientRepository extends JpaRepository<Client , Long> {
     Page<Client> searchDetailClientRequest(@Param("keyword") String keyword , @Param("email") String email, Pageable pageable);
 
     Page<Client> findByEmail(Pageable pageable, String email);
+
+    @Query(
+            value = """
+        SELECT new _bbu.lawfirmapi.models.DTO.client.response.ClientListResponse(
+            c.email,
+            MAX(c.clientName),
+            COUNT(c.clientId)
+        )
+        FROM Client c
+        WHERE (:email IS NULL OR LOWER(c.email) LIKE LOWER(CONCAT('%', :email, '%')))
+        GROUP BY c.email
+    """,
+            countQuery = """
+        SELECT COUNT(DISTINCT c.email)
+        FROM Client c
+        WHERE (:email IS NULL OR LOWER(c.email) LIKE LOWER(CONCAT('%', :email, '%')))
+    """
+    )
+    ClientListResponse findUniqueClientByEmail(
+            @Param("email") String email
+
+    );
 }

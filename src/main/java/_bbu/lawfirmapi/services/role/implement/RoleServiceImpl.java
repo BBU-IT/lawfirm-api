@@ -33,7 +33,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<Role> getAllRoles(){
 
-        System.out.println(roleRepository.findAll().isEmpty());
+//        System.out.println(roleRepository.findAll().isEmpty());
         return Optional.of(roleRepository.findAll())
                 .filter(list -> !list.isEmpty())
                 .orElseThrow(() -> new NotFoundException("None any role founded"));
@@ -66,7 +66,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Void removeRoleById(Integer roleId){
         if(roleRepository.findById(roleId).isEmpty()){
-            System.out.println("role deleted" + roleRepository.findById(roleId));
+//            System.out.println("role deleted" + roleRepository.findById(roleId));
             roleRepository.deleteById(roleId);
         }
         return null;

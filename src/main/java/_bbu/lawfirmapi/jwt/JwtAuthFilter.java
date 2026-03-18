@@ -34,7 +34,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String email = null;
-
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            // ✅ NO TOKEN → just continue (DO NOT BLOCK)
+            filterChain.doFilter(request, response);
+            return;
+        }
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             email = jwtService.extractEmail(token);

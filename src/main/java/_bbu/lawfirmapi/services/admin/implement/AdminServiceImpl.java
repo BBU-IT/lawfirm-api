@@ -152,7 +152,7 @@ public class AdminServiceImpl implements AdminService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         AppUser userDetail = appUserRepository.findByEmailWithRole(email.trim()).orElseThrow(
-                () -> new NotFoundException("user with email " + email +  " not found.")
+                () -> new NotFoundException("Credential with email name" + email +  " not found.")
         );
 
         if (userDetail == null) {
@@ -163,7 +163,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void checkIsEmailExist(String email){
-        if (appUserRepository.findByEmailWithRole(email) != null) {
+        if (appUserRepository.existsByEmail(email)) {
             throw new EmailAlreadyExistException("Email already exists: " + email);
         }
     }

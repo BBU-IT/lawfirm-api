@@ -5,6 +5,7 @@ import _bbu.lawfirmapi.models.DTO.doc.response.DocResponse;
 import _bbu.lawfirmapi.models.Entity.Document;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

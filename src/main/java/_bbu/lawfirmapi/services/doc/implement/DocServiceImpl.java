@@ -53,17 +53,17 @@ public class DocServiceImpl implements DocService  {
         if(documentRepo.findAll().isEmpty()){
             throw  new NotFoundException("List document not found");
         }
-       List<DocResponse> listOfDocs = documentRepo.findAll().stream().map(
-               doc -> new DocResponse(
-                       doc.getDocId(),
-                       doc.getTitle(),
-                       doc.getFileCover(),
-                       doc.getFileUrl(),
-                       doc.getCategory().getCategoryName(),
-                       doc.getCreatedAt(),
-                       doc.getUpdatedAt()
-               )
-       ).toList();
+        List<DocResponse> listOfDocs = documentRepo.findAll().stream().map(
+                doc -> new DocResponse(
+                        doc.getDocId(),
+                        doc.getTitle(),
+                        doc.getFileCover(),
+                        doc.getFileUrl(),
+                        doc.getCategory().getCategoryName(),
+                        doc.getCreatedAt(),
+                        doc.getUpdatedAt()
+                )
+        ).toList();
         return listOfDocs;
     }
     public class DocumentSpecs {
@@ -149,8 +149,9 @@ public class DocServiceImpl implements DocService  {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (!methodHelper.isLawyer(auth)) {
-            throw new AccessDeniedException("Only lawyers can upload documents");
+
+        if (!methodHelper.isLawyer(auth) && !methodHelper.isAdmin(auth)) {
+            throw new AccessDeniedException("Only lawyers and Admin can upload documents");
         }
 
         AppUser lawyer = appUserRepo.findAppUserByEmail(auth.getName())
@@ -172,6 +173,17 @@ public class DocServiceImpl implements DocService  {
 
     @Override
     public DocResponse modifiedExistDocumentById( Long docId, DocRequest docRequest) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+
+        if (!methodHelper.isLawyer(auth) && !methodHelper.isAdmin(auth)) {
+            throw new AccessDeniedException("Only lawyers and Admin can upload documents");
+        }
+
+        AppUser lawyer = appUserRepo.findAppUserByEmail(auth.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         Document currentDoc =  documentRepo.findById(docId).orElseThrow(
                 () -> new NotFoundException("Document with id " + docId +  " not found.")
         );
@@ -184,8 +196,8 @@ public class DocServiceImpl implements DocService  {
         currentDoc.setFileCover(docRequest.getFileCover());
         currentDoc.setFileUrl(docRequest.getFileUrl());
         currentDoc.setCategory(category);
-
         currentDoc.setUpdatedAt(LocalDateTime.now());
+        currentDoc.setAppUser(lawyer);
         DocResponse saveUpdateDoc = documentRepo.save(currentDoc).toResponse();
         return saveUpdateDoc;
     }

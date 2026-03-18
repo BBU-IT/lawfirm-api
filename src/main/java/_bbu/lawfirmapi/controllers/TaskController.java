@@ -6,6 +6,7 @@ import _bbu.lawfirmapi.models.DTO.task.request.TaskRequest;
 import _bbu.lawfirmapi.models.DTO.task.response.TaskResponse;
 import _bbu.lawfirmapi.models.Entity.Task;
 import _bbu.lawfirmapi.models.Enumerations.TaskStatus;
+import _bbu.lawfirmapi.services.admin.AdminService;
 import _bbu.lawfirmapi.services.task.TaskService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -26,6 +27,7 @@ import java.util.List;
 public class TaskController extends BaseResponse {
 
     private final TaskService taskService;
+    private final AdminService adminService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<Task>>> getAllTaskList(
@@ -42,6 +44,24 @@ public class TaskController extends BaseResponse {
                 HttpStatus.OK,
                 tasksList);
      }
+
+    @GetMapping("/my-tasks/{lawyerId}")
+    public ResponseEntity<ApiResponse<Page<Task>>> getMyTasks(
+            @PathVariable Long lawyerId,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "taskId") String sortBy,
+            @RequestParam(defaultValue = "true") Boolean ascending
+    ) {
+//        Long lawyerId = adminService.getCurrentAdminEntity().getAppUserId();
+        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        Page<Task> tasks = taskService.getTasksByCurrentLawyer(lawyerId, pageable);
+        return responseEntity(true,
+                "Get my tasks successfully.",
+                HttpStatus.OK,
+                tasks);
+    }
 
      @GetMapping("/filter")
      public ResponseEntity<ApiResponse<List<Task>>> filterTask(

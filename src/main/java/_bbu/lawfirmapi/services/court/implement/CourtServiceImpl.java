@@ -30,7 +30,7 @@ public class CourtServiceImpl implements CourtService {
     }
     @Override
     public List<Court> getCourtListWithNoPagination() {
-        System.out.println("sd" + courtRepository.findAll());
+//        System.out.println("sd" + courtRepository.findAll());
         return Optional.of(courtRepository.findAll())
                 .filter(list -> !list.isEmpty())
                 .orElseThrow(() -> new NotFoundException("No court list found."));

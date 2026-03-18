@@ -16,6 +16,7 @@ public interface AdminService extends UserDetailsService {
     //    void validateUserByEmail(String email);
 
     AppUserResponse getCurrentAdminProfile();
+    AppUser getCurrentAdminEntity();
 
     UserDetails loadUserByUsername(String email);
 

@@ -23,4 +23,7 @@ public interface TaskService {
     TaskResponse modifiedTaskById(Long taskId , TaskRequest taskRequest);
 
     Void removeTaskById(Long taskId);
+
+    List<Task> getTasksByCurrentLawyer(Long lawyerId);
+    Page<Task> getTasksByCurrentLawyer(Long lawyerId, Pageable pageable);
 }

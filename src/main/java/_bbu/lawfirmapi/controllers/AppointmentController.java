@@ -83,7 +83,7 @@ public class AppointmentController extends BaseResponse {
     @GetMapping("/{appointmentId}")
     public ResponseEntity<ApiResponse<AppointmentResponse>> fetchAppointmentById (@PathVariable Long appointmentId){
         return responseEntity(true ,
-                STR."Get appointment with id \{appointmentId} successfully",
+                "Get appointment with id " + appointmentId +" successfully",
                 HttpStatus.ACCEPTED ,
                 appointmentService.getAppointmentById(appointmentId));
     }
