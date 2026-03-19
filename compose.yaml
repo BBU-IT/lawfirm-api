@@ -1,0 +1,26 @@
+services:
+  storage:
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
+    container_name: minio
+    command: server /data --console-address ":9001"
+    mem_limit: 2000m
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: "@Password123!"
+    ports:
+      - "9000:9000"   # ✅ avoid conflict (changed from 9000)
+      - "9001:9001"   # ✅ avoid conflict (changed from 9001)
+    volumes:
+      - minio-old-data:/data   # ✅ correct mount path
+    networks:
+      - go_networks
+    restart: unless-stopped
+
+volumes:
+  minio-old-data:
+    external: true
+    name: d1d5b7753e2e78e5ad6632edc9ea8e8ef9579559e3b0cd69531c2a30fe3bfd1a
+
+networks:
+  go_networks:
+    driver: bridge
