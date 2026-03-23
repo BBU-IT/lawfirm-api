@@ -262,7 +262,6 @@ public class FileController extends BaseResponse {
                 fileService.getAllClientDocuments(keyword)
         );
     }
-
     @GetMapping("/client-documents/search")
     public ResponseEntity<ApiResponse<Object>> searchClientDocuments(
             @RequestParam String keyword
